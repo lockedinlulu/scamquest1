@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ScamQuest OS</title>
     <link rel="stylesheet" href="style.css" />
+    <link rel="icon" href="data:," />
   </head>
 
-  <!-- SCAM WIDGET (outside body intentionally kept as-is) -->
   <div id="scam-widget" style="position:fixed;top:40px;right:12px;z-index:9999;width:220px;background:rgba(40,40,40,0.82);backdrop-filter:blur(20px);border-radius:18px;border:0.5px solid rgba(255,255,255,0.15);overflow:hidden;font-family:-apple-system,sans-serif;color:white;display:none;">
     <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px 6px;">
       <div style="display:flex;align-items:center;gap:7px;">
@@ -49,7 +49,7 @@
   </div>
 
   <body>
-    <!-- ================= LOGIN SCREEN ================= -->
+    <!-- LOGIN SCREEN -->
     <div id="login-screen" class="screen active">
       <div class="top-bar">
         <div class="left">
@@ -60,18 +60,11 @@
             <button onclick="shutdown()">Shutdown</button>
           </div>
         </div>
-        <div class="right">
-          <span>📶</span><span>🔋 87%</span>
-          <span id="clock">--:--</span>
-        </div>
+        <div class="right"><span>📶</span><span>🔋 87%</span><span id="clock">--:--</span></div>
       </div>
       <div class="login-window">
         <div class="title-bar">
-          <div class="mac-buttons">
-            <span class="dot red"></span>
-            <span class="dot yellow"></span>
-            <span class="dot green"></span>
-          </div>
+          <div class="mac-buttons"><span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span></div>
           <span class="title">Login</span>
         </div>
         <div class="content">
@@ -82,15 +75,12 @@
           <button id="loginBtn">Login</button>
           <button id="guestBtn" class="guest-btn">Continue as Guest</button>
           <p id="message"></p>
-          <div class="login-footer">
-            <span>New here?</span>
-            <a href="signup.html">Create account</a>
-          </div>
+          <div class="login-footer"><span>New here?</span><a href="signup.html">Create account</a></div>
         </div>
       </div>
     </div>
 
-    <!-- ================= DESKTOP ================= -->
+    <!-- DESKTOP -->
     <div id="desktop" class="screen hidden">
       <div class="top-bar">
         <div class="left">
@@ -101,27 +91,24 @@
             <button onclick="shutdown()">Shutdown</button>
           </div>
         </div>
-        <div class="right">
-          <span>📶</span><span>🔋 87%</span>
-          <span id="clock-desktop">--:--</span>
-        </div>
+        <div class="right"><span>📶</span><span>🔋 87%</span><span id="clock-desktop">--:--</span></div>
       </div>
 
       <!-- DOCK -->
       <div class="desktop-icons">
-        <div class="icon" onclick="openWindow('window-messages')">💬<span>Messages</span></div>
-        <div class="icon" onclick="openWindow('window-notes')">📝<span>Notes</span></div>
-        <div class="icon" onclick="openWindow('window-safari')">🧭<span>Safari</span></div>
-        <div class="icon" onclick="openWindow('window-photos')">🖼️<span>Photos</span></div>
-        <div class="icon" onclick="openWindow('window-settings')">⚙️<span>Settings</span></div>
-        <div class="icon" onclick="openWindow('window-files')">📁<span>Files</span></div>
-        <div class="icon" onclick="openWindow('window-recycle')">🗑️<span>Recycle</span></div>
-        <div class="icon" onclick="openAppStore()">🛍️<span>App Store</span></div>
-        <div class="icon" onclick="openWindow('window-mail')">✉️<span>Mail</span></div>
-        <div class="icon" onclick="openWindow('window-facetime');renderFaceTimeContacts()">📹<span>FaceTime</span></div>
+        <div class="icon" id="dock-messages" onclick="openWindow('window-messages')">💬<span>Messages</span><span class="dock-dot"></span></div>
+        <div class="icon" id="dock-notes" onclick="openWindow('window-notes')">📝<span>Notes</span><span class="dock-dot"></span></div>
+        <div class="icon" id="dock-safari" onclick="openWindow('window-safari')">🧭<span>Safari</span><span class="dock-dot"></span></div>
+        <div class="icon" id="dock-photos" onclick="openWindow('window-photos')">🖼️<span>Photos</span><span class="dock-dot"></span></div>
+        <div class="icon" id="dock-settings" onclick="openWindow('window-settings')">⚙️<span>Settings</span><span class="dock-dot"></span></div>
+        <div class="icon" id="dock-files" onclick="openWindow('window-files')">📁<span>Files</span><span class="dock-dot"></span></div>
+        <div class="icon" id="dock-recycle" onclick="openWindow('window-recycle')">🗑️<span>Recycle</span><span class="dock-dot"></span></div>
+        <div class="icon" id="dock-appstore" onclick="openAppStore()">🛍️<span>App Store</span><span class="dock-dot"></span></div>
+        <div class="icon" id="dock-mail" onclick="openWindow('window-mail')">✉️<span>Mail</span><span class="dock-dot"></span></div>
+        <div class="icon" id="dock-facetime" onclick="openWindow('window-facetime');renderFaceTimeContacts()">📹<span>FaceTime</span><span class="dock-dot"></span></div>
       </div>
 
-      <!-- ================= NOTES ================= -->
+      <!-- NOTES -->
       <div id="window-notes" class="window hidden" style="width:750px;height:500px;">
         <div class="window-bar">
           <div class="mac-buttons">
@@ -135,10 +122,12 @@
           <div style="width:200px;min-width:200px;background:#f0efe8;border-right:1px solid #ddd;display:flex;flex-direction:column;overflow:hidden;">
             <div style="padding:10px 12px;border-bottom:1px solid #ddd;">
               <div style="font-size:11px;font-weight:700;color:#8e8e93;text-transform:uppercase;margin-bottom:8px;">iCloud</div>
-<div id="notes-folder" style="display:flex;align-items:center;justify-content:space-between;padding:6px 8px;background:rgba(0,0,0,0.07);border-radius:6px;cursor:pointer;">                <div style="display:flex;align-items:center;gap:6px;font-size:13px;">📁 <span style="font-weight:500;">Notes</span></div>
+              <div id="notes-folder" style="display:flex;align-items:center;justify-content:space-between;padding:6px 8px;background:rgba(0,0,0,0.07);border-radius:6px;cursor:pointer;">
+                <div style="display:flex;align-items:center;gap:6px;font-size:13px;">📁 <span style="font-weight:500;">Notes</span></div>
                 <span style="font-size:11px;color:#8e8e93;">8</span>
               </div>
-<div id="notes-recently-deleted" style="display:flex;align-items:center;justify-content:space-between;padding:6px 8px;cursor:pointer;border-radius:6px;">                <div style="display:flex;align-items:center;gap:6px;font-size:13px;">🗑️ <span>Recently Deleted</span></div>
+              <div id="notes-recently-deleted" style="display:flex;align-items:center;justify-content:space-between;padding:6px 8px;cursor:pointer;border-radius:6px;">
+                <div style="display:flex;align-items:center;gap:6px;font-size:13px;">🗑️ <span>Recently Deleted</span></div>
                 <span style="font-size:11px;color:#8e8e93;">2</span>
               </div>
             </div>
@@ -146,9 +135,9 @@
               <div style="font-size:11px;font-weight:700;color:#8e8e93;text-transform:uppercase;margin-bottom:8px;">Tags</div>
               <div style="display:flex;flex-wrap:wrap;gap:6px;">
                 <span class="notes-tag" data-tag="all" style="background:rgba(0,0,0,0.08);border-radius:12px;padding:3px 10px;font-size:11px;cursor:pointer;">All Tags</span>
-<span class="notes-tag" data-tag="#work" style="background:rgba(0,0,0,0.08);border-radius:12px;padding:3px 10px;font-size:11px;cursor:pointer;">#work</span>
-<span class="notes-tag" data-tag="#personal" style="background:rgba(0,0,0,0.08);border-radius:12px;padding:3px 10px;font-size:11px;cursor:pointer;">#personal</span>
-<span class="notes-tag" data-tag="#passwords" style="background:rgba(0,0,0,0.08);border-radius:12px;padding:3px 10px;font-size:11px;cursor:pointer;">#passwords</span>
+                <span class="notes-tag" data-tag="#work" style="background:rgba(0,0,0,0.08);border-radius:12px;padding:3px 10px;font-size:11px;cursor:pointer;">#work</span>
+                <span class="notes-tag" data-tag="#personal" style="background:rgba(0,0,0,0.08);border-radius:12px;padding:3px 10px;font-size:11px;cursor:pointer;">#personal</span>
+                <span class="notes-tag" data-tag="#passwords" style="background:rgba(0,0,0,0.08);border-radius:12px;padding:3px 10px;font-size:11px;cursor:pointer;">#passwords</span>
               </div>
             </div>
             <div style="padding:0 8px 8px;flex:1;overflow-y:auto;">
@@ -162,19 +151,46 @@
         </div>
       </div>
 
-      <!-- ================= SAFARI ================= -->
-      <div id="window-safari" class="window hidden">
-        <div class="window-bar">
-          <div class="mac-buttons">
+      <!-- SAFARI -->
+      <div id="window-safari" class="window hidden" style="width:860px;height:560px;">
+        <div class="window-bar" style="display:flex;align-items:center;gap:8px;padding:0 10px;">
+          <div class="mac-buttons" style="display:flex;gap:6px;flex-shrink:0;">
             <span class="dot red" onclick="closeWindow('window-safari')"></span>
-            <span class="dot yellow"></span><span class="dot green"></span>
+            <span class="dot yellow" onclick="minimizeWindow('window-safari')"></span>
+            <span class="dot green" onclick="maximizeWindow('window-safari')"></span>
           </div>
-          <span>Safari</span>
+          <button onclick="safariGoBack()" onmousedown="event.stopPropagation()" style="background:none;border:none;color:#8e8e93;font-size:18px;cursor:pointer;padding:2px 6px;min-width:24px;line-height:1;">‹</button>
+          <button onclick="safariGoForward()" onmousedown="event.stopPropagation()" style="background:none;border:none;color:#8e8e93;font-size:18px;cursor:pointer;padding:2px 6px;min-width:24px;line-height:1;">›</button>
+          <div style="flex:1;position:relative;">
+            <input id="safari-url" placeholder="Search or enter website name"
+style=" width: 100%; padding: 5px 12px; border-radius: 8px; border: none; background: rgba(0, 0, 0, 0.12); color: #1c1c1e; font-size: 13px; outline: none; box-sizing: border-box; text-align: center; "              onfocus="this.style.textAlign='left';this.select();showSafariSuggestions(this.value||'__all__');"
+              onblur="setTimeout(()=>hideSafariSuggestions(),150);if(!this.value)this.style.textAlign='center';"
+              oninput="showSafariSuggestions(this.value)"
+              onkeydown="if(event.key==='Enter'){safariNavigate(this.value);}" />
+          </div>
+          <button onclick="safariNavigate(document.getElementById('safari-url').value)" style="background:none;border:none;color:#0a84ff;font-size:12px;cursor:pointer;padding:2px 4px;">Go</button>
         </div>
-        <div class="window-content">Web browsing simulation.</div>
+        <div id="safari-content" style="height:calc(100% - 36px);overflow-y:auto;background:white;border-radius:0 0 12px 12px;">
+          <div id="safari-newtab" style="padding:40px 20px;text-align:center;background:#f5f5f7;min-height:100%;">
+            <div style="font-size:13px;font-weight:600;color:#1c1c1e;text-align:left;max-width:500px;margin:0 auto 12px;">Favorites</div>
+            <div style="display:flex;flex-wrap:wrap;gap:16px;justify-content:center;max-width:500px;margin:0 auto 32px;">
+              <div onclick="safariNavigate('google.com')" style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;width:64px;"><div style="width:52px;height:52px;border-radius:12px;background:white;display:flex;align-items:center;justify-content:center;font-size:26px;box-shadow:0 1px 4px rgba(0,0,0,0.12);">G</div><span style="font-size:11px;color:#1c1c1e;">Google</span></div>
+              <div onclick="safariNavigate('youtube.com')" style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;width:64px;"><div style="width:52px;height:52px;border-radius:12px;background:#ff0000;display:flex;align-items:center;justify-content:center;font-size:22px;color:white;box-shadow:0 1px 4px rgba(0,0,0,0.12);">▶</div><span style="font-size:11px;color:#1c1c1e;">YouTube</span></div>
+              <div onclick="safariNavigate('instagram.com')" style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;width:64px;"><div style="width:52px;height:52px;border-radius:12px;background:linear-gradient(135deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);display:flex;align-items:center;justify-content:center;font-size:24px;color:white;box-shadow:0 1px 4px rgba(0,0,0,0.12);">◻</div><span style="font-size:11px;color:#1c1c1e;">Instagram</span></div>
+              <div onclick="safariNavigate('amazon.com')" style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;width:64px;"><div style="width:52px;height:52px;border-radius:12px;background:#ff9900;display:flex;align-items:center;justify-content:center;font-size:22px;color:white;box-shadow:0 1px 4px rgba(0,0,0,0.12);">a</div><span style="font-size:11px;color:#1c1c1e;">Amazon</span></div>
+              <div onclick="safariNavigate('reddit.com')" style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;width:64px;"><div style="width:52px;height:52px;border-radius:12px;background:#ff4500;display:flex;align-items:center;justify-content:center;font-size:24px;color:white;box-shadow:0 1px 4px rgba(0,0,0,0.12);">r</div><span style="font-size:11px;color:#1c1c1e;">Reddit</span></div>
+              <div onclick="safariNavigate('wikipedia.org')" style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;width:64px;"><div style="width:52px;height:52px;border-radius:12px;background:white;display:flex;align-items:center;justify-content:center;font-size:24px;color:#1c1c1e;box-shadow:0 1px 4px rgba(0,0,0,0.12);">W</div><span style="font-size:11px;color:#1c1c1e;">Wikipedia</span></div>
+            </div>
+            <div style="font-size:13px;font-weight:600;color:#1c1c1e;text-align:left;max-width:500px;margin:0 auto 12px;">Privacy Report</div>
+            <div style="max-width:500px;margin:0 auto;background:white;border-radius:12px;padding:14px 18px;text-align:left;box-shadow:0 1px 4px rgba(0,0,0,0.08);">
+              <div style="font-size:12px;color:#8e8e93;">Safari has not encountered any trackers in the last seven days.</div>
+            </div>
+          </div>
+          <div id="safari-page" style="display:none;height:100%;"></div>
+        </div>
       </div>
 
-      <!-- ================= SETTINGS ================= -->
+      <!-- SETTINGS -->
       <div id="window-settings" class="window hidden" style="width:660px;height:520px;">
         <div class="window-bar">
           <div class="mac-buttons">
@@ -211,83 +227,41 @@
         </div>
       </div>
 
-      <!-- ================= FILES ================= -->
+      <!-- FILES -->
       <div id="window-files" class="window hidden" style="width:780px;height:520px;">
-  <div class="window-bar">
-    <div class="mac-buttons">
-      <span class="dot red" onclick="closeWindow('window-files')"></span>
-      <span class="dot yellow" onclick="minimizeWindow('window-files')"></span>
-      <span class="dot green" onclick="maximizeWindow('window-files')"></span>
-    </div>
-    <span>Files</span>
-  </div>
-
-  <div style="display:flex;height:calc(100% - 36px);background:#f5f5f5;border-radius:0 0 12px 12px;overflow:hidden;color:#1c1c1e;">
-
-    <!-- LEFT SIDEBAR -->
-    <div style="width:220px;min-width:220px;background:#ececec;border-right:1px solid #d0d0d0;display:flex;flex-direction:column;overflow:hidden;">
-
-      <!-- SEARCH -->
-      <div style="padding:10px 12px;">
-        <div style="display:flex;align-items:center;gap:6px;background:white;border-radius:8px;padding:6px 10px;border:0.5px solid #d0d0d0;">
-          <span style="color:#8e8e93;font-size:12px;">🔍</span>
-          <input placeholder="Search" style="border:none;background:transparent;outline:none;font-size:12px;color:#333;width:100%;" />
+        <div class="window-bar">
+          <div class="mac-buttons">
+            <span class="dot red" onclick="closeWindow('window-files')"></span>
+            <span class="dot yellow" onclick="minimizeWindow('window-files')"></span>
+            <span class="dot green" onclick="maximizeWindow('window-files')"></span>
+          </div>
+          <span>Files</span>
+        </div>
+        <div style="display:flex;height:calc(100% - 36px);background:#f5f5f5;border-radius:0 0 12px 12px;overflow:hidden;color:#1c1c1e;">
+          <div style="width:220px;min-width:220px;background:#ececec;border-right:1px solid #d0d0d0;display:flex;flex-direction:column;overflow:hidden;">
+            <div style="padding:10px 12px;">
+              <div style="display:flex;align-items:center;gap:6px;background:white;border-radius:8px;padding:6px 10px;border:0.5px solid #d0d0d0;">
+                <span style="color:#8e8e93;font-size:12px;">🔍</span>
+                <input placeholder="Search" style="border:none;background:transparent;outline:none;font-size:12px;color:#333;width:100%;" />
+              </div>
+            </div>
+            <div style="flex:1;overflow-y:auto;padding:4px 0;">
+              <div class="files-nav-item" onclick="showFilesSection('myfiles',this)" style="display:flex;align-items:center;gap:8px;padding:7px 14px;cursor:pointer;border-radius:8px;margin:1px 8px;background:#0a84ff;color:white;font-size:13px;"><span style="font-size:16px;">🗂️</span> My Files</div>
+              <div class="files-nav-item" onclick="showFilesSection('browser',this)" style="display:flex;align-items:center;gap:8px;padding:7px 14px;cursor:pointer;border-radius:8px;margin:1px 8px;color:#1c1c1e;font-size:13px;"><span style="font-size:16px;">🌐</span> Browser</div>
+              <div class="files-nav-item" onclick="showFilesSection('recent',this)" style="display:flex;align-items:center;gap:8px;padding:7px 14px;cursor:pointer;border-radius:8px;margin:1px 8px;color:#1c1c1e;font-size:13px;"><span style="font-size:16px;">🕐</span> Recent Files</div>
+              <div style="padding:8px 14px 4px;font-size:10px;font-weight:700;color:#8e8e93;text-transform:uppercase;letter-spacing:0.5px;margin-top:6px;">Connections</div>
+              <div class="files-nav-item" onclick="showFilesSection('icloud',this)" style="display:flex;align-items:center;gap:8px;padding:7px 14px;cursor:pointer;border-radius:8px;margin:1px 8px;color:#1c1c1e;font-size:13px;"><span style="font-size:16px;">☁️</span> Documents - iCloud</div>
+              <div class="files-nav-item" onclick="showFilesSection('computer',this)" style="display:flex;align-items:center;gap:8px;padding:7px 14px;cursor:pointer;border-radius:8px;margin:1px 8px;color:#1c1c1e;font-size:13px;"><span style="font-size:16px;">🖥️</span> Computer</div>
+            </div>
+            <div style="padding:10px 14px;border-top:0.5px solid #d0d0d0;display:flex;justify-content:space-between;">
+              <span style="font-size:18px;cursor:pointer;" onclick="closeWindow('window-files');openWindow('window-settings');">⚙️</span>
+            </div>
+          </div>
+          <div id="files-content" style="flex:1;background:white;overflow-y:auto;padding:20px;"></div>
         </div>
       </div>
 
-      <!-- NAV -->
-      <div style="flex:1;overflow-y:auto;padding:4px 0;">
-
-        <div class="files-nav-item active-files-nav" onclick="showFilesSection('myfiles', this)" style="display:flex;align-items:center;gap:8px;padding:7px 14px;cursor:pointer;border-radius:8px;margin:1px 8px;background:#0a84ff;color:white;font-size:13px;">
-          <span style="font-size:16px;">🗂️</span> My Files
-        </div>
-        <div class="files-nav-item" onclick="showFilesSection('browser', this)" style="display:flex;align-items:center;gap:8px;padding:7px 14px;cursor:pointer;border-radius:8px;margin:1px 8px;color:#1c1c1e;font-size:13px;">
-          <span style="font-size:16px;">🌐</span> Browser
-        </div>
-        <div class="files-nav-item" onclick="showFilesSection('vpn', this)" style="display:flex;align-items:center;gap:8px;padding:7px 14px;cursor:pointer;border-radius:8px;margin:1px 8px;color:#1c1c1e;font-size:13px;">
-          <span style="font-size:16px;">🔒</span> VPN
-          <span style="margin-left:auto;width:8px;height:8px;border-radius:50%;background:#ff9f0a;"></span>
-        </div>
-        <div class="files-nav-item" onclick="showFilesSection('recent', this)" style="display:flex;align-items:center;gap:8px;padding:7px 14px;cursor:pointer;border-radius:8px;margin:1px 8px;color:#1c1c1e;font-size:13px;">
-          <span style="font-size:16px;">🕐</span> Recent Files
-          <span style="margin-left:auto;color:#8e8e93;font-size:11px;">›</span>
-        </div>
-
-        <div style="padding:8px 14px 4px;font-size:10px;font-weight:700;color:#8e8e93;text-transform:uppercase;letter-spacing:0.5px;margin-top:6px;">Connections</div>
-        <div class="files-nav-item" onclick="showFilesSection('myfiles', this)" style="display:flex;align-items:center;gap:8px;padding:7px 14px;cursor:pointer;border-radius:8px;margin:1px 8px;color:#1c1c1e;font-size:13px;">
-          <span style="font-size:16px;">📁</span> Files
-        </div>
-        <div class="files-nav-item" onclick="showFilesSection('icloud', this)" style="display:flex;align-items:center;gap:8px;padding:7px 14px;cursor:pointer;border-radius:8px;margin:1px 8px;color:#1c1c1e;font-size:13px;">
-          <span style="font-size:16px;">☁️</span> Documents - iCloud
-        </div>
-        <div class="files-nav-item" onclick="showFilesSection('computer', this)" style="display:flex;align-items:center;gap:8px;padding:7px 14px;cursor:pointer;border-radius:8px;margin:1px 8px;color:#1c1c1e;font-size:13px;">
-          <span style="font-size:16px;">🖥️</span> Computer
-        </div>
-        <div class="files-nav-item" onclick="showFilesSection('dropbox', this)" style="display:flex;align-items:center;gap:8px;padding:7px 14px;cursor:pointer;border-radius:8px;margin:1px 8px;color:#1c1c1e;font-size:13px;">
-          <span style="font-size:16px;">📦</span> John Doe
-        </div>
-        <div style="display:flex;align-items:center;gap:8px;padding:7px 14px;cursor:pointer;border-radius:8px;margin:1px 8px;color:#0a84ff;font-size:13px;">
-          <span style="font-size:16px;">＋</span> Add Connection
-        </div>
-
-        <div style="padding:8px 14px 4px;font-size:10px;font-weight:700;color:#8e8e93;text-transform:uppercase;letter-spacing:0.5px;margin-top:6px;">Favorites</div>
-        <div style="margin:4px 14px;border:1.5px dashed #c0c0c0;border-radius:8px;padding:14px;font-size:11px;color:#aaa;text-align:center;">Drag and drop files or folders here to add them to Favorites list</div>
-      </div>
-
-      <!-- BOTTOM -->
-      <div style="padding:10px 14px;border-top:0.5px solid #d0d0d0;display:flex;justify-content:space-between;">
-<span style="font-size:18px;cursor:pointer;" onclick="closeWindow('window-files');openWindow('window-settings')">⚙️</span>      </div>
-    </div>
-
-    <!-- RIGHT CONTENT -->
-    <div id="files-content" style="flex:1;background:white;overflow-y:auto;padding:20px;">
-      <!-- populated by JS -->
-    </div>
-
-  </div>
-</div>
-
-      <!-- ================= RECYCLE ================= -->
+      <!-- RECYCLE -->
       <div id="window-recycle" class="window hidden">
         <div class="window-bar">
           <div class="mac-buttons">
@@ -299,7 +273,7 @@
         <div class="window-content">Deleted files appear here.</div>
       </div>
 
-      <!-- ================= FACETIME ================= -->
+      <!-- FACETIME -->
       <div id="window-facetime" class="window hidden" style="width:480px;height:520px;">
         <div class="window-bar">
           <div class="mac-buttons">
@@ -319,15 +293,7 @@
             <div id="ft-caller-name" style="font-size:18px;font-weight:600;color:white;"></div>
             <div id="ft-call-status" style="font-size:13px;color:rgba(255,255,255,0.5);">Connecting...</div>
             <div id="ft-visualiser" style="display:none;gap:3px;align-items:flex-end;height:28px;">
-              <style>
-                #ft-visualiser{display:flex}
-                .ft-bar{width:4px;border-radius:2px;background:#30d158;animation:ftpulse 0.8s ease-in-out infinite}
-                .ft-bar:nth-child(2){animation-delay:.1s;height:14px}
-                .ft-bar:nth-child(3){animation-delay:.2s;height:22px}
-                .ft-bar:nth-child(4){animation-delay:.3s;height:10px}
-                .ft-bar:nth-child(5){animation-delay:.15s;height:18px}
-                @keyframes ftpulse{0%,100%{transform:scaleY(.4)}50%{transform:scaleY(1)}}
-              </style>
+              <style>#ft-visualiser{display:flex}.ft-bar{width:4px;border-radius:2px;background:#30d158;animation:ftpulse 0.8s ease-in-out infinite}.ft-bar:nth-child(2){animation-delay:.1s;height:14px}.ft-bar:nth-child(3){animation-delay:.2s;height:22px}.ft-bar:nth-child(4){animation-delay:.3s;height:10px}.ft-bar:nth-child(5){animation-delay:.15s;height:18px}@keyframes ftpulse{0%,100%{transform:scaleY(.4)}50%{transform:scaleY(1)}}</style>
               <div class="ft-bar" style="height:10px;"></div>
               <div class="ft-bar" style="height:14px;"></div>
               <div class="ft-bar" style="height:22px;"></div>
@@ -338,14 +304,14 @@
           </div>
           <div id="ft-transcript" style="display:none;max-height:110px;overflow-y:auto;padding:8px 14px;background:rgba(255,255,255,0.04);font-size:12px;color:rgba(255,255,255,0.7);line-height:1.6;"></div>
           <div style="padding:10px 14px;background:#1a1a1a;display:flex;gap:8px;align-items:center;">
-            <input id="ft-input" placeholder="Type your response..." onkeydown="if(event.key==='Enter')sendFaceTimeMessage()" style="flex:1;padding:8px 12px;border-radius:20px;border:1px solid rgba(255,255,255,0.15);background:#2c2c2c;color:white;font-size:13px;outline:none;width:auto;" />
+            <input id="ft-input" placeholder="Type your response..." onkeydown="if(event.key==='Enter')sendFaceTimeMessage();" style="flex:1;padding:8px 12px;border-radius:20px;border:1px solid rgba(255,255,255,0.15);background:#2c2c2c;color:white;font-size:13px;outline:none;width:auto;" />
             <button onclick="sendFaceTimeMessage()" style="width:auto;padding:7px 16px;border-radius:20px;background:#0a84ff;font-size:13px;font-weight:600;border:none;color:white;cursor:pointer;">Send</button>
             <button onclick="endFaceTimeCall()" style="width:auto;padding:7px 14px;border-radius:20px;background:#ff3b30;font-size:13px;border:none;color:white;cursor:pointer;">✕</button>
           </div>
         </div>
       </div>
 
-      <!-- ================= APP STORE ================= -->
+      <!-- APP STORE -->
       <div id="window-appstore" class="window hidden" style="width:700px;height:480px;">
         <div class="window-bar">
           <div class="mac-buttons">
@@ -357,9 +323,7 @@
         </div>
         <div style="display:flex;height:calc(100% - 36px);background:white;border-radius:0 0 12px 12px;overflow:hidden;color:#000;">
           <div style="width:180px;min-width:180px;background:#f5f5f5;border-right:1px solid #e0e0e0;display:flex;flex-direction:column;padding:10px 0;">
-            <div style="padding:8px 10px 12px;">
-              <input placeholder="🔍 Search" style="width:100%;padding:6px 10px;border-radius:8px;border:none;background:#e0e0e0;color:#333;font-size:12px;outline:none;box-sizing:border-box;" />
-            </div>
+            <div style="padding:8px 10px 12px;"><input placeholder="🔍 Search" style="width:100%;padding:6px 10px;border-radius:8px;border:none;background:#e0e0e0;color:#333;font-size:12px;outline:none;box-sizing:border-box;" /></div>
             <div style="font-size:10px;font-weight:700;color:#8e8e93;padding:0 14px 6px;text-transform:uppercase;letter-spacing:0.5px;">Discover</div>
             <div class="as-cat" onclick="showCategory('discover',this)" style="display:flex;align-items:center;gap:8px;padding:7px 14px;cursor:pointer;border-radius:8px;margin:0 6px;background:#0a84ff;color:white;font-size:13px;"><span>🔍</span> Discover</div>
             <div class="as-cat" onclick="showCategory('arcade',this)" style="display:flex;align-items:center;gap:8px;padding:7px 14px;cursor:pointer;border-radius:8px;margin:0 6px;color:#333;font-size:13px;"><span>🕹️</span> Arcade</div>
@@ -374,8 +338,8 @@
         </div>
       </div>
 
-      <!-- ================= MAIL ================= -->
-      <div id="window-mail" class="window hidden">
+      <!-- MAIL -->
+      <div id="window-mail" class="window hidden" style="width:820px;height:540px;">
         <div class="window-bar">
           <div class="mac-buttons">
             <span class="dot red" onclick="closeWindow('window-mail')"></span>
@@ -384,10 +348,31 @@
           </div>
           <span>Mail</span>
         </div>
-        <div class="window-content">Your inbox is empty.</div>
+        <div style="display:flex;height:calc(100% - 36px);background:white;border-radius:0 0 12px 12px;overflow:hidden;color:#1c1c1e;">
+          <div style="width:180px;min-width:180px;background:#f5f5f5;border-right:1px solid #e0e0e0;display:flex;flex-direction:column;font-size:13px;overflow-y:auto;">
+            <div style="padding:10px 14px 4px;font-size:10px;font-weight:700;color:#8e8e93;text-transform:uppercase;">Favorites</div>
+            <div class="mail-folder active-mail-folder" onclick="showMailFolder('inbox',this)" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px;cursor:pointer;background:#0a84ff;color:white;border-radius:8px;margin:1px 6px;">📥 All Inboxes</div>
+            <div class="mail-folder" onclick="showMailFolder('icloud',this)" style="display:flex;align-items:center;padding:6px 14px 6px 28px;cursor:pointer;border-radius:8px;margin:1px 6px;color:#1c1c1e;">☁️ iCloud</div>
+            <div class="mail-folder" onclick="showMailFolder('work',this)" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px 6px 28px;cursor:pointer;border-radius:8px;margin:1px 6px;color:#1c1c1e;"><span>💼 Work</span><span style="background:#0a84ff;color:white;border-radius:8px;padding:1px 6px;font-size:10px;">13</span></div>
+            <div class="mail-folder" onclick="showMailFolder('vip',this)" style="display:flex;align-items:center;padding:6px 14px;cursor:pointer;border-radius:8px;margin:1px 6px;color:#1c1c1e;">⭐ VIPs</div>
+            <div class="mail-folder" onclick="showMailFolder('flagged',this)" style="display:flex;align-items:center;padding:6px 14px;cursor:pointer;border-radius:8px;margin:1px 6px;color:#1c1c1e;">🚩 Flagged</div>
+            <div class="mail-folder" onclick="showMailFolder('drafts',this)" style="display:flex;align-items:center;padding:6px 14px;cursor:pointer;border-radius:8px;margin:1px 6px;color:#1c1c1e;">📝 All Drafts</div>
+            <div class="mail-folder" onclick="showMailFolder('sent',this)" style="display:flex;align-items:center;padding:6px 14px;cursor:pointer;border-radius:8px;margin:1px 6px;color:#1c1c1e;">✈️ All Sent</div>
+            <div class="mail-folder" onclick="showMailFolder('pets',this)" style="display:flex;align-items:center;padding:6px 14px;cursor:pointer;border-radius:8px;margin:1px 6px;color:#1c1c1e;">🐾 Pets</div>
+          </div>
+          <div style="width:260px;min-width:260px;border-right:1px solid #e0e0e0;display:flex;flex-direction:column;background:white;">
+            <div style="padding:10px 12px;border-bottom:1px solid #f0f0f0;">
+              <input id="mail-search" placeholder="Search" oninput="searchMail(this.value)" style="width:100%;padding:7px 10px;border-radius:8px;border:none;background:#f0f0f0;color:#333;font-size:13px;outline:none;box-sizing:border-box;" />
+            </div>
+            <div id="mail-list" style="flex:1;overflow-y:auto;"></div>
+          </div>
+          <div id="mail-content" style="flex:1;overflow-y:auto;padding:20px 24px;background:white;">
+            <div style="color:#aaa;text-align:center;margin-top:80px;font-size:13px;">Select an email to read</div>
+          </div>
+        </div>
       </div>
 
-      <!-- ================= PHOTOS ================= -->
+      <!-- PHOTOS -->
       <div id="window-photos" class="window hidden" style="width:600px;height:420px;">
         <div class="window-bar">
           <div class="mac-buttons">
@@ -405,13 +390,11 @@
             <div class="device">📷 Recents</div>
             <div class="device">⭐ Favorites</div>
           </div>
-          <div class="photos-main" id="photosMain">
-            <p class="hint">Select a device to view photos</p>
-          </div>
+          <div class="photos-main" id="photosMain"><p class="hint">Select a device to view photos</p></div>
         </div>
       </div>
 
-      <!-- ================= MESSAGES ================= -->
+      <!-- MESSAGES -->
       <div id="window-messages" class="window hidden">
         <div class="window-bar">
           <div class="mac-buttons">
@@ -434,9 +417,7 @@
         </div>
         <div class="window-content messages-app">
           <div class="messages-body">
-            <div class="search-wrapper">
-              <input class="messages-search" placeholder="Search messages..." />
-            </div>
+            <div class="search-wrapper"><input class="messages-search" placeholder="Search messages..." /></div>
             <div class="pinned-section"></div>
             <div class="chat-list"></div>
           </div>
@@ -444,6 +425,21 @@
       </div>
 
     </div><!-- end #desktop -->
+
+    <!-- INCOMING CALL OVERLAY -->
+    <div id="incoming-call" style="display:none;position:fixed;top:50px;left:50%;transform:translateX(-50%);z-index:9998;background:rgba(30,30,30,0.95);backdrop-filter:blur(20px);border-radius:18px;border:0.5px solid rgba(255,255,255,0.15);padding:14px 18px;width:280px;font-family:-apple-system,sans-serif;color:white;box-shadow:0 8px 32px rgba(0,0,0,0.4);">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+        <img id="incoming-avatar" src="" style="width:44px;height:44px;border-radius:50%;border:2px solid rgba(255,255,255,0.2);" />
+        <div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.45);margin-bottom:2px;">FaceTime</div>
+          <div id="incoming-name" style="font-size:15px;font-weight:600;">Someone</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button onclick="declineIncomingCall()" style="flex:1;padding:8px 0;border-radius:12px;border:none;background:#ff3b30;color:white;font-size:13px;font-weight:600;cursor:pointer;">Decline</button>
+        <button onclick="acceptIncomingCall()" style="flex:1;padding:8px 0;border-radius:12px;border:none;background:#30d158;color:white;font-size:13px;font-weight:600;cursor:pointer;">Accept</button>
+      </div>
+    </div>
 
     <!-- TOAST -->
     <div id="toast" class="toast hidden"></div>
@@ -465,7 +461,13 @@
       </div>
     </div>
 
-    <!-- CLOCK -->
+    <!-- SAFARI SUGGESTIONS DROPDOWN -->
+    <div id="safari-suggestions" style="display:none;position:fixed;background:white;border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,0.18);z-index:99999;overflow:hidden;border:0.5px solid rgba(0,0,0,0.1);"></div>
+
+    <!-- DESKTOP FILE ICONS CONTAINER -->
+    <div id="desktop-files"></div>
+
+    <!-- CLOCK SCRIPT -->
     <script>
       function startClock() {
         const ids = ["clock","clock-desktop"];
@@ -480,21 +482,26 @@
 
     <!-- WINDOW MANAGER -->
     <script>
-       function openWindow(id) {
-  const win = document.getElementById(id);
-  if (win) win.classList.remove("hidden");
-  if (id === 'window-notes') setTimeout(() => {
-    if (typeof initNotes === 'function') initNotes();
-  }, 50);
-  if (id === 'window-appstore') setTimeout(() => {
-    if (typeof showCategory === 'function') showCategory('discover', document.querySelector('.as-cat'));
-  }, 50);
-}
+      let highestZ = 100;
+
+      function focusWindow(win) { highestZ++; win.style.zIndex = highestZ; }
+
+      function openWindow(id) {
+        const win = document.getElementById(id);
+        if (!win) return;
+        win.classList.remove("hidden");
+        focusWindow(win);
+        if (id === 'window-notes') initNotes();
+        if (id === 'window-mail') initMail();
+        if (id === 'window-files') showFilesSection('myfiles', document.querySelector('.files-nav-item'));
+      }
+
       function closeWindow(id) {
         const win = document.getElementById(id);
         if (!win) return;
         win.classList.add("hidden");
       }
+
       function minimizeWindow(id) {
         const win = document.getElementById(id);
         if (!win) return;
@@ -503,21 +510,20 @@
         win.style.opacity = "0";
         setTimeout(() => { win.classList.add("hidden"); win.style.transform=""; win.style.opacity=""; win.style.transition=""; }, 300);
       }
+
       function maximizeWindow(id) {
         const win = document.getElementById(id);
         if (win) win.classList.toggle("fullscreen");
       }
-      function toggleFullscreen(id) { maximizeWindow(id); }
 
-      let highestZ = 100;
-      function focusWindow(win) { highestZ++; win.style.zIndex = highestZ; }
+      function toggleFullscreen(id) { maximizeWindow(id); }
 
       function makeDraggable(win) {
         const bar = win.querySelector(".window-bar");
         if (!bar) return;
         let isDragging = false, startX, startY, startLeft, startTop;
         bar.addEventListener("mousedown", (e) => {
-          if (e.target.closest("button") || e.target.closest(".dot") || e.target.closest(".game-hud")) return;
+          if (e.target.closest("button") || e.target.closest(".dot")) return;
           isDragging = true; focusWindow(win);
           const rect = win.getBoundingClientRect();
           startX = e.clientX; startY = e.clientY; startLeft = rect.left; startTop = rect.top;
@@ -540,7 +546,7 @@
         win.appendChild(handle);
         let isResizing = false, startX, startY, startW, startH;
         handle.addEventListener("mousedown", (e) => { isResizing=true; startX=e.clientX; startY=e.clientY; startW=win.offsetWidth; startH=win.offsetHeight; e.preventDefault(); e.stopPropagation(); });
-        document.addEventListener("mousemove", (e) => { if (!isResizing) return; win.style.width=Math.max(300,startW+(e.clientX-startX))+"px"; win.style.height=Math.max(200,startH+(e.clientY-startY))+"px"; });
+        document.addEventListener("mousemove", (e) => { if(!isResizing) return; win.style.width=Math.max(300,startW+(e.clientX-startX))+"px"; win.style.height=Math.max(200,startH+(e.clientY-startY))+"px"; });
         document.addEventListener("mouseup", () => { isResizing = false; });
       }
 
@@ -564,6 +570,21 @@
         }, 2000);
       }
 
+      window.makeDraggable = makeDraggable;
+      window.makeResizable = makeResizable;
+      window.focusWindow = focusWindow;
+      window.openWindow = openWindow;
+      window.closeWindow = closeWindow;
+      window.minimizeWindow = minimizeWindow;
+      window.maximizeWindow = maximizeWindow;
+      window.toggleFullscreen = toggleFullscreen;
+      window.shutdown = shutdown;
+      window.cancelShutdown = cancelShutdown;
+      window.confirmShutdown = confirmShutdown;
+    </script>
+
+    <!-- APP DATA & UI LOGIC -->
+    <script>
       /* ===== APP STORE ===== */
       const appStoreData = {
         discover: [
@@ -572,8 +593,8 @@
           { icon:"📰", name:"Daily News",   desc:"Stay up to date with world news",  age:"9+",  dev:"NewsInc",  rating:3, size:"20MB",  lang:"EN", images:["https://picsum.photos/200/120?random=16","https://picsum.photos/200/120?random=17","https://picsum.photos/200/120?random=18"] },
         ],
         arcade: [
-          { icon:"🏎️", name:"Speed Racer",  desc:"Race through neon city streets",      age:"9+", dev:"NeonGames", rating:4, size:"120MB", lang:"EN", images:["https://picsum.photos/200/120?random=20","https://picsum.photos/200/120?random=21","https://picsum.photos/200/120?random=22"] },
-          { icon:"🧩", name:"Puzzle World", desc:"Thousands of mind-bending puzzles",   age:"4+", dev:"PuzzleLab", rating:5, size:"55MB",  lang:"EN", images:["https://picsum.photos/200/120?random=23","https://picsum.photos/200/120?random=24","https://picsum.photos/200/120?random=25"] },
+          { icon:"🏎️", name:"Speed Racer",  desc:"Race through neon city streets",    age:"9+", dev:"NeonGames", rating:4, size:"120MB", lang:"EN", images:["https://picsum.photos/200/120?random=20","https://picsum.photos/200/120?random=21","https://picsum.photos/200/120?random=22"] },
+          { icon:"🧩", name:"Puzzle World", desc:"Thousands of mind-bending puzzles", age:"4+", dev:"PuzzleLab", rating:5, size:"55MB",  lang:"EN", images:["https://picsum.photos/200/120?random=23","https://picsum.photos/200/120?random=24","https://picsum.photos/200/120?random=25"] },
         ],
         create: [
           { icon:"🎨", name:"Sketch Board", desc:"Draw, paint and design anything", age:"4+",  dev:"ArtStudio", rating:4, size:"95MB",  lang:"EN", images:["https://picsum.photos/200/120?random=30","https://picsum.photos/200/120?random=31","https://picsum.photos/200/120?random=32"] },
@@ -583,12 +604,8 @@
           { icon:"📊", name:"Sheets Plus", desc:"Powerful spreadsheets on the go",   age:"4+", dev:"WorkSuite", rating:4, size:"60MB", lang:"EN", images:["https://picsum.photos/200/120?random=40","https://picsum.photos/200/120?random=41","https://picsum.photos/200/120?random=42"] },
           { icon:"📝", name:"Docs Pro",    desc:"Write and collaborate in real time", age:"4+", dev:"WorkSuite", rating:4, size:"48MB", lang:"EN", images:["https://picsum.photos/200/120?random=43","https://picsum.photos/200/120?random=44","https://picsum.photos/200/120?random=45"] },
         ],
-        play: [
-          { icon:"🎲", name:"Board Games", desc:"Classic board games with friends", age:"4+", dev:"FunZone", rating:3, size:"35MB", lang:"EN", images:["https://picsum.photos/200/120?random=50","https://picsum.photos/200/120?random=51","https://picsum.photos/200/120?random=52"] },
-        ],
-        updates: [
-          { icon:"🔒", name:"ScamQuest", desc:"Update available — bug fixes", age:"12+", dev:"ScamQuest Inc", rating:5, size:"14MB", lang:"EN", images:[] },
-        ]
+        play:    [{ icon:"🎲", name:"Board Games", desc:"Classic board games with friends", age:"4+", dev:"FunZone", rating:3, size:"35MB", lang:"EN", images:["https://picsum.photos/200/120?random=50","https://picsum.photos/200/120?random=51","https://picsum.photos/200/120?random=52"] }],
+        updates: [{ icon:"🔒", name:"ScamQuest",   desc:"Update available — bug fixes",     age:"12+", dev:"ScamQuest Inc", rating:5, size:"14MB", lang:"EN", images:[] }]
       };
 
       function showCategory(cat, el) {
@@ -605,7 +622,7 @@
         const app = appStoreData[cat][index];
         const content = document.getElementById("appstore-content");
         const stars = "★".repeat(app.rating)+"☆".repeat(5-app.rating);
-        content.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 20px;border-bottom:1px solid #f0f0f0;"><button onclick="event.stopPropagation();goBack('${cat}')" style="background:none;border:none;color:#0a84ff;font-size:13px;cursor:pointer;width:auto;padding:0;">‹ Back</button><button style="background:none;border:none;color:#0a84ff;font-size:13px;cursor:pointer;width:auto;padding:0;">⬆ Share</button></div><div style="display:flex;gap:14px;padding:20px;"><div style="font-size:48px;width:80px;height:80px;background:#f2f2f7;border-radius:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${app.icon}</div><div style="flex:1;"><div style="font-weight:700;font-size:18px;color:#000;">${app.name}</div><div style="font-size:12px;color:#8e8e93;margin-top:4px;">${app.desc}</div><button style="margin-top:10px;background:#0a84ff;color:white;border:none;border-radius:16px;padding:7px 28px;font-size:13px;font-weight:600;cursor:pointer;width:auto;">GET</button></div></div><div style="height:1px;background:#f0f0f0;margin:0 20px;"></div><div style="display:flex;padding:14px 20px;gap:8px;overflow-x:auto;"><div style="flex:1;min-width:70px;background:#f9f9f9;border-radius:12px;padding:10px;text-align:center;"><div style="font-size:9px;color:#8e8e93;text-transform:uppercase;margin-bottom:4px;">Rating</div><div style="font-size:14px;color:#ffd60a;">${stars}</div><div style="font-size:10px;color:#8e8e93;">${app.rating}/5</div></div><div style="flex:1;min-width:60px;background:#f9f9f9;border-radius:12px;padding:10px;text-align:center;"><div style="font-size:9px;color:#8e8e93;text-transform:uppercase;margin-bottom:4px;">Age</div><div style="font-size:14px;font-weight:600;color:#000;">${app.age}</div></div><div style="flex:1;min-width:80px;background:#f9f9f9;border-radius:12px;padding:10px;text-align:center;"><div style="font-size:9px;color:#8e8e93;text-transform:uppercase;margin-bottom:4px;">Developer</div><div style="font-size:11px;font-weight:600;color:#000;">${app.dev}</div></div><div style="flex:1;min-width:55px;background:#f9f9f9;border-radius:12px;padding:10px;text-align:center;"><div style="font-size:9px;color:#8e8e93;text-transform:uppercase;margin-bottom:4px;">Size</div><div style="font-size:12px;font-weight:600;color:#000;">${app.size}</div></div><div style="flex:1;min-width:50px;background:#f9f9f9;border-radius:12px;padding:10px;text-align:center;"><div style="font-size:9px;color:#8e8e93;text-transform:uppercase;margin-bottom:4px;">Lang</div><div style="font-size:12px;font-weight:600;color:#000;">${app.lang}</div></div></div>`
+        content.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 20px;border-bottom:1px solid #f0f0f0;"><button onclick="event.stopPropagation();goBack('${cat}')" style="background:none;border:none;color:#0a84ff;font-size:13px;cursor:pointer;width:auto;padding:0;">‹ Back</button><button style="background:none;border:none;color:#0a84ff;font-size:13px;cursor:pointer;width:auto;padding:0;">⬆ Share</button></div><div style="display:flex;gap:14px;padding:20px;"><div style="font-size:48px;width:80px;height:80px;background:#f2f2f7;border-radius:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${app.icon}</div><div style="flex:1;"><div style="font-weight:700;font-size:18px;color:#000;">${app.name}</div><div style="font-size:12px;color:#8e8e93;margin-top:4px;">${app.desc}</div><button style="margin-top:10px;background:#0a84ff;color:white;border:none;border-radius:16px;padding:7px 28px;font-size:13px;font-weight:600;cursor:pointer;width:auto;">GET</button></div></div>`
           + (app.images.length ? `<div style="padding:0 20px 20px;"><div style="font-size:13px;font-weight:600;color:#000;margin-bottom:10px;">Preview</div><div style="display:flex;gap:10px;overflow-x:auto;">${app.images.map(src=>`<img src="${src}" style="height:130px;border-radius:12px;flex-shrink:0;" />`).join("")}</div></div>` : "");
       }
 
@@ -632,7 +649,7 @@
       const notesData = [
         { title:"Grocery List 🛒", date:"Today, 10:42", preview:"Don't forget milk...", tag:"#personal", content:`<div style="font-size:11px;color:#8e8e93;text-align:center;margin-bottom:16px;">Today at 10:42</div><div style="font-weight:700;font-size:18px;margin-bottom:12px;">Grocery List 🛒</div><div>☐ Milk</div><div>☐ Eggs</div><div>☐ Bread</div><div>☐ Butter</div><div>☐ Orange juice</div><div>☐ Pasta</div><div>☑ Cheese (already got)</div><div style="margin-top:12px;color:#8e8e93;font-size:12px;">#personal</div>` },
         { title:"Passwords 🔑", date:"Today, 09:15", preview:"Netflix: john123...", tag:"#passwords", content:`<div style="font-size:11px;color:#8e8e93;text-align:center;margin-bottom:16px;">Today at 09:15</div><div style="font-weight:700;font-size:18px;margin-bottom:12px;">Passwords 🔑</div><div><b>Netflix:</b> john123!</div><div><b>Instagram:</b> johndoe@99</div><div><b>Bank PIN:</b> 4821</div><div><b>Gmail:</b> johnD0e_2024</div><div><b>WiFi:</b> HomeNetwork_5G / password88</div><div><b>Amazon:</b> j.doe@email.com / Shopping44!</div><div style="margin-top:12px;color:#8e8e93;font-size:12px;">#passwords</div>` },
-        { title:"Job Opportunity 💼", date:"Yesterday, 16:30", preview:"Call Mike re: internship...", tag:"#work", content:`<div style="font-size:11px;color:#8e8e93;text-align:center;margin-bottom:16px;">Yesterday at 16:30</div><div style="font-weight:700;font-size:18px;margin-bottom:12px;">Job Opportunity 💼</div><div>Call <b>Mike</b> about the internship position at TechCorp.</div><div style="margin-top:8px;"><b>📞 Number:</b> (917) 555-0143</div><div style="margin-top:8px;"><b>Best time to call:</b> Weekdays 9am–5pm</div><div style="margin-top:8px;">He mentioned $22/hr and possibility of full-time after summer.</div><div style="margin-top:12px;color:#8e8e93;font-size:12px;">#work</div>` },
+        { title:"Job Opportunity 💼", date:"Yesterday, 16:30", preview:"Call Mike re: internship...", tag:"#work", content:`<div style="font-size:11px;color:#8e8e93;text-align:center;margin-bottom:16px;">Yesterday at 16:30</div><div style="font-weight:700;font-size:18px;margin-bottom:12px;">Job Opportunity 💼</div><div>Call <b>Mike</b> about the internship position at TechCorp.</div><div style="margin-top:8px;"><b>📞 Number:</b> (917) 555-0143</div><div style="margin-top:8px;"><b>Best time to call:</b> Weekdays 9am–5pm</div><div style="margin-top:12px;color:#8e8e93;font-size:12px;">#work</div>` },
         { title:"Credit Card Info 💳", date:"Yesterday, 14:05", preview:"Visa ending 4821...", tag:"#passwords", content:`<div style="font-size:11px;color:#8e8e93;text-align:center;margin-bottom:16px;">Yesterday at 14:05</div><div style="font-weight:700;font-size:18px;margin-bottom:12px;">Credit Card Info 💳</div><div><b>Visa:</b> 4821 XXXX XXXX 9032</div><div><b>Expiry:</b> 09/27</div><div><b>CVV:</b> 412</div><div style="margin-top:8px;"><b>Billing address:</b> 123 Main St, New York, NY</div><div style="margin-top:12px;color:#ff3b30;font-size:12px;">⚠️ Don't share this!</div><div style="color:#8e8e93;font-size:12px;">#passwords</div>` },
         { title:"Weekend Plans 🎉", date:"Yesterday, 11:00", preview:"Saturday: brunch with Sara...", tag:"#personal", content:`<div style="font-size:11px;color:#8e8e93;text-align:center;margin-bottom:16px;">Yesterday at 11:00</div><div style="font-weight:700;font-size:18px;margin-bottom:12px;">Weekend Plans 🎉</div><div><b>Saturday:</b></div><div>☐ Brunch with Sara @ 11am</div><div>☐ Gym 2pm</div><div>☐ Movie night w/ the guys</div><div style="margin-top:8px;"><b>Sunday:</b></div><div>☐ Laundry (finally)</div><div>☐ Finish that assignment due Monday</div><div>☐ Call mom</div><div style="margin-top:12px;color:#8e8e93;font-size:12px;">#personal</div>` },
         { title:"Study Notes 📚", date:"Mon, 18:22", preview:"Chapter 4: Networking...", tag:"#work", content:`<div style="font-size:11px;color:#8e8e93;text-align:center;margin-bottom:16px;">Monday at 18:22</div><div style="font-weight:700;font-size:18px;margin-bottom:12px;">Study Notes 📚</div><div><b>Chapter 4: Networking Basics</b></div><div style="margin-top:8px;">• IP addresses identify devices on a network</div><div>• DNS translates domain names to IPs</div><div>• TCP/IP is the foundation of the internet</div><div>• Firewalls filter incoming/outgoing traffic</div><div style="margin-top:12px;color:#8e8e93;font-size:12px;">#work</div>` },
@@ -640,252 +657,324 @@
         { title:"SSN & Docs 🪪", date:"Sat, 09:00", preview:"SSN: 523-44-...", tag:"#passwords", content:`<div style="font-size:11px;color:#8e8e93;text-align:center;margin-bottom:16px;">Saturday at 09:00</div><div style="font-weight:700;font-size:18px;margin-bottom:12px;">SSN & Docs 🪪</div><div><b>SSN:</b> 523-44-8901</div><div><b>Passport #:</b> US8821445</div><div><b>Driver License:</b> NY-4421-887-009</div><div><b>Date of Birth:</b> March 14, 1998</div><div style="margin-top:12px;color:#ff3b30;font-size:12px;">⚠️ Extremely sensitive — do not share!</div><div style="color:#8e8e93;font-size:12px;">#passwords</div>` },
       ];
 
+      const deletedNotes = [
+        { title:"Old Todo List 📝", date:"Last week", preview:"Buy groceries, call dentist...", tag:"#personal", content:`<div style="font-weight:700;font-size:18px;margin-bottom:12px;">Old Todo List 📝</div><div>☑ Buy groceries</div><div>☑ Call dentist</div><div>☑ Return Amazon package</div><div style="margin-top:12px;color:#8e8e93;font-size:12px;">#personal</div>` },
+        { title:"Ex's Number 💔", date:"2 weeks ago", preview:"Don't text. Don't text. Don't...", tag:"#personal", content:`<div style="font-weight:700;font-size:18px;margin-bottom:12px;">Ex's Number 💔</div><div>📞 (917) 555-0187</div><div style="margin-top:8px;color:#ff3b30;">DO NOT TEXT.</div><div style="color:#8e8e93;font-size:12px;">#personal</div>` },
+      ];
+
       let activeTag = "all";
-const deletedNotes = [
-  { title:"Old Todo List 📝", date:"Last week", preview:"Buy groceries, call dentist...", tag:"#personal", content:`<div style="font-size:11px;color:#8e8e93;text-align:center;margin-bottom:16px;">Last week</div><div style="font-weight:700;font-size:18px;margin-bottom:12px;">Old Todo List 📝</div><div>☑ Buy groceries</div><div>☑ Call dentist</div><div>☑ Return Amazon package</div><div style="margin-top:12px;color:#8e8e93;font-size:12px;">#personal</div>` },
-  { title:"Ex's Number 💔", date:"2 weeks ago", preview:"Don't text. Don't text. Don't...", tag:"#personal", content:`<div style="font-size:11px;color:#8e8e93;text-align:center;margin-bottom:16px;">2 weeks ago</div><div style="font-weight:700;font-size:18px;margin-bottom:12px;">Ex's Number 💔</div><div>📞 (917) 555-0187</div><div style="margin-top:8px;color:#ff3b30;">DO NOT TEXT.</div><div style="margin-top:8px;">seriously don't do it</div><div style="color:#8e8e93;font-size:12px;">#personal</div>` },
-];
 
-function initNotes() {
-  const list = document.getElementById("notes-list");
-  if (!list) return;
-  activeTag = "all";
-  renderNotesList(notesData, list);
-  openNote(0, notesData, false);
+      function initNotes() {
+        const list = document.getElementById("notes-list");
+        if (!list) return;
+        activeTag = "all";
+        renderNotesList(notesData, list);
+        openNote(0, notesData, false);
+        document.querySelectorAll(".notes-tag").forEach(el => {
+          el.onclick = () => {
+            document.querySelectorAll(".notes-tag").forEach(t => { t.style.background="rgba(0,0,0,0.08)"; t.style.color=""; });
+            el.style.background="#0a84ff"; el.style.color="white";
+            activeTag = el.dataset.tag;
+            const filtered = activeTag === "all" ? notesData : notesData.filter(n => n.tag === activeTag);
+            renderNotesList(filtered, list);
+            if (filtered.length) openNote(0, filtered, false);
+          };
+        });
+        document.getElementById("notes-recently-deleted")?.addEventListener("click", () => {
+          renderNotesList(deletedNotes, list, true);
+          if (deletedNotes.length) openNote(0, deletedNotes, true);
+        });
+        document.getElementById("notes-folder")?.addEventListener("click", () => {
+          renderNotesList(notesData, list);
+          openNote(0, notesData, false);
+        });
+      }
 
-  // wire up tags
-  document.querySelectorAll(".notes-tag").forEach(el => {
-    el.onclick = () => {
-      // highlight active tag
-      document.querySelectorAll(".notes-tag").forEach(t => t.style.background = "rgba(0,0,0,0.08)");
-      el.style.background = "#0a84ff";
-      el.style.color = "white";
-      activeTag = el.dataset.tag;
-      const filtered = activeTag === "all" ? notesData : notesData.filter(n => n.tag === activeTag);
-      renderNotesList(filtered, list);
-      if (filtered.length) openNote(0, filtered, false);
-    };
-  });
+      function renderNotesList(notes, list, isDeleted = false) {
+        list.innerHTML = `<div style="padding:8px 12px;font-size:11px;font-weight:700;color:#8e8e93;text-transform:uppercase;border-bottom:1px solid #e8e8e0;">${isDeleted ? "Recently Deleted" : "Notes"}</div>`
+          + notes.map((note, i) => `<div onclick="openNote(${i},${isDeleted?'deletedNotes':'notesData'},${isDeleted})" id="note-item-${i}" style="padding:10px 14px;border-bottom:1px solid #e8e8e0;cursor:pointer;background:${i===0?"#ffd60a44":"transparent"};"><div style="font-weight:700;font-size:13px;color:#000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${note.title}</div><div style="display:flex;gap:6px;margin-top:2px;"><span style="font-size:11px;color:#8e8e93;">${note.date}</span><span style="font-size:11px;color:#8e8e93;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${note.preview}</span></div></div>`).join("");
+      }
 
-  document.getElementById("notes-recently-deleted")?.addEventListener("click", () => {
-    // highlight recently deleted in sidebar
-    document.getElementById("notes-folder").style.background = "transparent";
-    document.getElementById("notes-recently-deleted").style.background = "rgba(0,0,0,0.07)";
-    document.getElementById("notes-recently-deleted").style.borderRadius = "6px";
-    renderNotesList(deletedNotes, list, true);
-    if (deletedNotes.length) openNote(0, deletedNotes, true);
-  });
+      function openNote(i, source, isDeleted) {
+        if (typeof source === "string") source = window[source];
+        if (!source) source = notesData;
+        document.querySelectorAll("[id^='note-item-']").forEach(el => el.style.background="transparent");
+        const item = document.getElementById("note-item-"+i);
+        if (item) item.style.background="#ffd60a44";
+        const content = document.getElementById("notes-content");
+        if (!content) return;
+        const note = source[i];
+        const maxChars = 300;
+        content.innerHTML = `<div style="position:relative;">${note.content}<div style="margin-top:16px;border-top:1px solid #f0f0f0;padding-top:12px;">${isDeleted
+          ? `<div style="color:#ff3b30;font-size:12px;margin-bottom:8px;">🗑️ This note is in Recently Deleted — read only</div><div style="font-size:13px;color:#aaa;font-style:italic;">${note.userNote||"No additional notes."}</div>`
+          : `<div contenteditable="true" id="note-editable-${i}" data-max="${maxChars}" oninput="handleNoteInput(this,${i})" style="min-height:60px;font-size:13px;color:#333;outline:none;line-height:1.6;font-family:-apple-system,sans-serif;white-space:pre-wrap;">${note.userNote||""}</div><div id="note-charcount-${i}" style="font-size:11px;color:#8e8e93;text-align:right;margin-top:4px;">${maxChars-(note.userNote?.length||0)} chars remaining</div>`
+        }</div></div>`;
+      }
 
-  document.getElementById("notes-folder")?.addEventListener("click", () => {
-    // highlight notes folder in sidebar
-    document.getElementById("notes-recently-deleted").style.background = "transparent";
-    document.getElementById("notes-folder").style.background = "rgba(0,0,0,0.07)";
-    renderNotesList(notesData, list);
-    openNote(0, notesData, false);
-  });
-}
+      function handleNoteInput(el, i) {
+        const max = parseInt(el.dataset.max);
+        const text = el.innerText;
+        if (text.length > max) { el.innerText = text.slice(0, max); }
+        notesData[i].userNote = el.innerText;
+        const counter = document.getElementById(`note-charcount-${i}`);
+        if (counter) counter.textContent = (max - el.innerText.length) + " chars remaining";
+      }
 
-function renderNotesList(notes, list, isDeleted = false) {
-  list.innerHTML = `<div style="padding:8px 12px;font-size:11px;font-weight:700;color:#8e8e93;text-transform:uppercase;border-bottom:1px solid #e8e8e0;">${isDeleted ? "Recently Deleted" : "Notes"}</div>`
-    + notes.map((note, i) => `
-      <div onclick="openNote(${i}, ${isDeleted ? 'deletedNotes' : 'notesData'}, ${isDeleted})" id="note-item-${i}" style="padding:10px 14px;border-bottom:1px solid #e8e8e0;cursor:pointer;background:${i===0?"#ffd60a44":"transparent"};">
-        <div style="font-weight:700;font-size:13px;color:#000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${note.title}</div>
-        <div style="display:flex;gap:6px;margin-top:2px;">
-          <span style="font-size:11px;color:#8e8e93;">${note.date}</span>
-          <span style="font-size:11px;color:#8e8e93;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${note.preview}</span>
-        </div>
-      </div>`).join("");
-}
+      /* ===== FILES ===== */
+      const filesData = {
+        myfiles: { title:"My Files", items:[
+          { icon:"🖼️", name:"Photo Albums", meta:"21 items", color:"#e8f0ff", date:"" },
+          { icon:"🎵", name:"iTunes Files", meta:"12 items", color:"#e8ffe8", date:"" },
+          { icon:"📁", name:"Text", meta:"24 items", color:"#e8f4ff", date:"" },
+          { icon:"🏔️", name:"photo_31.12.20", meta:"", color:"#ddeeff", date:"01.01.2021", isPhoto:true },
+          { icon:"📄", name:"March Report", meta:"", color:"#fff8e8", date:"16.03.2020" },
+          { icon:"🧾", name:"Invoice #00892", meta:"", color:"#f0f0ff", date:"16.03.2020" },
+          { icon:"📋", name:"Admission Confirmation", meta:"", color:"#fff0f0", date:"16.03.2020" },
+          { icon:"✈️", name:"Boarding pass", meta:"", color:"#f0fff0", date:"16.03.2020" },
+        ]},
+        recent: { title:"Recent Files", items:[
+          { icon:"📄", name:"March Report", meta:"", color:"#fff8e8", date:"Today" },
+          { icon:"🧾", name:"Invoice #00892", meta:"", color:"#f0f0ff", date:"Yesterday" },
+        ]},
+        icloud: { title:"Documents - iCloud", items:[
+          { icon:"📁", name:"Work Docs", meta:"8 items", color:"#e8f4ff", date:"" },
+          { icon:"📄", name:"Resume_2024.pdf", meta:"", color:"#fff8e8", date:"Jan 2024" },
+        ]},
+        computer: { title:"Computer", items:[
+          { icon:"💾", name:"Macintosh HD", meta:"256 GB", color:"#f0f0f0", date:"" },
+        ]},
+        browser: { title:"Browser", items:[
+          { icon:"📄", name:"invoice_march.pdf", meta:"", color:"#fff8e8", date:"Today" },
+          { icon:"🖼️", name:"wallpaper.jpg", meta:"", color:"#e8f4ff", date:"Yesterday", isPhoto:true },
+          { icon:"📦", name:"setup_v2.zip", meta:"", color:"#f0f0f0", date:"Mon" },
+        ]},
+      };
 
-function openNote(i, source, isDeleted = false) {
-  if (typeof source === "string") source = window[source];
-  if (!source) source = notesData;
+      function showFilesSection(section, el) {
+        document.querySelectorAll(".files-nav-item").forEach(t => { t.style.background="transparent"; t.style.color="#1c1c1e"; });
+        if (el) { el.style.background="#0a84ff"; el.style.color="white"; }
+        const data = filesData[section] || filesData.myfiles;
+        const content = document.getElementById("files-content");
+        content.innerHTML = `<div style="font-size:22px;font-weight:700;color:#1c1c1e;margin-bottom:16px;">${data.title}</div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px;">`
+          + data.items.map(item => `<div style="display:flex;flex-direction:column;align-items:center;cursor:pointer;position:relative;" onclick="openFileItem('${item.name}')"><div style="width:110px;height:90px;border-radius:12px;background:${item.color};display:flex;align-items:center;justify-content:center;margin-bottom:6px;overflow:hidden;position:relative;border:0.5px solid rgba(0,0,0,0.08);">${item.isPhoto?`<img src="https://picsum.photos/110/90?random=${Math.floor(Math.random()*50)}" style="width:100%;height:100%;object-fit:cover;" />`:`<span style="font-size:36px;">${item.icon}</span>`}</div><div style="font-size:11px;font-weight:500;color:#1c1c1e;text-align:center;max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${item.name}</div>${item.date?`<div style="font-size:10px;color:#8e8e93;">${item.date}</div>`:""}</div>`).join("")
+          + "</div>";
+      }
 
-  document.querySelectorAll("[id^='note-item-']").forEach(el => el.style.background = "transparent");
-  const item = document.getElementById("note-item-" + i);
-  if (item) item.style.background = "#ffd60a44";
+      function openFileItem(name) {
+        const item = Object.values(filesData).flatMap(s=>s.items).find(i=>i.name===name);
+        if (!item) return;
+        const winId = 'file-win-'+name.replace(/[^a-z0-9]/gi,'');
+        const old = document.getElementById(winId); if (old) old.remove();
+        const win = document.createElement("div");
+        win.id = winId; win.className = "window";
+        win.style.cssText = "position:absolute;top:80px;left:50%;transform:translateX(-50%);width:500px;height:380px;background:white;border-radius:12px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.5);display:flex;flex-direction:column;z-index:9999;";
+        const content = item.isPhoto ? `<img src="https://picsum.photos/400/300?random=${Math.floor(Math.random()*99)}" style="width:100%;height:100%;object-fit:contain;" />` : `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;color:#333;"><div style="font-size:64px;">${item.icon}</div><div style="font-size:14px;font-weight:600;">${item.name}</div></div>`;
+        win.innerHTML = `<div class="window-bar" style="padding:8px 10px;background:#f0f0f0;display:flex;align-items:center;gap:8px;flex-shrink:0;"><div class="mac-buttons" style="display:flex;gap:6px;"><span class="dot red" onclick="this.closest('.window').remove()" style="cursor:pointer;"></span><span class="dot yellow" style="cursor:pointer;"></span><span class="dot green" style="cursor:pointer;"></span></div><span style="font-size:12px;color:#333;margin-left:4px;">${name}</span></div><div style="flex:1;overflow:hidden;background:${item.isPhoto?'#000':'white'};">${content}</div>`;
+        document.getElementById("desktop").appendChild(win);
+        makeDraggable(win); makeResizable(win); focusWindow(win);
+      }
 
-  const content = document.getElementById("notes-content");
-  if (!content) return;
+      /* ===== MAIL ===== */
+      const mailData = {
+        inbox: [
+          { id:0, from:"Apple Security", email:"no-reply@apple-secure.ru", subject:"Your Apple ID has been locked", preview:"We detected unusual activity on your account. Verify immediately to restore access...", time:"9/14/21", unread:true, scam:true, body:`<p>Dear Customer,</p><p style="margin-top:12px;">We have detected <b>unusual sign-in activity</b> on your Apple ID. Your account has been temporarily locked.</p><div style="margin:16px 0;"><a href="#" style="background:#0a84ff;color:white;padding:10px 20px;border-radius:8px;text-decoration:none;font-size:13px;">Verify Apple ID Now →</a></div>` },
+          { id:1, from:"Mom", email:"mom@gmail.com", subject:"Thanksgiving plans?", preview:"Hey honey, are you coming home for Thanksgiving this year?", time:"9/14/21", unread:true, scam:false, body:`<p>Hey honey,</p><p style="margin-top:12px;">Are you coming home for Thanksgiving this year? Dad and I were thinking of doing a big dinner with the whole family.</p><p style="margin-top:12px;">Love you,<br/>Mom</p>` },
+          { id:2, from:"Netflix", email:"info@netflix-billing-update.com", subject:"Payment failed — update now", preview:"Your Netflix payment failed. Update your billing info to avoid losing access...", time:"9/13/21", unread:true, scam:true, body:`<p>Hi there,</p><p style="margin-top:12px;">We were unable to process your payment. Your account will be suspended in <b>24 hours</b>.</p><div style="margin:16px 0;"><a href="#" style="background:#e50914;color:white;padding:10px 20px;border-radius:8px;text-decoration:none;font-size:13px;">Update Billing Info →</a></div>` },
+          { id:3, from:"Prof. Johnson", email:"johnson@university.edu", subject:"Assignment feedback", preview:"Hi, I've reviewed your latest submission. Overall good work but there are a few areas...", time:"9/13/21", unread:false, scam:false, body:`<p>Hi,</p><p style="margin-top:12px;">I've reviewed your latest submission. Overall good work but there are a few areas that need improvement. Overall grade: <b>B+</b>.</p>` },
+          { id:4, from:"IRS Tax Division", email:"irs-refund@gov-tax-services.net", subject:"You have a pending tax refund", preview:"Congratulations! You are eligible for a $2,840 tax refund. Claim within 48 hours...", time:"9/12/21", unread:true, scam:true, body:`<p>Dear Taxpayer,</p><p style="margin-top:12px;">You are eligible for a <b>$2,840.00 tax refund</b>. Claim within 48 hours.</p><div style="margin:16px 0;"><a href="#" style="background:#1a3a6b;color:white;padding:10px 20px;border-radius:8px;text-decoration:none;font-size:13px;">Claim Refund Now →</a></div>` },
+          { id:5, from:"Jake", email:"jake.wilson@gmail.com", subject:"Weekend hiking trip?", preview:"Yo! A few of us are planning a hike this Saturday at Bear Mountain. You in?", time:"9/12/21", unread:false, scam:false, body:`<p>Yo! A few of us are planning a hike this Saturday at Bear Mountain. You in? Leaving at 8am.</p>` },
+          { id:6, from:"Amazon", email:"orders@amazon.com", subject:"Your order has shipped!", preview:"Your order #112-4421887 has been shipped and is on its way...", time:"9/11/21", unread:false, scam:false, body:`<p>Your order <b>#112-4421887</b> has shipped! Expected delivery: September 14, 2021.</p>` },
+          { id:7, from:"Crypto Millionaire", email:"invest@crypto-profits-now.biz", subject:"Make $5,000 this week — guaranteed", preview:"I made $47,000 last month with this ONE simple crypto trick...", time:"9/11/21", unread:true, scam:true, body:`<p>Send 0.1 BTC and I'll send you back 1 BTC guaranteed!</p><div style="margin:16px 0;"><a href="#" style="background:#f7931a;color:white;padding:10px 20px;border-radius:8px;text-decoration:none;font-size:13px;">Get Rich Now →</a></div>` },
+          { id:8, from:"Dr. Sarah Chen", email:"s.chen@hospital.org", subject:"Your appointment reminder", preview:"Reminder for your appointment on September 15th at 2:30 PM...", time:"9/10/21", unread:false, scam:false, body:`<p><b>Date:</b> September 15, 2021 at 2:30 PM<br/><b>Location:</b> 245 Medical Plaza, Suite 300</p>` },
+          { id:9, from:"LinkedIn", email:"jobs@linkedin.com", subject:"3 new jobs match your profile", preview:"Software Engineer at Google, Frontend Developer at Spotify...", time:"9/10/21", unread:false, scam:false, body:`<ul style="padding-left:20px;"><li><b>Software Engineer</b> — Google, NYC ($120k-$160k)</li><li><b>Frontend Developer</b> — Spotify, Remote ($95k-$130k)</li><li><b>UX Designer</b> — Apple, Cupertino ($110k-$145k)</li></ul>` },
+          { id:10, from:"FedEx Delivery", email:"tracking@fedex-delivery-notice.com", subject:"Package held — action required", preview:"A small customs fee of $2.99 is required to release your package...", time:"9/9/21", unread:true, scam:true, body:`<p>Pay a customs fee of <b>$2.99</b> to release your package within 24 hours.</p><div style="margin:16px 0;"><a href="#" style="background:#4d148c;color:white;padding:10px 20px;border-radius:8px;text-decoration:none;font-size:13px;">Pay $2.99 Now →</a></div>` },
+          { id:11, from:"Sara", email:"sara.k@gmail.com", subject:"Photos from last weekend!", preview:"I finally uploaded all the photos from the trip. So many good ones!", time:"9/9/21", unread:false, scam:false, body:`<p>I finally uploaded all the photos from the trip! Check them out on Google Photos.</p>` },
+        ],
+        icloud: [
+          { id:0, from:"iCloud", email:"no-reply@icloud.com", subject:"Your iCloud storage is almost full", preview:"You have used 4.8 GB of your 5 GB iCloud storage plan...", time:"9/14/21", unread:true, scam:false, body:`<p>You have used <b>4.8 GB</b> of your 5 GB iCloud storage. Upgrade to keep your data backed up.</p>` },
+          { id:1, from:"Apple", email:"no-reply@apple.com", subject:"Your receipt from Apple", preview:"Thanks for your purchase. Apple TV+ monthly subscription — $4.99...", time:"9/12/21", unread:false, scam:false, body:`<p>Apple TV+ monthly subscription — <b>$4.99</b><br/>Billed to Visa ending 9032.</p>` },
+          { id:2, from:"iCloud Scam", email:"support@icloud-verify-now.ru", subject:"Your iCloud account will be deleted", preview:"Act now or lose all your photos and data permanently...", time:"9/10/21", unread:true, scam:true, body:`<p>Your iCloud account will be permanently deleted in 24 hours.</p><div style="margin:16px 0;"><a href="#" style="background:#0a84ff;color:white;padding:10px 20px;border-radius:8px;text-decoration:none;font-size:13px;">Verify Now →</a></div>` },
+        ],
+        work: [
+          { id:0, from:"Boss — David", email:"david.h@techcorp.com", subject:"Q3 report due Friday", preview:"Hey, just a reminder that the Q3 report needs to be submitted by EOD Friday...", time:"9/14/21", unread:true, scam:false, body:`<p>Hey, just a reminder the Q3 report needs to be submitted by EOD Friday.</p><p style="margin-top:12px;">— David</p>` },
+          { id:1, from:"HR Team", email:"hr@techcorp.com", subject:"Updated vacation policy", preview:"Please review the updated company vacation policy effective October 1st...", time:"9/13/21", unread:false, scam:false, body:`<p>Please review the updated vacation policy effective October 1st.</p>` },
+          { id:2, from:"Slack", email:"no-reply@slack.com", subject:"You have 13 unread messages", preview:"Here's what you missed in #general, #dev-team, and 2 direct messages...", time:"9/13/21", unread:true, scam:false, body:`<p>You have unread messages in <b>#general</b>, <b>#dev-team</b>, and 2 direct messages.</p>` },
+          { id:3, from:"Fake IT Dept", email:"it-support@techcorp-helpdesk.net", subject:"Your password expires today", preview:"Reset your corporate password immediately to avoid being locked out...", time:"9/11/21", unread:true, scam:true, body:`<p>Your corporate password expires today.</p><div style="margin:16px 0;"><a href="#" style="background:#333;color:white;padding:10px 20px;border-radius:8px;text-decoration:none;font-size:13px;">Reset Password →</a></div>` },
+        ],
+        vip: [
+          { id:0, from:"Mom", email:"mom@gmail.com", subject:"Thanksgiving plans?", preview:"Hey honey, are you coming home for Thanksgiving this year?", time:"9/14/21", unread:true, scam:false, body:`<p>Hey honey, are you coming home for Thanksgiving? Love you!<br/>Mom</p>` },
+          { id:1, from:"Boss — David", email:"david.h@techcorp.com", subject:"Great work on the presentation!", preview:"Just wanted to say the client loved your slides today...", time:"9/11/21", unread:false, scam:false, body:`<p>Just wanted to say the client loved your slides today. Really great work!</p>` },
+        ],
+        flagged: [
+          { id:0, from:"IRS Tax Division", email:"irs-refund@gov-tax-services.net", subject:"You have a pending tax refund", preview:"You are eligible for a $2,840 tax refund...", time:"9/12/21", unread:true, scam:true, body:`<p>You are eligible for a <b>$2,840.00 tax refund</b>.</p><div style="margin:16px 0;"><a href="#" style="background:#1a3a6b;color:white;padding:10px 20px;border-radius:8px;text-decoration:none;font-size:13px;">Claim Refund Now →</a></div>` },
+        ],
+        drafts: [
+          { id:0, from:"Me", email:"johndoe@gmail.com", subject:"Re: Thanksgiving plans", preview:"Hey Mom! Yes I'm planning to come home...", time:"9/14/21", unread:false, scam:false, body:`<p>Hey Mom! Yes I'm planning to come home. I was thinking I could arrive Wednesday evening.</p>` },
+        ],
+        sent: [
+          { id:0, from:"Me", email:"johndoe@gmail.com", subject:"Re: Weekend hiking trip?", preview:"Sounds great Jake! I'm in.", time:"9/12/21", unread:false, scam:false, body:`<p>Sounds great Jake! I'm in. Should I bring anything besides water and snacks?</p>` },
+          { id:1, from:"Me", email:"johndoe@gmail.com", subject:"Re: Photos from last weekend!", preview:"Oh my gosh these are so good!!", time:"9/9/21", unread:false, scam:false, body:`<p>Oh my gosh these are so good!! Can you send me the one by the lake separately?</p>` },
+        ],
+        pets: [
+          { id:0, from:"Vet Clinic", email:"appointments@pawsvet.com", subject:"Reminder: Max's checkup tomorrow", preview:"Max has a checkup appointment tomorrow at 11am...", time:"9/14/21", unread:true, scam:false, body:`<p>Reminder that <b>Max</b> has a checkup appointment tomorrow at <b>11:00 AM</b>.</p>` },
+          { id:1, from:"Fake Pet Insurance", email:"claims@pet-insurance-now.biz", subject:"Your pet insurance claim approved — claim $500", preview:"A $500 reimbursement is waiting for your pet...", time:"9/10/21", unread:true, scam:true, body:`<p>A <b>$500 reimbursement</b> is waiting. Provide your banking details to receive your payout.</p><div style="margin:16px 0;"><a href="#" style="background:#30d158;color:white;padding:10px 20px;border-radius:8px;text-decoration:none;font-size:13px;">Claim $500 →</a></div>` },
+        ],
+      };
 
-  const note = source[i];
-  const maxChars = 300;
+      let searchResults = [];
 
-  content.innerHTML = `
-    <div style="position:relative;">
-      ${note.content}
-      <div style="margin-top:16px;border-top:1px solid #f0f0f0;padding-top:12px;">
-        ${isDeleted ? 
-          `<div style="color:#ff3b30;font-size:12px;margin-bottom:8px;">🗑️ This note is in Recently Deleted — read only</div>
-           <div style="font-size:13px;color:#aaa;font-style:italic;">${note.userNote || "No additional notes."}</div>` 
-          :
-          `<div contenteditable="true" id="note-editable-${i}"
-            data-max="${maxChars}"
-            oninput="handleNoteInput(this, ${i})"
-            style="min-height:60px;font-size:13px;color:#333;outline:none;line-height:1.6;font-family:-apple-system,sans-serif;white-space:pre-wrap;"
-            >${note.userNote || ""}</div>
-           <div id="note-charcount-${i}" style="font-size:11px;color:#8e8e93;text-align:right;margin-top:4px;">${maxChars - (note.userNote?.length || 0)} chars remaining</div>`
+      function initMail() { showMailFolder('inbox', document.querySelector('.mail-folder')); }
+
+      function showMailFolder(folder, el) {
+        document.querySelectorAll(".mail-folder").forEach(t => { t.style.background="transparent"; t.style.color="#1c1c1e"; });
+        if (el) { el.style.background="#0a84ff"; el.style.color="white"; }
+        const emails = mailData[folder] || [];
+        const list = document.getElementById("mail-list");
+        list.innerHTML = `<div style="padding:10px 14px;border-bottom:1px solid #f0f0f0;"><div style="font-size:14px;font-weight:700;color:#1c1c1e;">${folder.charAt(0).toUpperCase()+folder.slice(1)}</div><div id="mail-unread-count" style="font-size:11px;color:#8e8e93;">${emails.length} messages, ${emails.filter(e=>e.unread).length} unread</div></div>`
+          + emails.map((email,i) => `<div onclick="openFolderEmail('${folder}',${i})" id="mail-item-${i}" style="padding:10px 14px;border-bottom:1px solid #f0f0f0;cursor:pointer;display:flex;gap:10px;align-items:flex-start;background:${i===0?'#e8f0fe':'white'};"><div style="flex:1;min-width:0;"><div style="display:flex;justify-content:space-between;align-items:center;"><div style="font-size:13px;font-weight:${email.unread?'700':'400'};color:#1c1c1e;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:120px;">${email.from}</div><div style="font-size:10px;color:#8e8e93;flex-shrink:0;">${email.time}</div></div><div style="font-size:12px;font-weight:${email.unread?'600':'400'};color:#1c1c1e;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${email.subject}</div><div style="font-size:11px;color:#8e8e93;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${email.preview}</div></div>${email.unread?`<div style="width:8px;height:8px;border-radius:50%;background:#0a84ff;flex-shrink:0;margin-top:4px;"></div>`:''}</div>`).join("");
+        if (emails.length) openFolderEmail(folder, 0);
+      }
+
+      function openFolderEmail(folder, i) {
+        const emails = mailData[folder] || [];
+        const email = emails[i];
+        if (!email) return;
+        window.currentEmail = email;
+        if (typeof setWidgetContext === 'function') setWidgetContext('mail', 'Reading: '+email.subject.slice(0,25), true);
+        document.querySelectorAll("[id^='mail-item-']").forEach(el => el.style.background="white");
+        const item = document.getElementById("mail-item-"+i);
+        if (item) item.style.background="#e8f0fe";
+        if (email.unread) {
+          email.unread = false;
+          const dot = item?.querySelector("div[style*='background:#0a84ff'][style*='border-radius:50%']");
+          if (dot) dot.remove();
+          const countEl = document.getElementById("mail-unread-count");
+          if (countEl) countEl.textContent = `${emails.length} messages, ${emails.filter(e=>e.unread).length} unread`;
         }
-      </div>
-    </div>
-  `;
+        const content = document.getElementById("mail-content");
+        content.innerHTML = `<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;"><div style="flex:1;"><div style="font-size:14px;font-weight:700;color:#1c1c1e;">${email.from}</div><div style="font-size:12px;color:#8e8e93;">${email.email}</div><div style="font-size:13px;font-weight:600;color:#1c1c1e;margin-top:4px;">${email.subject}</div></div><div style="font-size:11px;color:#8e8e93;">${email.time}</div></div><div style="height:1px;background:#f0f0f0;margin-bottom:16px;"></div><div style="font-size:13px;line-height:1.7;color:#1c1c1e;">${email.body||''}</div>`;
+      }
 
-  if (!isDeleted) {
-    const editable = document.getElementById(`note-editable-${i}`);
-    if (editable) {
-      // place cursor at end
-      const range = document.createRange();
-      const sel = window.getSelection();
-      range.selectNodeContents(editable);
-      range.collapse(false);
-      sel.removeAllRanges();
-      sel.addRange(range);
-    }
-  }
-}
+      function searchMail(query) {
+        if (!query.trim()) { showMailFolder('inbox', document.querySelector('.mail-folder')); return; }
+        const q = query.toLowerCase();
+        searchResults = Object.values(mailData).flat().filter(e => e.from.toLowerCase().includes(q) || e.subject.toLowerCase().includes(q) || e.preview.toLowerCase().includes(q));
+        const list = document.getElementById("mail-list");
+        list.innerHTML = `<div style="padding:10px 14px;border-bottom:1px solid #f0f0f0;font-size:11px;color:#8e8e93;">${searchResults.length} result(s) for "${query}"</div>`
+          + (searchResults.length === 0
+            ? `<div style="padding:30px;text-align:center;color:#8e8e93;font-size:13px;">No results found</div>`
+            : searchResults.map((email,i) => `<div onclick="openSearchEmail(${i})" style="padding:10px 14px;border-bottom:1px solid #f0f0f0;cursor:pointer;background:white;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background='white'"><div style="display:flex;justify-content:space-between;"><div style="font-size:13px;color:#1c1c1e;">${email.from}</div><div style="font-size:10px;color:#8e8e93;">${email.time}</div></div><div style="font-size:12px;color:#1c1c1e;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${email.subject}</div></div>`).join(""));
+      }
 
-function handleNoteInput(el, i) {
-  const max = parseInt(el.dataset.max);
-  const text = el.innerText;
-  if (text.length > max) {
-    el.innerText = text.slice(0, max);
-    // move cursor to end
-    const range = document.createRange();
-    const sel = window.getSelection();
-    range.selectNodeContents(el);
-    range.collapse(false);
-    sel.removeAllRanges();
-    sel.addRange(range);
-  }
-  notesData[i].userNote = el.innerText;
-  const counter = document.getElementById(`note-charcount-${i}`);
-  if (counter) counter.textContent = (max - el.innerText.length) + " chars remaining";
-}
+      function openSearchEmail(i) {
+        const email = searchResults[i];
+        if (!email) return;
+        window.currentEmail = email;
+        if (typeof setWidgetContext === 'function') setWidgetContext('mail', 'Reading: '+email.subject.slice(0,25), true);
+        const content = document.getElementById("mail-content");
+        content.innerHTML = `<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;"><div style="flex:1;"><div style="font-size:14px;font-weight:700;color:#1c1c1e;">${email.from}</div><div style="font-size:12px;color:#8e8e93;">${email.email}</div><div style="font-size:13px;font-weight:600;color:#1c1c1e;margin-top:4px;">${email.subject}</div></div><div style="font-size:11px;color:#8e8e93;">${email.time}</div></div><div style="height:1px;background:#f0f0f0;margin-bottom:16px;"></div><div style="font-size:13px;line-height:1.7;color:#1c1c1e;">${email.body||''}</div>`;
+      }
 
-/* ===== FILES APP ===== */
-const filesData = {
-  myfiles: {
-    title: "My Files",
-    items: [
-      { icon:"🖼️", name:"Photo Albums", meta:"21 items", color:"#e8f0ff", date:"" },
-      { icon:"🎵", name:"iTunes Files", meta:"12 items", color:"#e8ffe8", date:"" },
-      { icon:"🗑️", name:"Recently Deleted", meta:"18 items", color:"#f5f5f5", date:"" },
-      { icon:"📁", name:"Text", meta:"24 items", color:"#e8f4ff", date:"" },
-      { icon:"🏔️", name:"photo_31.12.20", meta:"", color:"#ddeeff", date:"01.01.2021", isPhoto:true },
-      { icon:"🏀", name:"Kira Wang - Game", meta:"", color:"#ffe8e8", date:"16.03.2020", isPhoto:true },
-      { icon:"📄", name:"March Report", meta:"", color:"#fff8e8", date:"16.03.2020" },
-      { icon:"🧾", name:"Invoice #00892", meta:"", color:"#f0f0ff", date:"16.03.2020" },
-{ icon:"🎬", name:"Tokyo trip", meta:"23:15", color:"#1a1a2e", date:"16.03.2020" },      { icon:"📖", name:"Wanderer journal", meta:"", color:"#f5f0ff", date:"16.03.2020", isPhoto:true },
-      { icon:"📋", name:"Admission Confirmation", meta:"", color:"#fff0f0", date:"16.03.2020" },
-      { icon:"✈️", name:"Boarding pass", meta:"", color:"#f0fff0", date:"16.03.2020" },
-      { icon:"🌴", name:"Tres Wood - Highlights", meta:"2:08", color:"#1a1a2e", date:"16.03.2020", isVideo:true },
-    ]
-  },
-  recent: {
-    title: "Recent Files",
-    items: [
-      { icon:"📄", name:"March Report", meta:"", color:"#fff8e8", date:"Today" },
-      { icon:"🧾", name:"Invoice #00892", meta:"", color:"#f0f0ff", date:"Yesterday" },
-      { icon:"📋", name:"Admission Confirmation", meta:"", color:"#fff0f0", date:"2 days ago" },
-    ]
-  },
-  icloud: {
-    title: "Documents - iCloud",
-    items: [
-      { icon:"📁", name:"Work Docs", meta:"8 items", color:"#e8f4ff", date:"" },
-      { icon:"📁", name:"Personal", meta:"14 items", color:"#e8f4ff", date:"" },
-      { icon:"📄", name:"Resume_2024.pdf", meta:"", color:"#fff8e8", date:"Jan 2024" },
-    ]
-  },
-  computer: {
-    title: "Computer",
-    items: [
-      { icon:"💾", name:"Macintosh HD", meta:"256 GB", color:"#f0f0f0", date:"" },
-      { icon:"📀", name:"External Drive", meta:"1 TB", color:"#f0f0f0", date:"" },
-    ]
-  },
-  browser: {
-  title: "Browser",
-  items: [
-    { icon:"📄", name:"invoice_march.pdf", meta:"", color:"#fff8e8", date:"Today" },
-    { icon:"🖼️", name:"wallpaper.jpg", meta:"", color:"#e8f4ff", date:"Yesterday", isPhoto:true },
-    { icon:"📦", name:"setup_v2.zip", meta:"", color:"#f0f0f0", date:"Mon" },
-    { icon:"🎬", name:"tutorial.mp4", meta:"4:21", color:"#111", date:"Last week"},
-    { icon:"📄", name:"resume_final.docx", meta:"", color:"#e8f0ff", date:"Last week" },
-    { icon:"🖼️", name:"screenshot.png", meta:"", color:"#f0fff0", date:"Last week", isPhoto:true },
-  ]
-},
-  vpn: {
-    title: "VPN",
-    items: [
-      { icon:"🔒", name:"Not Connected", meta:"Tap to connect", color:"#fff0f0", date:"" },
-    ]
-  },
-  dropbox: {
-    title: "John Doe",
-    items: [
-      { icon:"📦", name:"Shared with me", meta:"3 items", color:"#e8f0ff", date:"" },
-    ]
-  }
-};
+      window.showMailFolder = showMailFolder;
+      window.openFolderEmail = openFolderEmail;
+      window.openSearchEmail = openSearchEmail;
+      window.initMail = initMail;
+      window.searchMail = searchMail;
 
-function showFilesSection(section, el) {
-  // update sidebar highlight
-  document.querySelectorAll(".files-nav-item").forEach(t => {
-    t.style.background = "transparent";
-    t.style.color = "#1c1c1e";
-  });
-  if (el) { el.style.background = "#0a84ff"; el.style.color = "white"; }
+      /* ===== SAFARI ===== */
+      const safariHistory = ['google.com','youtube.com','instagram.com','amazon.com','reddit.com','wikipedia.org','how to make pasta','best hiking trails near me','weather today'];
+      let safariNavStack = [], safariNavIndex = -1;
 
-  const data = filesData[section] || filesData.myfiles;
-  const content = document.getElementById("files-content");
+      const safariPages = {
+        'google.com': () => `<div style="min-height:100%;background:white;display:flex;flex-direction:column;align-items:center;padding-top:80px;"><div style="font-size:48px;font-weight:300;color:#4285f4;margin-bottom:24px;">G<span style="color:#ea4335;">o</span><span style="color:#fbbc05;">o</span><span style="color:#4285f4;">g</span><span style="color:#34a853;">l</span><span style="color:#ea4335;">e</span></div><div style="display:flex;align-items:center;gap:8px;width:480px;background:white;border:1px solid #ddd;border-radius:24px;padding:10px 16px;box-shadow:0 1px 6px rgba(0,0,0,0.1);"><span style="color:#8e8e93;">🔍</span><input placeholder="Search Google" style="border:none;outline:none;font-size:14px;width:100%;color:#1c1c1e;" onkeydown="if(event.key==='Enter')safariSearch(this.value)" /></div></div>`,
+        'youtube.com': () => `<div style="min-height:100%;background:#f9f9f9;"><div style="background:white;padding:10px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #eee;"><span style="color:#ff0000;font-size:20px;font-weight:700;">▶ YouTube</span><input placeholder="Search" style="flex:1;padding:6px 12px;border:1px solid #ddd;border-radius:20px;outline:none;font-size:13px;" /></div><div style="padding:16px;display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">${['Hiking Bear Mountain Vlog','Top 10 Scam Calls Exposed','How To Cook Pasta Perfectly','Sony WH-1000XM4 Review','NYC Street Food Tour','Study With Me — 2 Hours'].map((title,i)=>`<div style="cursor:pointer;border-radius:8px;overflow:hidden;background:white;box-shadow:0 1px 4px rgba(0,0,0,0.08);"><img src="https://picsum.photos/200/112?random=${i+60}" style="width:100%;height:auto;display:block;" /><div style="padding:8px;font-size:12px;font-weight:500;color:#1c1c1e;">${title}</div></div>`).join('')}</div></div>`,
+        'reddit.com': () => `<div style="min-height:100%;background:#dae0e6;"><div style="background:#ff4500;padding:10px 16px;"><span style="color:white;font-size:16px;font-weight:700;">reddit</span></div><div style="max-width:600px;margin:16px auto;display:flex;flex-direction:column;gap:8px;">${[{sub:'r/scams',title:'PSA: New phishing email pretending to be Apple',ups:'12.1k'},{sub:'r/personalfinance',title:'IRS will NEVER email you about a refund',ups:'8.7k'},{sub:'r/hiking',title:'Bear Mountain trail — best kept secret in NY!',ups:'4.2k'}].map(p=>`<div style="background:white;border-radius:8px;padding:12px 16px;cursor:pointer;"><div style="font-size:10px;color:#8e8e93;margin-bottom:4px;">${p.sub}</div><div style="font-size:13px;font-weight:500;color:#1c1c1e;">${p.title}</div><div style="font-size:11px;color:#8e8e93;margin-top:6px;">▲ ${p.ups}</div></div>`).join('')}</div></div>`,
+        'wikipedia.org': () => `<div style="min-height:100%;background:white;padding:24px;"><div style="max-width:600px;margin:0 auto;"><div style="font-size:28px;font-weight:300;text-align:center;margin-bottom:16px;">Wikipedia</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">${['Phishing','Internet fraud','Cybersecurity','Social engineering','Email spoofing','Identity theft'].map(t=>`<div style="border:1px solid #eee;border-radius:6px;padding:10px 14px;cursor:pointer;"><div style="font-size:13px;color:#0645ad;font-weight:500;">${t}</div></div>`).join('')}</div></div></div>`,
+        'amazon.com': () => `<div style="min-height:100%;background:#eaeded;"><div style="background:#131921;padding:10px 16px;display:flex;align-items:center;gap:12px;"><span style="color:#ff9900;font-size:18px;font-weight:700;">amazon</span><input placeholder="Search Amazon" style="flex:1;padding:7px 12px;border-radius:4px;border:none;outline:none;font-size:13px;" /></div><div style="padding:16px;display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">${['Sony WH-1000XM4','Apple AirPods Pro','Kindle Paperwhite'].map((name,i)=>`<div style="background:white;border-radius:8px;padding:12px;cursor:pointer;"><img src="https://picsum.photos/160/160?random=${i+80}" style="width:100%;border-radius:6px;" /><div style="font-size:12px;font-weight:500;margin-top:8px;">${name}</div></div>`).join('')}</div></div>`,
+        'instagram.com': () => `<div style="min-height:100%;background:#fafafa;"><div style="background:white;border-bottom:1px solid #eee;padding:10px 16px;text-align:center;font-size:20px;font-weight:600;font-family:Georgia,serif;">Instagram</div><div style="max-width:480px;margin:20px auto;">${[{user:'sara.k',img:70},{user:'jake.wilson',img:71}].map(p=>`<div style="background:white;border:1px solid #eee;border-radius:8px;overflow:hidden;margin-bottom:12px;"><div style="display:flex;align-items:center;gap:10px;padding:10px;"><img src="https://i.pravatar.cc/32?img=${p.img}" style="width:32px;height:32px;border-radius:50%;" /><span style="font-size:13px;font-weight:600;">${p.user}</span></div><img src="https://picsum.photos/480/480?random=${p.img}" style="width:100%;display:block;" /></div>`).join('')}</div></div>`,
+      };
 
-  content.innerHTML = `
-    <div style="font-size:22px;font-weight:700;color:#1c1c1e;margin-bottom:16px;">${data.title}</div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px;">
-      ${data.items.map(item => `
-<div style="display:flex;flex-direction:column;align-items:center;cursor:pointer;position:relative;" onclick="event.stopPropagation();openFileItem('${item.name}')">          <div style="width:110px;height:90px;border-radius:12px;background:${item.isVideo ? item.color : item.color};display:flex;align-items:center;justify-content:center;margin-bottom:6px;overflow:hidden;position:relative;border:0.5px solid rgba(0,0,0,0.08);">
-            ${item.isVideo ? 
-              `<div style="width:100%;height:100%;background:${item.color};display:flex;align-items:center;justify-content:center;font-size:28px;">🎬</div>
-               <div style="position:absolute;bottom:4px;right:4px;background:rgba(0,0,0,0.6);color:white;font-size:9px;padding:1px 5px;border-radius:4px;display:flex;align-items:center;gap:3px;">▶ ${item.meta}</div>` :
-              item.isPhoto ?
-              `<img src="https://picsum.photos/110/90?random=${Math.floor(Math.random()*50)}" style="width:100%;height:100%;object-fit:cover;" />` :
-              `<span style="font-size:36px;">${item.icon}</span>`
-            }
-          </div>
-          <div style="font-size:11px;font-weight:500;color:#1c1c1e;text-align:center;max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${item.name}</div>
-          ${item.meta && !item.isVideo ? `<div style="font-size:10px;color:#8e8e93;">${item.meta}</div>` : ""}
-          ${item.date ? `<div style="font-size:10px;color:#8e8e93;">${item.date}</div>` : ""}
-          <div style="position:absolute;top:4px;right:4px;color:#8e8e93;font-size:14px;cursor:pointer;" onclick="event.stopPropagation()">···</div>
-        </div>
-      `).join("")}
-    </div>
-  `;
-}
+      function safariRenderPage(site, query) {
+        document.getElementById('safari-newtab').style.display='none';
+        document.getElementById('safari-page').style.display='block';
+        const page = document.getElementById('safari-page');
+        if (site === 'search') {
+          document.getElementById('safari-url').value = query;
+          page.innerHTML = `<div style="min-height:100%;background:white;padding:16px 24px;"><div style="font-size:13px;color:#8e8e93;margin-bottom:16px;">Search results for "<b style="color:#1c1c1e;">${query}</b>"</div>${['Wikipedia','Reddit','Amazon','YouTube','Google'].map((name,i)=>`<div style="margin-bottom:20px;cursor:pointer;" onclick="safariNavigate('${name.toLowerCase()}.${i===4?'com':'org'}')"><div style="font-size:11px;color:#8e8e93;">${name.toLowerCase()}.${i===4?'com':'org'}</div><div style="font-size:15px;color:#0645ad;margin:2px 0;">${query} — ${name}</div><div style="font-size:13px;color:#4d4d4d;">Find information about ${query} on ${name}.</div></div>`).join('')}</div>`;
+        } else if (safariPages[site]) {
+          document.getElementById('safari-url').value = site;
+          page.innerHTML = safariPages[site]();
+        } else {
+          document.getElementById('safari-url').value = site;
+          page.innerHTML = `<div style="padding:40px;text-align:center;color:#8e8e93;font-size:14px;">Cannot connect to ${site}</div>`;
+        }
+        hideSafariSuggestions();
+      }
 
-function openFileItem(name) {
-  const overlay = document.createElement("div");
-  overlay.style.cssText = "position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.5);z-index:99998;display:flex;align-items:center;justify-content:center;";
-  overlay.innerHTML = `
-    <div style="background:white;border-radius:14px;padding:24px;width:340px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.4);">
-      <div style="font-size:48px;margin-bottom:12px;">📄</div>
-      <div style="font-size:16px;font-weight:700;color:#1c1c1e;margin-bottom:6px;">${name}</div>
-      <div style="font-size:12px;color:#8e8e93;margin-bottom:20px;">This file is stored on your device.</div>
-      <div style="display:flex;gap:10px;justify-content:center;">
-        <button onclick="this.closest('div[style*=fixed]').remove()" style="width:auto;padding:8px 20px;border-radius:8px;background:#f0f0f0;border:none;color:#333;cursor:pointer;">Close</button>
-        <button onclick="this.closest('div[style*=fixed]').remove()" style="width:auto;padding:8px 20px;border-radius:8px;background:#0a84ff;border:none;color:white;cursor:pointer;">Open</button>
-      </div>
-    </div>`;
-  overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
-  document.body.appendChild(overlay);
-}
+      function safariNavigate(input) {
+        if (!input||!input.trim()) return;
+        if (!safariHistory.includes(input)) safariHistory.unshift(input);
+        const isUrl = input.includes('.') && !input.includes(' ');
+        const site = isUrl ? input.replace(/^https?:\/\//,'').replace(/^www\./,'').split('/')[0] : 'search';
+        const query = isUrl ? '' : input;
+        safariNavStack = safariNavStack.slice(0, safariNavIndex+1);
+        safariNavStack.push({site, query});
+        safariNavIndex = safariNavStack.length-1;
+        safariRenderPage(site, query);
+      }
+      function safariSearch(query) { if (query.trim()) safariNavigate(query); }
+      function safariGoBack() { if (safariNavIndex<1) return; safariNavIndex--; const {site,query}=safariNavStack[safariNavIndex]; safariRenderPage(site,query); }
+      function safariGoForward() { if (safariNavIndex>=safariNavStack.length-1) return; safariNavIndex++; const {site,query}=safariNavStack[safariNavIndex]; safariRenderPage(site,query); }
 
-// init files when opened
-const _origOpenWindow = window.openWindow;
-      
+      function showSafariSuggestions(val) {
+        const box = document.getElementById('safari-suggestions');
+        const input = document.getElementById('safari-url');
+        const showAll = val === '__all__';
+        if (!showAll && !val.trim()) { box.style.display='none'; return; }
+        const matches = showAll ? safariHistory.slice(0,8) : safariHistory.filter(h=>h.toLowerCase().includes(val.toLowerCase())).slice(0,6);
+        if (!matches.length) { box.style.display='none'; return; }
+        const rect = input.getBoundingClientRect();
+        box.style.top=(rect.bottom+4)+'px'; box.style.left=rect.left+'px'; box.style.width=rect.width+'px'; box.style.display='block';
+        box.innerHTML = matches.map(m=>`<div onmousedown="event.preventDefault();document.getElementById('safari-url').value='${m}';safariNavigate('${m}')" style="padding:9px 14px;font-size:13px;color:#1c1c1e;cursor:pointer;border-bottom:0.5px solid #f0f0f0;background:white;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background='white'"><span style="color:#8e8e93;font-size:11px;">🕐</span> ${m}</div>`).join('');
+      }
+      function hideSafariSuggestions() { const b=document.getElementById('safari-suggestions'); if(b) b.style.display='none'; }
+      document.addEventListener('click',(e)=>{ if(!e.target.closest('#safari-url')&&!e.target.closest('#safari-suggestions')) hideSafariSuggestions(); });
+
+      /* ===== DESKTOP FILE ICONS ===== */
+      const DESKTOP_ITEMS = [
+        { icon:"📁", name:"Mac Stacks Tip", x:120, y:80 },
+        { icon:"🖼️", name:"IMG_1562.jpeg", x:600, y:90 },
+        { icon:"📄", name:"setapp_how-to.csv", x:680, y:340 },
+        { icon:"🖼️", name:"Screenshot 2021.png", x:920, y:80 },
+      ];
+
+      function createDesktopItem(item) {
+        const el = document.createElement("div");
+        el.style.cssText = `position:absolute;left:${item.x}px;top:${item.y}px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;width:80px;z-index:1;user-select:none;`;
+        el.innerHTML = `<div style="font-size:36px;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.4));">${item.icon}</div><div style="font-size:11px;color:white;text-align:center;text-shadow:0 1px 3px rgba(0,0,0,0.8);word-break:break-word;line-height:1.3;max-width:80px;">${item.name}</div>`;
+        el.addEventListener("dblclick", () => {
+          const win = document.createElement("div");
+          win.className = "window";
+          win.style.cssText = "position:absolute;top:100px;left:50%;transform:translateX(-50%);width:420px;height:320px;background:white;border-radius:12px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.5);display:flex;flex-direction:column;z-index:9999;";
+          win.innerHTML = `<div class="window-bar" style="padding:8px 10px;background:#f0f0f0;display:flex;align-items:center;gap:8px;flex-shrink:0;"><div class="mac-buttons" style="display:flex;gap:6px;"><span class="dot red" onclick="this.closest('.window').remove()" style="cursor:pointer;"></span><span class="dot yellow" style="cursor:pointer;"></span><span class="dot green" style="cursor:pointer;"></span></div><span style="font-size:12px;color:#333;">${item.name}</span></div><div style="flex:1;overflow:hidden;background:${item.icon==='🖼️'?'#000':'white'};display:flex;align-items:center;justify-content:center;">${item.icon==='🖼️'?`<img src="https://picsum.photos/420/260?random=${Math.floor(Math.random()*99)}" style="width:100%;height:100%;object-fit:cover;" />`:`<div style="font-size:64px;">${item.icon}</div>`}</div>`;
+          document.getElementById("desktop").appendChild(win);
+          makeDraggable(win); focusWindow(win);
+        });
+        let isDragging=false, startX, startY, startLeft, startTop;
+        el.addEventListener("mousedown",(e)=>{ e.stopPropagation(); isDragging=true; startX=e.clientX; startY=e.clientY; startLeft=parseInt(el.style.left); startTop=parseInt(el.style.top); });
+        document.addEventListener("mousemove",(e)=>{ if(!isDragging) return; el.style.left=startLeft+e.clientX-startX+"px"; el.style.top=startTop+e.clientY-startY+"px"; });
+        document.addEventListener("mouseup",()=>{ isDragging=false; });
+        el.classList.add("desktop-file-item");
+        return el;
+      }
+
+      window.addEventListener("DOMContentLoaded", () => {
+        const desktop = document.getElementById("desktop");
+        DESKTOP_ITEMS.forEach(item => desktop.appendChild(createDesktopItem(item)));
+      });
     </script>
-      <script src="settings.js"></script>
-    <script type="module" src="script.js"></script>
 
+    <script src="settings.js"></script>
+    <script type="module" src="script.js"></script>
   </body>
 </html>

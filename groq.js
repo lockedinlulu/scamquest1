@@ -1,5 +1,7 @@
-import { GROQ_API_KEY } from "./config.js";
+import { GROQ_API_KEY, ELEVENLABS_API_KEY } from "./config.js";
+
 const GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
+
 
 export async function sendToGroq(messages, systemPrompt) {
   const response = await fetch(GROQ_URL, {
@@ -24,26 +26,26 @@ export async function sendToGroq(messages, systemPrompt) {
   return raw.replace(/^[""]|[""]$/g, "").trim();
 }
 
-import { ELEVENLABS_API_KEY } from "./config.js";
+const VOICE_FEMALE = "21m00Tcm4TlvDq8ikWAM"; // Rachel — calm, friendly
+const VOICE_MALE   = "TxGEqnHWrfWFTfGW9XjX"; // Josh — slightly pushier
 
-// Scammers get a different voice ID to sound off
-// ---- keep everything above this line unchanged ----
+let currentAudio = null;
+let currentResolve = null;
 
-const VOICE_NORMAL = "21m00Tcm4TlvDq8ikWAM";
-const VOICE_SCAMMER = "TxGEqnHWrfWFTfGW9XjX";
-
-let currentAudio = null;                         // ← NEW
-
-export function stopSpeaking() {                 // ← NEW
+export function stopSpeaking() {
   if (currentAudio) {
     currentAudio.pause();
     currentAudio.src = "";
     currentAudio = null;
   }
+  if (currentResolve) {
+    currentResolve();
+    currentResolve = null;
+  }
 }
 
-export async function speakWithElevenLabs(text, isScammer) {   // ← REPLACED
-  const voiceId = isScammer ? VOICE_SCAMMER : VOICE_NORMAL;
+export async function speakWithElevenLabs(text, isFemale) {
+  const voiceId = isFemale ? VOICE_FEMALE : VOICE_MALE;
   const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
     method: "POST",
     headers: {
@@ -62,9 +64,11 @@ export async function speakWithElevenLabs(text, isScammer) {   // ← REPLACED
   currentAudio = new Audio(url);
   await currentAudio.play();
   return new Promise(resolve => {
+    currentResolve = resolve;
     currentAudio.addEventListener("ended", () => {
       URL.revokeObjectURL(url);
       currentAudio = null;
+      currentResolve = null;
       resolve();
     });
   });

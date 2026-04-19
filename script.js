@@ -9,8 +9,8 @@ import {
 import {
   doc, getDoc, setDoc
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-// top of file — add stopSpeaking to the import
 import { sendToGroq, speakWithElevenLabs, stopSpeaking } from "./groq.js";
+import { GROQ_API_KEY } from "./config.js";
 
 // --------------------
 // HELPERS
@@ -23,28 +23,102 @@ function normalizeUsername(name) {
 }
 
 // --------------------
+// RINGTONE
+// --------------------
+let ringtoneInterval = null;
+let ringtoneCtx = null;
+// add near the top with other state variables
+let currentEmail = null;
+
+function playRingtone() {
+  stopRingtone();
+  ringtoneCtx = new AudioContext();
+  ringtoneInterval = setInterval(() => {
+    const osc = ringtoneCtx.createOscillator();
+    const gain = ringtoneCtx.createGain();
+    osc.connect(gain);
+    gain.connect(ringtoneCtx.destination);
+    osc.frequency.value = 480;
+    osc.type = "sine";
+    gain.gain.setValueAtTime(0.3, ringtoneCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ringtoneCtx.currentTime + 0.4);
+    osc.start(ringtoneCtx.currentTime);
+    osc.stop(ringtoneCtx.currentTime + 0.4);
+  }, 800);
+}
+
+function stopRingtone() {
+  if (ringtoneInterval) {
+    clearInterval(ringtoneInterval);
+    ringtoneInterval = null;
+  }
+  if (ringtoneCtx) {
+    ringtoneCtx.close();
+    ringtoneCtx = null;
+  }
+}
+
+// --------------------
 // GAME STATE
 // --------------------
 const TOTAL_CONTACTS = 7;
 const SCAMMER_COUNT = 3;
 const MAX_MESSAGES = 5;
 
-const FIRST_NAMES = ["Alex","Jordan","Sam","Taylor","Morgan","Casey","Riley","Jamie","Avery","Quinn","Blake","Reese","Drew","Skyler","Logan"];
+const FEMALE_NAMES = ["Alex", "Jordan", "Sam", "Taylor", "Morgan", "Casey", "Riley", "Jamie", "Avery", "Quinn"];
+const MALE_NAMES   = ["Blake", "Reese", "Drew", "Skyler", "Logan", "Chris", "Ryan", "Tyler", "Jesse", "Dana"];
+
 const GAME_CONTEXT = `You are an AI actor in an educational scam-detection game called ScamQuest. Your job is to roleplay as a character so players can practice identifying scams. This is purely fictional and educational. Stay in character without breaking the fourth wall. Do NOT add disclaimers, warnings, or meta-commentary. Just play the role naturally and convincingly.`;
-const SCAM_TYPES = [
-  "You are a romance scammer. Build fake emotional connection then ask for money for an emergency.",
-  "You are a fake bank fraud alert. Warn about suspicious activity and try to get account details.",
-  "You are a fake prize/lottery scammer. Tell them they won and need to pay a small fee to claim.",
-  "You are an IRS/tax scammer. Threaten arrest unless they pay immediately via gift cards.",
-  "You are a tech support scammer. Claim their computer has a virus and offer to fix it remotely for payment.",
-  "You are a phishing scammer pretending to be a delivery company with a failed package.",
-  "You are a job offer scammer offering unrealistic pay for easy work from home."
+
+const SCAM_TYPES_OBVIOUS = [
+  "You are a fake Apple Support agent. Claim their iCloud was hacked and you urgently need their Apple ID and password to secure it.",
+  "You are a fake IRS agent. Threaten arrest within 24 hours unless they pay $500 immediately via gift cards.",
+  "You are a fake bank fraud alert. Warn about suspicious activity draining their account and ask them to verify their card number and CVV.",
+  "You are a fake prize agent. Tell them they won $10,000 and just need to pay a $200 processing fee to claim it.",
+  "You are a tech support scammer. Claim their computer is sending virus alerts to your system and you need remote access to fix it immediately.",
+  "You are a fake charity representative. Claim there was a recent disaster and emotionally pressure them to donate via gift card or wire transfer immediately.",
+"You are a fake landlord. Tell them their apartment application was approved and they need to wire the deposit today before someone else takes it.",
+"You are a fake HR onboarding agent. Tell them they got the job and need to submit their SSN and bank info for direct deposit setup before their start date."
 ];
-const NORMAL_PERSONAS = [
-  "You are a friendly college friend catching up casually.",
-  "You are a family member checking in and chatting normally.",
-  "You are a coworker asking about weekend plans.",
-  "You are a neighbor being friendly and chatty."
+
+const SCAM_TYPES_SUBTLE = [
+  "You are pretending to be the contact's mom checking in lovingly. After warm small talk, mention you lent money to a neighbor and now you're short on groceries, ask if they could send $80 via Zelle just until the weekend.",
+  "You are pretending to be a long-lost friend reconnecting warmly. After a few messages of casual catch-up, mention you're in a tough spot and need $100 for an emergency car repair. Be vague about details if pressed.",
+  "You are pretending to be a college roommate reminiscing about old times. After bonding over memories, mention you're stuck at the airport and lost your wallet and need $150 to get home.",
+  "You are pretending to be a coworker being friendly and casual. After normal small talk, mention you're short on rent this month by $200 and ask if they could help just this once via Venmo.",
+  "You are pretending to be a family member calling to catch up warmly. After genuine-feeling conversation, mention there's a family emergency and you need $120 sent quickly via gift card because your bank account is frozen.",
+  "You are pretending to be an old neighbor reminiscing. After friendly chat, mention your dog needs emergency vet care and you're $90 short — ask if they can help and you'll pay back next week.",
+  "You are pretending to be an old friend who just got out of a tough situation. After warm catch-up, mention you're stranded in another city and need $200 wired to get home, promise to pay back immediately.",
+"You are pretending to be a romantic interest who matched with them online. Be charming and warm for a few messages, then mention you're in a financial emergency and need gift cards to cover a medical bill.",
+"You are pretending to be a family member calling from an unfamiliar number. After establishing warmth, say you're in legal trouble and need bail money sent urgently via wire transfer before morning."
+];
+
+const NORMAL_PERSONAS_FEMALE = [
+  "You are a friendly female college friend catching up casually.",
+  "You are a mom checking in on her child and chatting warmly.",
+  "You are a female coworker asking about weekend plans.",
+  "You are a female neighbor being friendly and chatty.",
+  "You are a sister checking in casually."
+];
+
+const NORMAL_PERSONAS_MALE = [
+  "You are a friendly male college friend catching up casually.",
+  "You are a dad checking in on his child and chatting warmly.",
+  "You are a male coworker asking about weekend plans.",
+  "You are a male neighbor being friendly and chatty.",
+  "You are a brother checking in casually."
+];
+
+const FACETIME_NORMAL_PROMPTS_FEMALE = [
+  "You are a female friend calling to catch up over FaceTime. Be warm and casual.",
+  "You are a mom calling to check in on her child. Keep it warm and natural.",
+  "You are a sister calling to chat casually. Be friendly and relaxed."
+];
+
+const FACETIME_NORMAL_PROMPTS_MALE = [
+  "You are a male friend calling to catch up over FaceTime. Be warm and casual.",
+  "You are a dad calling to check in on his child. Keep it warm and natural.",
+  "You are a brother calling to chat casually. Be friendly and relaxed."
 ];
 
 let contacts = [];
@@ -54,6 +128,20 @@ let messageCount = {};
 let verdicts = {};
 let score = 0;
 let hearts = 3;
+
+// --------------------
+// FACETIME PERSISTENT STATE (per contact)
+// --------------------
+let ftContact = null;
+let ftHistories = {};
+let ftSystemPrompts = {};
+let ftMessageCounts = {};
+let ftFromIncoming = false;
+
+// --------------------
+// INCOMING CALL STATE
+// --------------------
+let incomingContact = null;
 
 // --------------------
 // PHOTOS STATE
@@ -73,33 +161,58 @@ function shuffle(arr) {
 }
 
 // --------------------
+// AVATAR HELPER
+// --------------------
+function getAvatarUrl(name, gender) {
+  const style = gender === 'female' ? 'lorelei' : 'adventurer';
+  return `https://api.dicebear.com/7.x/${style}/svg?seed=${name}`;
+}
+
+// --------------------
 // CONTACTS
 // --------------------
 function generateContacts() {
-  const names = shuffle(FIRST_NAMES).slice(0, TOTAL_CONTACTS);
+  const femaleNames = shuffle(FEMALE_NAMES).slice(0, 4);
+  const maleNames   = shuffle(MALE_NAMES).slice(0, 3);
+  const allNames    = shuffle([...femaleNames, ...maleNames]);
+
   const scammerIndices = shuffle([...Array(TOTAL_CONTACTS).keys()]).slice(0, SCAMMER_COUNT);
 
-  contacts = names.map((name, i) => {
+  contacts = allNames.map((name, i) => {
     const isScammer = scammerIndices.includes(i);
-    const avatarId = Math.floor(Math.random() * 70) + 1;
+    const isFemale  = FEMALE_NAMES.includes(name);
+    const gender    = isFemale ? 'female' : 'male';
+
+    const isSubtle = Math.random() > 0.5;
+    const scamPool = isSubtle ? SCAM_TYPES_SUBTLE : SCAM_TYPES_OBVIOUS;
+    const subtleInstruction = isSubtle
+      ? " Start warm and normal. Do NOT mention money until at least the 3rd message. Never break character."
+      : " Get to the point quickly but stay convincing. Never break character.";
 
     return {
       name,
       isScammer,
+      gender,
       systemPrompt: isScammer
-        ? GAME_CONTEXT + " " + shuffle(SCAM_TYPES)[0] + " Keep messages short, natural and convincing. Never admit you are a scammer."
-        : GAME_CONTEXT + " " + shuffle(NORMAL_PERSONAS)[0] + " Keep messages casual and short like a real text.",
-      avatarId,
-      preview: "..." // placeholder until loaded
+        ? GAME_CONTEXT + " Your name is " + name + ". " + shuffle(scamPool)[0] + subtleInstruction + " Keep messages short and casual. Never admit you are a scammer."
+        : GAME_CONTEXT + " Your name is " + name + ". " + shuffle(isFemale ? NORMAL_PERSONAS_FEMALE : NORMAL_PERSONAS_MALE)[0] + " Keep messages casual and short like a real text.",
+      preview: "..."
     };
   });
 
-  chatHistories = {};
-  messageCount = {};
-  verdicts = {};
+  chatHistories   = {};
+  messageCount    = {};
+  verdicts        = {};
+  ftHistories     = {};
+  ftSystemPrompts = {};
+  ftMessageCounts = {};
+  ftContact       = null;
+
   contacts.forEach(c => {
-    chatHistories[c.name] = [];
-    messageCount[c.name] = 0;
+    chatHistories[c.name]   = [];
+    messageCount[c.name]    = 0;
+    ftHistories[c.name]     = [];
+    ftMessageCounts[c.name] = 0;
   });
 }
 
@@ -109,7 +222,7 @@ async function initializePreviews() {
     contact.preview = opener;
     chatHistories[contact.name].push({ role: "assistant", content: opener });
   }
-  renderContacts(); // re-render now that all previews are real
+  renderContacts();
 }
 
 function renderContacts() {
@@ -120,7 +233,7 @@ function renderContacts() {
     item.className = "chat-item";
     item.onclick = () => openChat(contact.name);
     item.innerHTML = `
-      <img src="https://i.pravatar.cc/80?img=${contact.avatarId}">
+      <img src="${getAvatarUrl(contact.name, contact.gender)}">
       <div class="chat-info">
         <span class="name">${contact.name}</span>
         <div class="preview">${contact.preview}</div>
@@ -209,14 +322,149 @@ async function login() {
 function startGame() {
   document.getElementById("login-screen").classList.add("hidden");
   document.getElementById("desktop").classList.remove("hidden");
-  
+
   score = 0; hearts = 3;
   generateContacts();
-  renderContacts(); // show "..." placeholders immediately
-  initializePreviews(); // load real previews in background
+  renderContacts();
+  initializePreviews();
   updateHeartsDisplay();
   updateScoreDisplay();
   document.getElementById('scam-widget').style.display = 'block';
+  scheduleFirstCall();
+  setTimeout(() => generateMailInbox(), 15000);
+}
+
+// --------------------
+// AI MAIL GENERATION
+// --------------------
+// Renders a safe email body from plain text fields — no AI HTML injected
+function buildEmailBody(email) {
+  const paragraphs = (email.bodyText || "")
+    .split('\n')
+    .filter(p => p.trim())
+    .map(p => `<p style="margin-top:10px;">${escapeHtml(p)}</p>`)
+    .join('');
+
+  const button = email.scam && email.buttonText
+    ? `<div style="margin:16px 0;">
+        <a href="#" onclick="return false;" style="background:#0a84ff;color:white;padding:10px 20px;border-radius:8px;text-decoration:none;font-size:13px;display:inline-block;">
+          ${escapeHtml(email.buttonText)} →
+        </a>
+       </div>`
+    : '';
+
+  // show external sender warning on roughly half of scam emails
+  const showExternalWarning = email.scam && Math.random() > 0.5;
+  const externalBanner = showExternalWarning
+    ? `<div style="background:#fff8e8;border:1px solid #f0c040;border-radius:8px;padding:8px 12px;margin-bottom:12px;display:flex;align-items:center;gap:8px;">
+        <span style="font-size:14px;">⚠️</span>
+        <span style="font-size:12px;color:#7a5c00;">This sender is from outside your organization.</span>
+       </div>`
+    : '';
+
+  return `
+    <div style="margin-bottom:16px;">
+      <b>From:</b> ${escapeHtml(email.from)} &lt;${escapeHtml(email.email)}&gt;
+    </div>
+    <div style="margin-bottom:16px;border-bottom:1px solid #eee;padding-bottom:16px;"></div>
+    ${externalBanner}
+    ${paragraphs}
+    ${button}
+  `;
+}
+
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+async function generateMailInbox() {
+  const prompt = `Generate exactly 12 emails for a scam detection game: 5 scam, 7 legit, in random order.
+Return ONLY a valid JSON array with no markdown, no backticks, no extra text.
+
+Each object must have ONLY these fields (all strings/booleans, NO nested objects, NO HTML):
+- from: sender display name
+- email: sender email address (scam emails use suspicious domains like .ru .biz .net)
+- subject: email subject line
+- preview: preview text under 70 characters
+- time: date string like "9/14/21"
+- unread: true or false
+- scam: true or false
+- bodyText: plain text body of the email, use \\n for line breaks, NO HTML tags at all
+- buttonText: for scam emails only, the text for the suspicious CTA button (e.g. "Verify Now" or "Claim Refund"). Empty string for legit emails.
+
+Vary scam types: fake Apple/Google security alert, fake IRS refund, fake bank fraud, fake prize win, fake delivery fee, fake Netflix payment, fake job offer, fake friend/family in urgent trouble needing money wired, fake romance interest gradually asking for gift cards, fake charity after a disaster asking for donations, fake landlord asking for wire transfer deposit, fake HR onboarding asking for SSN and bank info.
+Vary legit types: family catching up, friend making plans, work email, receipt/order confirmation, doctor appointment, school notification, real brand newsletter.`;
+
+  try {
+    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${GROQ_API_KEY}`
+      },
+      body: JSON.stringify({
+        model: "llama-3.1-8b-instant",
+        messages: [
+          { role: "system", content: "You are a JSON generator. Output ONLY a valid JSON array. No markdown, no explanation, no backticks." },
+          { role: "user", content: prompt }
+        ],
+        max_tokens: 3000,
+        temperature: 0.9
+      })
+    });
+
+    const data = await response.json();
+    const raw = data.choices?.[0]?.message?.content || "";
+
+    // extract the array
+    const match = raw.match(/\[[\s\S]*\]/);
+    if (!match) throw new Error("No JSON array found in response");
+
+    const emails = JSON.parse(match[0]);
+    if (!Array.isArray(emails) || emails.length === 0) throw new Error("Invalid array");
+
+    // validate each email has required fields, drop malformed ones
+   const clean = emails.filter(e =>
+  typeof e.from === 'string' &&
+  typeof e.email === 'string' &&
+  typeof e.subject === 'string' &&
+  e.scam !== undefined
+).map((e, i) => ({
+  id: i,
+  from: e.from || "Unknown",
+  email: e.email || "unknown@unknown.com",
+  subject: e.subject || "(no subject)",
+  preview: e.preview || "",
+  time: e.time || "9/14/21",
+  unread: e.unread === true || e.unread === 'true',
+  scam: e.scam === true || e.scam === 'true',
+  bodyText: e.bodyText || "",
+  buttonText: e.buttonText || "",
+  body: null
+}));
+
+    if (clean.length === 0) throw new Error("No valid emails after filtering");
+
+    // attach body builder so index.html rendering functions can use it
+    window.buildEmailBody = buildEmailBody;
+    window.mailData.inbox = clean;
+
+    // if mail is open, refresh it
+    const mailWin = document.getElementById("window-mail");
+    if (mailWin && !mailWin.classList.contains("hidden")) {
+      if (typeof window.showMailFolder === 'function') {
+  window.showMailFolder('inbox', document.querySelector('.mail-folder'));
+}
+    }
+
+    console.log("✅ AI mail inbox generated:", clean.length, "emails");
+  } catch (err) {
+    console.warn("⚠️ Mail generation failed, keeping static emails:", err.message);
+  }
 }
 
 // --------------------
@@ -225,20 +473,41 @@ function startGame() {
 function openWindow(id) {
   const win = document.getElementById(id);
   if (win) win.classList.remove("hidden");
+  updateDockIndicator(id, true);
   if (id === 'window-notes') setTimeout(() => { if (typeof initNotes === 'function') initNotes(); }, 50);
   if (id === 'window-appstore') setTimeout(() => { if (typeof showCategory === 'function') showCategory('discover', document.querySelector('.as-cat')); }, 50);
   if (id === 'window-files') setTimeout(() => { if (typeof showFilesSection === 'function') showFilesSection('myfiles', document.querySelector('.files-nav-item')); }, 50);
+  if (id === 'window-mail') setTimeout(() => { if (typeof initMail === 'function') initMail(); }, 50);
+  if (id === 'window-facetime') {
+    const callActive = document.getElementById("facetime-call").style.display === "flex";
+    if (callActive && ftContact) {
+      setWidgetContext('facetime', 'FaceTime with ' + ftContact.name, true);
+      if (verdicts[ftContact.name] !== undefined) showVerdictResult(ftContact.name);
+    } else {
+      document.getElementById("facetime-list").style.display = "block";
+      document.getElementById("facetime-call").style.display = "none";
+      renderFaceTimeContacts();
+    }
+  }
 }
 
 function closeWindow(id) {
   const win = document.getElementById(id);
   if (win) win.classList.add("hidden");
+  updateDockIndicator(id, false);
   if (id === "window-messages") {
+    currentContact = null;
     document.getElementById("chat-screen").classList.add("hidden");
     document.getElementById("chat-messages").innerHTML = "";
   }
   if (id === "window-photos") {
     viewerOpen = false;
+  }
+  const anyOpen = document.querySelectorAll(".window:not(.hidden)").length > 0;
+  if (!anyOpen) {
+    currentContact = null;
+    document.getElementById('widget-context').textContent = "Nothing open yet...";
+    document.getElementById('widget-verdict-section').style.display = 'none';
   }
 }
 
@@ -280,9 +549,6 @@ function confirmShutdown() {
   }, 2000);
 }
 
-// and at the bottom with your other window. exposures:
-
-
 // --------------------
 // PHOTOS APP
 // --------------------
@@ -299,9 +565,9 @@ function openPhotoGrid() {
     img.src = src;
     img.style.cssText = "width:100%;cursor:pointer;border-radius:4px;";
     img.addEventListener("click", (e) => {
-  e.stopPropagation();
-  openPhotoViewer(index);
-});
+      e.stopPropagation();
+      openPhotoViewer(index);
+    });
     grid.appendChild(img);
   });
 
@@ -321,16 +587,16 @@ function openPhotoViewer(index) {
     </div>
   `;
 
-document.getElementById("prevBtn").onclick = (e) => {
-  e.stopPropagation();
-  currentPhotoIndex = (currentPhotoIndex - 1 + PHOTOS.length) % PHOTOS.length;
-  document.getElementById("viewerImg").src = PHOTOS[currentPhotoIndex];
-};
-document.getElementById("nextBtn").onclick = (e) => {
-  e.stopPropagation();
-  currentPhotoIndex = (currentPhotoIndex + 1) % PHOTOS.length;
-  document.getElementById("viewerImg").src = PHOTOS[currentPhotoIndex];
-};
+  document.getElementById("prevBtn").onclick = (e) => {
+    e.stopPropagation();
+    currentPhotoIndex = (currentPhotoIndex - 1 + PHOTOS.length) % PHOTOS.length;
+    document.getElementById("viewerImg").src = PHOTOS[currentPhotoIndex];
+  };
+  document.getElementById("nextBtn").onclick = (e) => {
+    e.stopPropagation();
+    currentPhotoIndex = (currentPhotoIndex + 1) % PHOTOS.length;
+    document.getElementById("viewerImg").src = PHOTOS[currentPhotoIndex];
+  };
 }
 
 // --------------------
@@ -340,9 +606,11 @@ async function openChat(name) {
   currentContact = contacts.find(c => c.name === name);
   if (!currentContact) return;
 
+  ftContact = null;
+
   document.getElementById("chat-name").textContent = name;
-  document.getElementById("chat-name").textContent = name;
-setWidgetContext('messages', 'Chatting with ' + name, true);
+  setWidgetContext('messages', 'Chatting with ' + name, true);
+
   const msgContainer = document.getElementById("chat-messages");
   msgContainer.innerHTML = "";
   document.getElementById("chat-screen").classList.remove("hidden");
@@ -363,6 +631,7 @@ setWidgetContext('messages', 'Chatting with ' + name, true);
     appendBubble(botOpener, "received");
   }
 }
+
 function closeChat() {
   document.getElementById("chat-screen").classList.add("hidden");
 }
@@ -410,11 +679,22 @@ async function sendMessage() {
 // VERDICT
 // --------------------
 function submitVerdict(isScam) {
-  if (!currentContact) return;
-  const name = currentContact.name;
+  const ftCallVisible = document.getElementById("facetime-call")?.style.display === "flex";
+  const active = (ftCallVisible && ftContact) ? ftContact : currentContact;
+  
+  // handle mail verdict separately
+  if (!active && !currentEmail) return;
+  if (currentEmail && !active) {
+    submitMailVerdict(isScam);
+    return;
+  }
+  // ... rest unchanged
+  if (!active) return;
+
+  const name = active.name;
   if (verdicts[name] !== undefined) return;
 
-  const correct = isScam === currentContact.isScammer;
+  const correct = isScam === active.isScammer;
   verdicts[name] = isScam;
 
   if (correct) {
@@ -429,8 +709,14 @@ function submitVerdict(isScam) {
   updateScoreDisplay();
   showVerdictResult(name);
 
-  if (hearts <= 0) setTimeout(() => gameOver(), 1000);
+  if (ftCallVisible && ftContact) {
+    setTimeout(() => {
+      endFaceTimeCall();
+      ftContact = null;
+    }, 1200);
+  }
 
+  if (hearts <= 0) setTimeout(() => gameOver(), 1000);
   if (Object.keys(verdicts).length === TOTAL_CONTACTS) {
     setTimeout(() => gameComplete(), 1500);
   }
@@ -438,15 +724,14 @@ function submitVerdict(isScam) {
 
 function showVerdictResult(name) {
   const contact = contacts.find(c => c.name === name);
-  if (verdicts[name] !== undefined) {
-    const correct = verdicts[name] === contact.isScammer;
-    document.getElementById('widget-verdict-section').innerHTML = `
-      <div style="height:0.5px;background:rgba(255,255,255,0.1);margin-bottom:10px;"></div>
-      <div style="font-size:9px;color:rgba(255,255,255,0.45);margin-bottom:7px;">YOUR VERDICT</div>
-      <div style="text-align:center;font-size:13px;font-weight:600;color:${correct ? '#30d158' : '#ff3b30'};">
-        ${correct ? '✅ Correct!' : '❌ Wrong!'}
-      </div>`;
-  }
+  if (!contact || verdicts[name] === undefined) return;
+  const correct = verdicts[name] === contact.isScammer;
+  document.getElementById('widget-verdict-section').innerHTML = `
+    <div style="height:0.5px;background:rgba(255,255,255,0.1);margin-bottom:10px;"></div>
+    <div style="font-size:9px;color:rgba(255,255,255,0.45);margin-bottom:7px;">YOUR VERDICT</div>
+    <div style="text-align:center;font-size:13px;font-weight:600;color:${correct ? '#30d158' : '#ff3b30'};">
+      ${correct ? '✅ Correct!' : '❌ Wrong!'}
+    </div>`;
 }
 
 function showToast(msg) {
@@ -474,12 +759,23 @@ function gameComplete() {
 // CLICK OUTSIDE
 // --------------------
 document.addEventListener("click", (e) => {
-if (e.target.closest(".desktop-icons") || e.target.closest(".window") || e.target.closest("#scam-widget") || e.target.closest("#shutdown-screen") || e.target.closest("[style*='99998']")) return;  document.querySelectorAll(".window:not(.hidden)").forEach(win => {
+  if (
+    e.target.closest(".desktop-icons") ||
+    e.target.closest(".window") ||
+    e.target.closest("#scam-widget") ||
+    e.target.closest("#shutdown-screen") ||
+    e.target.closest("#incoming-call") ||
+    e.target.closest("[style*='99998']")
+  ) return;
+  document.querySelectorAll(".window:not(.hidden)").forEach(win => {
     win.classList.add("hidden");
     if (win.id === "window-messages") {
       document.getElementById("chat-screen").classList.add("hidden");
     }
   });
+  currentContact = null;
+  document.getElementById('widget-context').textContent = "Nothing open yet...";
+  document.getElementById('widget-verdict-section').style.display = 'none';
 });
 
 // --------------------
@@ -520,6 +816,10 @@ window.addEventListener("DOMContentLoaded", () => {
   const macbook = document.getElementById("macbook");
   if (macbook) macbook.addEventListener("click", openPhotoGrid);
 });
+
+// --------------------
+// SCAM WIDGET
+// --------------------
 function toggleScamWidget() {
   const body = document.getElementById('widget-body');
   const btn = document.getElementById('widget-toggle-btn');
@@ -548,26 +848,10 @@ function updateWidgetHUD(hearts, score) {
   document.getElementById('widget-score').textContent = score;
 }
 
-
-
 // --------------------
 // FACETIME STATE
 // --------------------
-let ftContact = null;
-let ftHistory = [];
-let ftMessageCount = 0;
-const FT_MAX_MESSAGES = 4; // calls are shorter than texts
-
-const FACETIME_SCAM_PROMPTS = [
-  "You are a scammer on a FaceTime call pretending to be from Apple Support. Claim their iCloud was hacked and you need their Apple ID to secure it.",
-  "You are a scammer pretending to be a grandchild in trouble, calling from a friend's phone. You need bail money urgently.",
-  "You are a scammer pretending to be from their bank's fraud department. There's suspicious activity and you need to verify their card number.",
-];
-
-const FACETIME_NORMAL_PROMPTS = [
-  "You are a friend calling to catch up over FaceTime. Be warm and casual.",
-  "You are a family member calling to check in. Keep it natural and warm.",
-];
+const FT_MAX_MESSAGES = 4;
 
 // --------------------
 // FACETIME FUNCTIONS
@@ -583,7 +867,7 @@ function renderFaceTimeContacts() {
     row.onmouseleave = () => row.style.background = "transparent";
     row.onclick = () => startFaceTimeCall(c);
     row.innerHTML = `
-      <img src="https://i.pravatar.cc/80?img=${c.avatarId}" style="width:40px;height:40px;border-radius:50%;">
+      <img src="${getAvatarUrl(c.name, c.gender)}" style="width:40px;height:40px;border-radius:50%;">
       <div style="flex:1;">
         <div style="font-size:13px;font-weight:600;color:white;">${c.name}</div>
         <div style="font-size:11px;color:rgba(255,255,255,0.4);">📹 FaceTime</div>
@@ -596,48 +880,78 @@ function renderFaceTimeContacts() {
 
 async function startFaceTimeCall(contact) {
   ftContact = contact;
-  ftHistory = [];
-  ftMessageCount = 0;
+  currentContact = null;
 
-  // swap list → call screen
   document.getElementById("facetime-list").style.display = "none";
   const callScreen = document.getElementById("facetime-call");
   callScreen.style.display = "flex";
 
-  document.getElementById("ft-avatar").src = `https://i.pravatar.cc/80?img=${contact.avatarId}`;
+  document.getElementById("ft-avatar").src = getAvatarUrl(contact.name, contact.gender);
   document.getElementById("ft-caller-name").textContent = contact.name;
-  document.getElementById("ft-call-status").textContent = "Connecting...";
-  document.getElementById("ft-transcript").style.display = "none";
-  document.getElementById("ft-transcript").innerHTML = "";
-  document.getElementById("ft-input").disabled = true;
+
+  const transcript = document.getElementById("ft-transcript");
+  transcript.innerHTML = "";
+  ftHistories[contact.name].forEach(msg => {
+    appendFTTranscript(msg.speaker, msg.text);
+  });
 
   setWidgetContext('facetime', 'FaceTime with ' + contact.name, true);
 
-  // pick system prompt
-  const isScammer = contact.isScammer;
-  const promptPool = isScammer ? FACETIME_SCAM_PROMPTS : FACETIME_NORMAL_PROMPTS;
-  ftContact.ftSystemPrompt = GAME_CONTEXT + " " + shuffle(promptPool)[0] + " Keep responses to 1-2 sentences max, like a real call. No disclaimers.";
+  if (verdicts[contact.name] !== undefined) {
+    document.getElementById("ft-call-status").textContent = "Call ended";
+    document.getElementById("ft-input").disabled = true;
+    transcript.style.display = ftHistories[contact.name].length > 0 ? "block" : "none";
+    showVerdictResult(contact.name);
+    return;
+  }
 
-  // short fake ring delay
+  if (ftHistories[contact.name].length > 0) {
+    const callOver = ftMessageCounts[contact.name] >= FT_MAX_MESSAGES;
+    document.getElementById("ft-call-status").textContent = callOver ? "Call ended — give your verdict" : "Connected";
+    document.getElementById("ft-input").disabled = callOver;
+    transcript.style.display = "block";
+    return;
+  }
+
+  document.getElementById("ft-call-status").textContent = "Connecting...";
+  transcript.style.display = "none";
+  document.getElementById("ft-input").disabled = true;
+
+  let promptPool;
+  let subtleInstruction = "";
+
+  if (contact.isScammer) {
+    const isSubtle = Math.random() > 0.5;
+    promptPool = isSubtle ? SCAM_TYPES_SUBTLE : SCAM_TYPES_OBVIOUS;
+    subtleInstruction = isSubtle
+      ? " Start warm and normal. Do NOT mention the scam until at least the 2nd message."
+      : " Get to the point quickly but stay convincing.";
+  } else {
+    promptPool = contact.gender === 'female' ? FACETIME_NORMAL_PROMPTS_FEMALE : FACETIME_NORMAL_PROMPTS_MALE;
+  }
+
+  ftSystemPrompts[contact.name] = GAME_CONTEXT + " Your name is " + contact.name + ". " + shuffle(promptPool)[0] + subtleInstruction + " Keep responses to 1-2 sentences max, like a real call. No disclaimers.";
+
   await new Promise(r => setTimeout(r, 1500));
   document.getElementById("ft-call-status").textContent = "Connected";
 
-  // opener
-  const opener = await sendToGroq([], ftContact.ftSystemPrompt + " You just connected. Say a natural opening line.");
-  ftHistory.push({ role: "assistant", content: opener });
+  const opener = await sendToGroq([], ftSystemPrompts[contact.name] + " You just connected. Say a natural opening line.");
+  ftHistories[contact.name].push({ speaker: contact.name, text: opener, role: "assistant" });
   appendFTTranscript(contact.name, opener);
 
-  // speak it
   document.getElementById("ft-visualiser").style.display = "flex";
-  await speakWithElevenLabs(opener, contact.isScammer);
+  await speakWithElevenLabs(opener, contact.gender === 'female');
   document.getElementById("ft-visualiser").style.display = "none";
 
   document.getElementById("ft-input").disabled = false;
-  document.getElementById("ft-transcript").style.display = "block";
+  transcript.style.display = "block";
 }
 
 async function sendFaceTimeMessage() {
-  if (!ftContact || ftMessageCount >= FT_MAX_MESSAGES) return;
+  if (!ftContact) return;
+  const name = ftContact.name;
+  if (ftMessageCounts[name] >= FT_MAX_MESSAGES) return;
+
   const input = document.getElementById("ft-input");
   const text = input.value.trim();
   if (!text) return;
@@ -645,21 +959,25 @@ async function sendFaceTimeMessage() {
   input.value = "";
   input.disabled = true;
   appendFTTranscript("You", text);
-  ftHistory.push({ role: "user", content: text });
-  ftMessageCount++;
+  ftHistories[name].push({ speaker: "You", text, role: "user" });
+  ftMessageCounts[name]++;
 
-  if (ftMessageCount >= FT_MAX_MESSAGES) {
+  if (ftMessageCounts[name] >= FT_MAX_MESSAGES) {
     document.getElementById("ft-call-status").textContent = "Call ended — give your verdict";
     input.disabled = true;
     return;
   }
 
-  const reply = await sendToGroq(ftHistory, ftContact.ftSystemPrompt);
-  ftHistory.push({ role: "assistant", content: reply });
-  appendFTTranscript(ftContact.name, reply);
+  const messages = ftHistories[name]
+    .filter(m => m.role === "user" || m.role === "assistant")
+    .map(m => ({ role: m.role, content: m.text }));
+
+  const reply = await sendToGroq(messages, ftSystemPrompts[name]);
+  ftHistories[name].push({ speaker: name, text: reply, role: "assistant" });
+  appendFTTranscript(name, reply);
 
   document.getElementById("ft-visualiser").style.display = "flex";
-  await speakWithElevenLabs(reply, ftContact.isScammer);
+  await speakWithElevenLabs(reply, ftContact.gender === 'female');
   document.getElementById("ft-visualiser").style.display = "none";
 
   input.disabled = false;
@@ -677,22 +995,141 @@ function appendFTTranscript(speaker, text) {
 }
 
 function endFaceTimeCall() {
+  stopSpeaking();
   document.getElementById("facetime-call").style.display = "none";
-  document.getElementById("facetime-list").style.display = "block";
-  ftContact = null;
-  ftHistory = [];
+  if (ftFromIncoming) {
+    ftFromIncoming = false;
+    closeWindow("window-facetime");
+  } else {
+    document.getElementById("facetime-list").style.display = "block";
+  }
 }
 
 function closeFaceTime() {
+  ftFromIncoming = false;
   endFaceTimeCall();
   closeWindow("window-facetime");
 }
 
-// expose
-window.renderFaceTimeContacts = renderFaceTimeContacts;
-window.sendFaceTimeMessage = sendFaceTimeMessage;
-window.endFaceTimeCall = endFaceTimeCall;
-window.closeFaceTime = closeFaceTime;
+// --------------------
+// INCOMING CALLS
+// --------------------
+function triggerIncomingCall() {
+  const desktopVisible = !document.getElementById("desktop").classList.contains("hidden");
+  const noActiveCall = document.getElementById("facetime-call").style.display !== "flex";
+  const noBannerShowing = document.getElementById("incoming-call").style.display === "none" || document.getElementById("incoming-call").style.display === "";
+  if (desktopVisible && noActiveCall && noBannerShowing && contacts.length > 0) {
+    const unjudged = contacts.filter(c => verdicts[c.name] === undefined);
+    if (unjudged.length > 0) {
+      incomingContact = shuffle(unjudged)[0];
+      showIncomingCall(incomingContact);
+    }
+  }
+}
+
+function scheduleFirstCall() {
+  const delay = (Math.random() * 10000) + 5000;
+  setTimeout(() => {
+    triggerIncomingCall();
+    scheduleIncomingCall();
+  }, delay);
+}
+
+function scheduleIncomingCall() {
+  const delay = (Math.random() * 25000) + 20000;
+  setTimeout(() => {
+    triggerIncomingCall();
+    scheduleIncomingCall();
+  }, delay);
+}
+
+function showIncomingCall(contact) {
+  document.getElementById("incoming-avatar").src = getAvatarUrl(contact.name, contact.gender);
+  document.getElementById("incoming-name").textContent = contact.name;
+  const banner = document.getElementById("incoming-call");
+  banner.style.display = "block";
+  playRingtone();
+
+  setTimeout(() => {
+    if (banner.style.display !== "none") declineIncomingCall();
+  }, 10000);
+}
+
+function acceptIncomingCall() {
+  stopRingtone();
+  document.getElementById("incoming-call").style.display = "none";
+  if (!incomingContact) return;
+  const contact = incomingContact;
+  incomingContact = null;
+  ftFromIncoming = true;
+  setTimeout(() => {
+    openWindow("window-facetime");
+    setTimeout(() => startFaceTimeCall(contact), 50);
+  }, 10);
+}
+
+function declineIncomingCall() {
+  stopRingtone();
+  document.getElementById("incoming-call").style.display = "none";
+  incomingContact = null;
+}
+
+// --------------------
+// DOCK INDICATORS
+// --------------------
+const WINDOW_TO_DOCK = {
+  'window-messages': 'dock-messages',
+  'window-notes':    'dock-notes',
+  'window-safari':   'dock-safari',
+  'window-photos':   'dock-photos',
+  'window-settings': 'dock-settings',
+  'window-files':    'dock-files',
+  'window-recycle':  'dock-recycle',
+  'window-appstore': 'dock-appstore',
+  'window-mail':     'dock-mail',
+  'window-facetime': 'dock-facetime',
+};
+
+function updateDockIndicator(windowId, isOpen) {
+  try {
+    const dockId = WINDOW_TO_DOCK[windowId];
+    if (!dockId) return;
+    const icon = document.getElementById(dockId);
+    if (!icon) return;
+    icon.classList.toggle('running', isOpen);
+  } catch(e) {}
+}
+
+function submitMailVerdict(isScam) {
+  if (!currentEmail) return;
+  const key = 'mail_' + currentEmail.email + '_' + currentEmail.subject;
+  if (verdicts[key] !== undefined) return;
+
+  const correct = isScam === currentEmail.scam;
+  verdicts[key] = isScam;
+
+  if (correct) {
+    score += 100;
+    showToast("✅ Correct! +100");
+  } else {
+    hearts = Math.max(0, hearts - 1);
+    showToast("❌ Wrong! -1 heart");
+  }
+
+  updateHeartsDisplay();
+  updateScoreDisplay();
+
+  // show result in widget
+  document.getElementById('widget-verdict-section').innerHTML = `
+    <div style="height:0.5px;background:rgba(255,255,255,0.1);margin-bottom:10px;"></div>
+    <div style="font-size:9px;color:rgba(255,255,255,0.45);margin-bottom:7px;">YOUR VERDICT</div>
+    <div style="text-align:center;font-size:13px;font-weight:600;color:${correct ? '#30d158' : '#ff3b30'};">
+      ${correct ? '✅ Correct!' : '❌ Wrong!'}
+    </div>`;
+
+  if (hearts <= 0) setTimeout(() => gameOver(), 1000);
+}
+
 // --------------------
 // EXPOSE TO HTML
 // --------------------
@@ -711,3 +1148,9 @@ window.submitVerdict = submitVerdict;
 window.toggleScamWidget = toggleScamWidget;
 window.cancelShutdown = cancelShutdown;
 window.confirmShutdown = confirmShutdown;
+window.renderFaceTimeContacts = renderFaceTimeContacts;
+window.sendFaceTimeMessage = sendFaceTimeMessage;
+window.endFaceTimeCall = endFaceTimeCall;
+window.closeFaceTime = closeFaceTime;
+window.acceptIncomingCall = acceptIncomingCall;
+window.declineIncomingCall = declineIncomingCall;
