@@ -19,7 +19,7 @@
       </div>
       <button onclick="toggleScamWidget()" id="widget-toggle-btn" style="background:rgba(255,255,255,0.1);border:none;color:rgba(255,255,255,0.6);width:20px;height:20px;border-radius:50%;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;padding:0;line-height:1;">−</button>
     </div>
-    <div id="widget-body">
+    <div id="widget-body" style="max-height:70vh;overflow-y:auto;">
       <div style="height:0.5px;background:rgba(255,255,255,0.1);margin:0 14px;"></div>
       <div style="display:flex;justify-content:space-between;padding:10px 14px 8px;">
         <div style="text-align:center;">
@@ -525,6 +525,8 @@
         tick(); setInterval(tick, 1000);
       }
       window.addEventListener("DOMContentLoaded", startClock);
+
+
     </script>
 
     <!-- WINDOW MANAGER -->
@@ -645,10 +647,13 @@
           { icon:"🎵", name:"Beats Studio", desc:"Stream millions of songs",          age:"12+", dev:"BeatsCo",  rating:5, size:"45MB",  lang:"EN", images:["https://picsum.photos/200/120?random=13","https://picsum.photos/200/120?random=14","https://picsum.photos/200/120?random=15"] },
           { icon:"📰", name:"Daily News",   desc:"Stay up to date with world news",  age:"9+",  dev:"NewsInc",  rating:3, size:"20MB",  lang:"EN", images:["https://picsum.photos/200/120?random=16","https://picsum.photos/200/120?random=17","https://picsum.photos/200/120?random=18"] },
         ],
-        arcade: [
-          { icon:"🏎️", name:"Speed Racer",  desc:"Race through neon city streets",    age:"9+", dev:"NeonGames", rating:4, size:"120MB", lang:"EN", images:["https://picsum.photos/200/120?random=20","https://picsum.photos/200/120?random=21","https://picsum.photos/200/120?random=22"] },
-          { icon:"🧩", name:"Puzzle World", desc:"Thousands of mind-bending puzzles", age:"4+", dev:"PuzzleLab", rating:5, size:"55MB",  lang:"EN", images:["https://picsum.photos/200/120?random=23","https://picsum.photos/200/120?random=24","https://picsum.photos/200/120?random=25"] },
-        ],
+     arcade: [
+  { icon:"🏎️", name:"Speed Racer", desc:"Race through neon city streets", age:"9+", dev:"NeonGames", rating:4, size:"120MB", lang:"EN", images:["https://picsum.photos/200/120?random=20","https://picsum.photos/200/120?random=21","https://picsum.photos/200/120?random=22"] },
+  { icon:"🧩", name:"Puzzle World", desc:"Thousands of mind-bending puzzles", age:"4+", dev:"PuzzleLab", rating:5, size:"55MB", lang:"EN", images:["https://picsum.photos/200/120?random=23","https://picsum.photos/200/120?random=24","https://picsum.photos/200/120?random=25"] },
+  { icon:"🎰", name:"Vegas Cash Slots", desc:"WIN REAL MONEY — Instant payouts guaranteed!", age:"17+", dev:"LuckyWin Ltd", rating:5, size:"8MB", lang:"EN", scam:true, images:["https://picsum.photos/200/120?random=60","https://picsum.photos/200/120?random=61","https://picsum.photos/200/120?random=62"] },
+  { icon:"♠️", name:"Millionaire Poker Pro", desc:"Beat the house — 100% win rate system revealed", age:"17+", dev:"ProWin Systems", rating:5, size:"6MB", lang:"EN", scam:true, images:["https://picsum.photos/200/120?random=63","https://picsum.photos/200/120?random=64","https://picsum.photos/200/120?random=65"] },
+  { icon:"🃏", name:"Free Crypto Casino", desc:"No deposit needed. Earn $500 in your first hour!", age:"17+", dev:"CryptoWin Inc", rating:5, size:"4MB", lang:"EN", scam:true, images:["https://picsum.photos/200/120?random=66","https://picsum.photos/200/120?random=67","https://picsum.photos/200/120?random=68"] },
+],
         create: [
           { icon:"🎨", name:"Sketch Board", desc:"Draw, paint and design anything", age:"4+",  dev:"ArtStudio", rating:4, size:"95MB",  lang:"EN", images:["https://picsum.photos/200/120?random=30","https://picsum.photos/200/120?random=31","https://picsum.photos/200/120?random=32"] },
           { icon:"🎬", name:"Video Cut",    desc:"Edit videos like a pro",          age:"12+", dev:"CutPro",    rating:5, size:"210MB", lang:"EN", images:["https://picsum.photos/200/120?random=33","https://picsum.photos/200/120?random=34","https://picsum.photos/200/120?random=35"] },
@@ -667,7 +672,7 @@
         const apps = appStoreData[cat] || [];
         const content = document.getElementById("appstore-content");
         content.innerHTML = `<div style="padding:16px 20px 8px;font-size:22px;font-weight:700;color:#000;border-bottom:1px solid #f0f0f0;">${cat.charAt(0).toUpperCase()+cat.slice(1)}</div>`
-          + apps.map((app,i) => `<div onclick="showAppDetail(event,'${cat}',${i})" style="display:flex;align-items:center;padding:12px 20px;cursor:pointer;border-bottom:1px solid #f0f0f0;gap:12px;"><div style="font-size:32px;width:52px;height:52px;background:#f2f2f7;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${app.icon}</div><div style="flex:1;min-width:0;"><div style="font-weight:700;font-size:13px;color:#000;">${app.name}</div><div style="font-size:11px;color:#8e8e93;margin-top:2px;">${app.desc}</div></div><button onclick="event.stopPropagation()" style="background:#e8f0fe;color:#0a84ff;border:none;border-radius:14px;padding:5px 14px;font-size:12px;font-weight:600;cursor:pointer;width:auto;flex-shrink:0;">GET</button></div>`).join("");
+          + apps.map((app,i) => `<div onclick="showAppDetail(event,'${cat}',${i})" style="display:flex;align-items:center;padding:12px 20px;cursor:pointer;border-bottom:1px solid #f0f0f0;gap:12px;"><div style="font-size:32px;width:52px;height:52px;background:#f2f2f7;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${app.icon}</div><div style="flex:1;min-width:0;"><div style="font-weight:700;font-size:13px;color:#000;">${app.name}</div><div style="font-size:11px;color:#8e8e93;margin-top:2px;">${app.desc}</div></div><button onclick="event.stopPropagation();${app.scam ? 'downloadScamApp()' : ''}" style="background:#e8f0fe;color:#0a84ff;border:none;border-radius:14px;padding:5px 14px;font-size:12px;font-weight:600;cursor:pointer;width:auto;flex-shrink:0;">GET</button></div>`).join("");
       }
 
       function showAppDetail(e, cat, index) {
@@ -675,7 +680,7 @@
         const app = appStoreData[cat][index];
         const content = document.getElementById("appstore-content");
         const stars = "★".repeat(app.rating)+"☆".repeat(5-app.rating);
-        content.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 20px;border-bottom:1px solid #f0f0f0;"><button onclick="event.stopPropagation();goBack('${cat}')" style="background:none;border:none;color:#0a84ff;font-size:13px;cursor:pointer;width:auto;padding:0;">‹ Back</button><button style="background:none;border:none;color:#0a84ff;font-size:13px;cursor:pointer;width:auto;padding:0;">⬆ Share</button></div><div style="display:flex;gap:14px;padding:20px;"><div style="font-size:48px;width:80px;height:80px;background:#f2f2f7;border-radius:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${app.icon}</div><div style="flex:1;"><div style="font-weight:700;font-size:18px;color:#000;">${app.name}</div><div style="font-size:12px;color:#8e8e93;margin-top:4px;">${app.desc}</div><button style="margin-top:10px;background:#0a84ff;color:white;border:none;border-radius:16px;padding:7px 28px;font-size:13px;font-weight:600;cursor:pointer;width:auto;">GET</button></div></div>`
+        content.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 20px;border-bottom:1px solid #f0f0f0;"><button onclick="event.stopPropagation();goBack('${cat}')" style="background:none;border:none;color:#0a84ff;font-size:13px;cursor:pointer;width:auto;padding:0;">‹ Back</button><button style="background:none;border:none;color:#0a84ff;font-size:13px;cursor:pointer;width:auto;padding:0;">⬆ Share</button></div><div style="display:flex;gap:14px;padding:20px;"><div style="font-size:48px;width:80px;height:80px;background:#f2f2f7;border-radius:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${app.icon}</div><div style="flex:1;"><div style="font-weight:700;font-size:18px;color:#000;">${app.name}</div><div style="font-size:12px;color:#8e8e93;margin-top:4px;">${app.desc}</div><button onclick="${app.scam ? 'downloadScamApp()' : ''}" style="margin-top:10px;background:${app.scam ? '#ff3b30' : '#0a84ff'};color:white;border:none;border-radius:16px;padding:7px 28px;font-size:13px;font-weight:600;cursor:pointer;width:auto;">${app.scam ? 'FREE DOWNLOAD' : 'GET'}</button></div></div>`
           + (app.images.length ? `<div style="padding:0 20px 20px;"><div style="font-size:13px;font-weight:600;color:#000;margin-bottom:10px;">Preview</div><div style="display:flex;gap:10px;overflow-x:auto;">${app.images.map(src=>`<img src="${src}" style="height:130px;border-radius:12px;flex-shrink:0;" />`).join("")}</div></div>` : "");
       }
 
@@ -813,7 +818,13 @@
           { icon:"📦", name:"setup_v2.zip", meta:"", color:"#f0f0f0", date:"Mon" },
         ]},
       };
-
+function downloadScamApp() {
+  if (typeof clickedScamButton === 'function') {
+    clickedScamButton();
+  }
+  showToast("⚠️ Fake app downloaded malware! -1 heart");
+}
+window.downloadScamApp = downloadScamApp;
       function showFilesSection(section, el) {
         document.querySelectorAll(".files-nav-item").forEach(t => { t.style.background="transparent"; t.style.color="#1c1c1e"; });
         if (el) { el.style.background="#0a84ff"; el.style.color="white"; }
@@ -909,18 +920,23 @@
   const item = document.getElementById("mail-item-" + i);
   if (item) item.style.background = "#e8f0fe";
 
-  if (email.unread) {
-    email.unread = false;
-    // remove the blue dot
-    const dot = item?.querySelector("div[style*='border-radius:50%']");
+if (email.unread) {
+  email.unread = false;
+  if (item) {
+    // remove blue dot
+    const dot = item.querySelector("div[style*='border-radius:50%']");
     if (dot) dot.remove();
-    // update unread count
-    const countEl = document.getElementById("mail-unread-count");
-    if (countEl) {
-      const remaining = emails.filter(e => e.unread).length;
-      countEl.textContent = `${emails.length} messages, ${remaining} unread`;
-    }
+    // unbold everything inside this mail item
+    item.querySelectorAll("div").forEach(el => {
+      el.style.fontWeight = "400";
+    });
   }
+  const countEl = document.getElementById("mail-unread-count");
+  if (countEl) {
+    const remaining = emails.filter(e => e.unread).length;
+    countEl.textContent = `${emails.length} messages, ${remaining} unread`;
+  }
+}
 
   const bodyHtml = email.bodyText
     ? (typeof buildEmailBody === 'function' ? buildEmailBody(email) : email.bodyText)

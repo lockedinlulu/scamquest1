@@ -29,7 +29,11 @@ const SETTINGS_PANELS = {
       ${_lbl('Account')}
       ${_card(_row(_rl('Username'),_rv('johndoe'))+_row(_rl('Email'),_rv(email))+_row(_rl('Password'),_rv('••••••••'),true))}
       ${_lbl('Game Stats')}
-      ${_card(_row(_rl('Games played'),_rv('—'))+_row(_rl('Best score'),`<div style="font-size:13px;color:#c8930a;">— ⭐</div>`)+_row(_rl('Scams caught'),`<div style="font-size:13px;color:#1a8a3a;">—</div>`,true))}
+${_card(
+  _row(_rl('Games played'), _rv(window._gamesPlayed || '—')) +
+  _row(_rl('Best score'), `<div style="font-size:13px;color:#c8930a;">${window._bestScore !== undefined ? '⭐ ' + window._bestScore : '—'}</div>`) +
+  _row(_rl('Scams caught'), `<div style="font-size:13px;color:#1a8a3a;">${window._scamsCaught !== undefined ? window._scamsCaught : '—'}</div>`, true)
+)}
       <div style="margin-top:16px;"><button onclick="settingsSignOut()" style="width:100%;padding:10px;border-radius:8px;background:rgba(255,59,48,0.08);border:0.5px solid rgba(255,59,48,0.3);color:#ff3b30;font-size:13px;cursor:pointer;">Sign Out</button></div>`;
   },
   wifi() {

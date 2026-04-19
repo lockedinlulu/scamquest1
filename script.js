@@ -30,6 +30,10 @@ async function searchTavily(query) {
   return data.results || [];
 }
 
+window._gamesPlayed = 0;
+window._bestScore = 0;
+window._scamsCaught = 0;
+
 // --------------------
 // HELPERS
 // --------------------
@@ -108,24 +112,24 @@ const SCAM_TYPES_SUBTLE = [
   "You are pretending to be a family member calling to catch up warmly. After genuine-feeling conversation, mention there's a family emergency and you need $120 sent quickly via gift card because your bank account is frozen.",
   "You are pretending to be an old neighbor reminiscing. After friendly chat, mention your dog needs emergency vet care and you're $90 short — ask if they can help and you'll pay back next week.",
   "You are pretending to be an old friend who just got out of a tough situation. After warm catch-up, mention you're stranded in another city and need $200 wired to get home, promise to pay back immediately.",
-"You are pretending to be a romantic interest who matched with them online. Be charming and warm for a few messages, then mention you're in a financial emergency and need gift cards to cover a medical bill.",
+"You are pretending to be a romantic interest who matched with them online. After 1 warm message, you MUST clearly ask them to send you gift cards or money for a medical emergency or travel to meet them. The money ask must be obvious and specific.",
 "You are pretending to be a family member calling from an unfamiliar number. After establishing warmth, say you're in legal trouble and need bail money sent urgently via wire transfer before morning."
 ];
 
 const NORMAL_PERSONAS_FEMALE = [
-  "You are a friendly female college friend catching up casually.",
-  "You are a mom checking in on her child and chatting warmly.",
-  "You are a female coworker asking about weekend plans.",
-  "You are a female neighbor being friendly and chatty.",
-  "You are a sister checking in casually."
+  "You are a friendly female college friend catching up casually. Never ask for money, gift cards, or personal information. Keep it completely normal.",
+  "You are a mom checking in on her child and chatting warmly. Never ask for money or anything suspicious. Just normal family chat.",
+  "You are a female coworker asking about weekend plans. Keep it light and normal, never suspicious.",
+  "You are a female neighbor being friendly and chatty. Normal small talk only.",
+  "You are a sister checking in casually. Normal sibling conversation only."
 ];
 
 const NORMAL_PERSONAS_MALE = [
-  "You are a friendly male college friend catching up casually.",
-  "You are a dad checking in on his child and chatting warmly.",
-  "You are a male coworker asking about weekend plans.",
-  "You are a male neighbor being friendly and chatty.",
-  "You are a brother checking in casually."
+  "You are a friendly male college friend catching up casually. Never ask for money, gift cards, or personal information. Keep it completely normal.",
+  "You are a dad checking in on his child and chatting warmly. Never ask for money or anything suspicious. Just normal family chat.",
+  "You are a male coworker asking about weekend plans. Keep it light and normal, never suspicious.",
+  "You are a male neighbor being friendly and chatty. Normal small talk only.",
+  "You are a brother checking in casually. Normal sibling conversation only."
 ];
 
 const FACETIME_NORMAL_PROMPTS_FEMALE = [
@@ -148,6 +152,7 @@ let msgVerdicts = {};   // verdicts from iMessage
 let ftVerdicts = {};    // verdicts from FaceTime
 let score = 0;
 let hearts = 3;
+let openedContacts = new Set();
 
 // --------------------
 // FACETIME PERSISTENT STATE (per contact)
@@ -206,19 +211,22 @@ function generateContacts() {
     const isSubtle = Math.random() > 0.5;
     const scamPool = isSubtle ? SCAM_TYPES_SUBTLE : SCAM_TYPES_OBVIOUS;
     const subtleInstruction = isSubtle
-      ? " Start warm and normal. Do NOT mention money until the 2rd message. The ask must appear before the final message. Never break character."
-      : " Get to the point quickly but stay convincing. Never break character.";
+  ? " Start warm and normal. You MUST mention the money or scam ask by the 3rd message. The ask must be clearly stated before MAX_MESSAGES is reached. Never break character."
+  : " Get to the point quickly but stay convincing. Never break character.";
 
-    return {
-      name,
-      isScammer,
-      gender,
-      systemPrompt: isScammer
-        ? GAME_CONTEXT + " Your name is " + name + ". " + shuffle(scamPool)[0] + subtleInstruction + " Keep messages short and casual. Never admit you are a scammer."
-        : GAME_CONTEXT + " Your name is " + name + ". " + shuffle(isFemale ? NORMAL_PERSONAS_FEMALE : NORMAL_PERSONAS_MALE)[0] + " Keep messages casual and short like a real text.",
-      preview: "..."
-    };
-  });
+   return {
+  name,
+  isScammer,
+  gender,
+  unknown: isScammer && Math.random() > 0.4,
+  systemPrompt: isScammer
+    ? GAME_CONTEXT + " Your name is " + name + ". " + shuffle(scamPool)[0] + subtleInstruction + " Keep messages short and casual. Never admit you are a scammer."
+    : GAME_CONTEXT + " Your name is " + name + ". " + shuffle(isFemale ? NORMAL_PERSONAS_FEMALE : NORMAL_PERSONAS_MALE)[0] + " Keep messages casual and short like a real text. You are NOT a scammer. Never mention money, payments, gift cards, emergencies, or anything suspicious.",
+  preview: "..."
+};
+  }); 
+  
+  openedContacts = new Set();  // ← closes the .map()
 
   chatHistories   = {};
   messageCount    = {};
@@ -236,14 +244,19 @@ ftVerdicts  = {};
     ftMessageCounts[c.name] = 0;
   });
 }
-
 async function initializePreviews() {
   for (const contact of contacts) {
-    const opener = await sendToGroq([], contact.systemPrompt + " Start the conversation with a short, natural opening message. No disclaimers or warnings.");
-    contact.preview = opener;
-    chatHistories[contact.name].push({ role: "assistant", content: opener });
+    try {
+      const opener = await sendToGroq([], contact.systemPrompt + " Start the conversation with a short, natural opening message. No disclaimers or warnings.");
+      contact.preview = opener;
+      chatHistories[contact.name].push({ role: "assistant", content: opener });
+    } catch(e) {
+      contact.preview = "Hey, how's it going?";
+      chatHistories[contact.name].push({ role: "assistant", content: contact.preview });
+    }
+    renderContacts();
+    await new Promise(r => setTimeout(r, 5000));// 2s between each call
   }
-  renderContacts();
 }
 
 function renderContacts() {
@@ -253,14 +266,15 @@ function renderContacts() {
     const item = document.createElement("div");
     item.className = "chat-item";
     item.onclick = () => openChat(contact.name);
-    item.innerHTML = `
-      <img src="${getAvatarUrl(contact.name, contact.gender)}">
-      <div class="chat-info">
-        <span class="name">${contact.name}</span>
-        <div class="preview">${contact.preview}</div>
-        <div class="unread-dot"></div>
-      </div>
-    `;
+  item.innerHTML = `
+  <img src="${contact.unknown ? 'https://api.dicebear.com/7.x/bottts/svg?seed=unknown' : getAvatarUrl(contact.name, contact.gender)}">
+  <div class="chat-info">
+    <span class="name" style="color:${contact.unknown ? '#8e8e93' : ''}">${contact.unknown ? 'Unknown Number' : contact.name}</span>
+    <div class="preview" style="font-size:11px;color:#8e8e93;">${contact.unknown ? '+1 (' + Math.floor(Math.random()*900+100) + ') ' + Math.floor(Math.random()*900+100) + '-' + Math.floor(Math.random()*9000+1000) : ''}</div>
+    <div class="preview">${contact.preview}</div>
+    <div class="unread-dot" style="${openedContacts.has(contact.name) ? 'display:none;' : ''}"></div>
+  </div>
+`;
     chatList.appendChild(item);
   });
 }
@@ -355,7 +369,7 @@ function startGame() {
   updateScoreDisplay();
   document.getElementById('scam-widget').style.display = 'block';
   scheduleFirstCall();
-  setTimeout(() => generateMailInbox(), 15000);
+setTimeout(() => generateMailInbox(), 30000);
 }
 
 // --------------------
@@ -432,8 +446,13 @@ Vary legit types: family catching up, friend making plans, work email, receipt/o
       })
     });
 
-    const data = await response.json();
-    const raw = data.choices?.[0]?.message?.content || "";
+    if (response.status === 429) {
+  console.warn("⚠️ Rate limited, retrying in 15s...");
+  setTimeout(() => generateMailInbox(), 15000);
+  return;
+}
+const data = await response.json();
+const raw = data.choices?.[0]?.message?.content || "";
 
     // extract the array
     
@@ -629,12 +648,22 @@ async function openChat(name) {
 
   ftContact = null;
 
-  document.getElementById("chat-name").textContent = name;
+  const chatContact = contacts.find(c => c.name === name);
+document.getElementById("chat-name").textContent = chatContact?.unknown ? 'Unknown Number' : name;
   setWidgetContext('messages', 'Chatting with ' + name, true);
 
   const msgContainer = document.getElementById("chat-messages");
   msgContainer.innerHTML = "";
   document.getElementById("chat-screen").classList.remove("hidden");
+  // remove unread dot from this contact in the list
+openedContacts.add(name);
+document.querySelectorAll(".chat-item").forEach(item => {
+  if (item.querySelector(".name")?.textContent === name || 
+      item.querySelector(".name")?.textContent === 'Unknown Number') {
+    const dot = item.querySelector(".unread-dot");
+    if (dot) dot.style.display = "none";
+  }
+});
 
   document.getElementById("chat-input-field").disabled = false;
   document.querySelector(".chat-input button").disabled = false;
@@ -926,14 +955,14 @@ function renderFaceTimeContacts() {
     row.onmouseenter = () => row.style.background = "rgba(255,255,255,0.06)";
     row.onmouseleave = () => row.style.background = "transparent";
     row.onclick = () => startFaceTimeCall(c);
-    row.innerHTML = `
-      <img src="${getAvatarUrl(c.name, c.gender)}" style="width:40px;height:40px;border-radius:50%;">
-      <div style="flex:1;">
-        <div style="font-size:13px;font-weight:600;color:white;">${c.name}</div>
-        <div style="font-size:11px;color:rgba(255,255,255,0.4);">📹 FaceTime</div>
-      </div>
-      <div style="font-size:11px;color:#0a84ff;">Call</div>
-    `;
+  row.innerHTML = `
+  <img src="${c.unknown ? 'https://api.dicebear.com/7.x/bottts/svg?seed=unknown' : getAvatarUrl(c.name, c.gender)}" style="width:40px;height:40px;border-radius:50%;">
+  <div style="flex:1;">
+    <div style="font-size:13px;font-weight:600;color:${c.unknown ? 'rgba(255,255,255,0.4)' : 'white'};">${c.unknown ? 'Unknown Number' : c.name}</div>
+    <div style="font-size:11px;color:rgba(255,255,255,0.4);">📹 FaceTime</div>
+  </div>
+  <div style="font-size:11px;color:#0a84ff;">Call</div>
+`;
     container.appendChild(row);
   });
 }
@@ -948,7 +977,7 @@ async function startFaceTimeCall(contact) {
   callScreen.style.display = "flex";
 
   document.getElementById("ft-avatar").src = getAvatarUrl(contact.name, contact.gender);
-  document.getElementById("ft-caller-name").textContent = contact.name;
+  document.getElementById("ft-caller-name").textContent = contact.unknown ? 'Unknown Number' : contact.name;
 
   const transcript = document.getElementById("ft-transcript");
   transcript.innerHTML = "";
@@ -985,8 +1014,8 @@ async function startFaceTimeCall(contact) {
     const isSubtle = Math.random() > 0.5;
     promptPool = isSubtle ? SCAM_TYPES_SUBTLE : SCAM_TYPES_OBVIOUS;
     subtleInstruction = isSubtle
-      ? " Start warm and normal. Do NOT mention the scam until at least the 2nd message."
-      : " Get to the point quickly but stay convincing.";
+  ? " Start with ONE warm message maximum, then you MUST clearly and specifically ask for money, gift cards, or personal information. The scam ask must be unmistakable — use a specific dollar amount or explicitly ask for gift card codes. Never break character."
+  : " Get to the point quickly but stay convincing.";
   } else {
     promptPool = contact.gender === 'female' ? FACETIME_NORMAL_PROMPTS_FEMALE : FACETIME_NORMAL_PROMPTS_MALE;
   }
@@ -1001,11 +1030,15 @@ async function startFaceTimeCall(contact) {
   appendFTTranscript(contact.name, opener);
 
   document.getElementById("ft-visualiser").style.display = "flex";
+try {
   await speakWithElevenLabs(opener, contact.gender === 'female');
-  document.getElementById("ft-visualiser").style.display = "none";
+} catch(e) {
+  console.warn("TTS failed:", e);
+}
+document.getElementById("ft-visualiser").style.display = "none";
 
-  document.getElementById("ft-input").disabled = false;
-  transcript.style.display = "block";
+document.getElementById("ft-input").disabled = false;
+transcript.style.display = "block";
 }
 
 async function sendFaceTimeMessage() {
@@ -1038,11 +1071,15 @@ async function sendFaceTimeMessage() {
   appendFTTranscript(name, reply);
 
   document.getElementById("ft-visualiser").style.display = "flex";
+try {
   await speakWithElevenLabs(reply, ftContact.gender === 'female');
-  document.getElementById("ft-visualiser").style.display = "none";
+} catch(e) {
+  console.warn("TTS failed:", e);
+}
+document.getElementById("ft-visualiser").style.display = "none";
 
-  input.disabled = false;
-  input.focus();
+input.disabled = false;
+input.focus();
 }
 
 function appendFTTranscript(speaker, text) {
@@ -1294,7 +1331,9 @@ async function gameOver() {
       timestamp: Date.now()
     }, { merge: true }); // merge:true keeps their best score if you want
   }
-
+window._gamesPlayed = (window._gamesPlayed || 0) + 1;
+window._bestScore = Math.max(window._bestScore || 0, score);
+window._scamsCaught = (window._scamsCaught || 0) + correct;
   setTimeout(() => triggerGameOver(score, correct, wrong, 3 - hearts), 1000);
 }
 
@@ -1367,8 +1406,7 @@ async function loadNotesLeaderboard() {
   const el = document.getElementById('notes-leaderboard-content');
   if (!el) return;
   try {
-    const { getDocs, query, orderBy, limit, collection } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
-    const { db } = await import("./firebase.js");
+
     const snapshot = await getDocs(query(collection(db, 'leaderboard'), orderBy('score', 'desc'), limit(10)));
     if (snapshot.empty) { el.innerHTML = '<div style="color:#aaa;">No scores yet.</div>'; return; }
     const medals = ['🥇','🥈','🥉'];
@@ -1397,8 +1435,7 @@ async function toggleDeathLeaderboard() {
   if (isHidden && !deathLeaderboardLoaded) {
     deathLeaderboardLoaded = true;
     try {
-      const { getDocs, query, orderBy, limit, collection } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
-      const { db } = await import("./firebase.js");
+     
       const snapshot = await getDocs(query(collection(db, 'leaderboard'), orderBy('score', 'desc'), limit(10)));
       const medals = ['🥇','🥈','🥉'];
       const rows = document.getElementById('death-leaderboard-rows');
