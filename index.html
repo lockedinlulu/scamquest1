@@ -200,6 +200,10 @@
         <div onclick="safariNavigate('amazon.com')" style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;width:64px;"><div style="width:52px;height:52px;border-radius:12px;background:#ff9900;display:flex;align-items:center;justify-content:center;font-size:22px;color:white;box-shadow:0 1px 4px rgba(0,0,0,0.12);">a</div><span style="font-size:11px;color:#1c1c1e;">Amazon</span></div>
         <div onclick="safariNavigate('reddit.com')" style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;width:64px;"><div style="width:52px;height:52px;border-radius:12px;background:#ff4500;display:flex;align-items:center;justify-content:center;font-size:24px;color:white;box-shadow:0 1px 4px rgba(0,0,0,0.12);">r</div><span style="font-size:11px;color:#1c1c1e;">Reddit</span></div>
         <div onclick="safariNavigate('wikipedia.org')" style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;width:64px;"><div style="width:52px;height:52px;border-radius:12px;background:white;display:flex;align-items:center;justify-content:center;font-size:24px;color:#1c1c1e;box-shadow:0 1px 4px rgba(0,0,0,0.12);">W</div><span style="font-size:11px;color:#1c1c1e;">Wikipedia</span></div>
+        <div onclick="safariNavigate('freeflix.tv')" style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;width:64px;">
+  <div style="width:52px;height:52px;border-radius:12px;background:#1a1a2e;display:flex;align-items:center;justify-content:center;font-size:22px;color:white;box-shadow:0 1px 4px rgba(0,0,0,0.12);">🎬</div>
+  <span style="font-size:11px;color:#1c1c1e;">FreeFlix</span>
+</div>
       </div>
       <div style="font-size:13px;font-weight:600;color:#1c1c1e;text-align:left;max-width:500px;margin:0 auto 12px;">Privacy Report</div>
       <div style="max-width:500px;margin:0 auto;background:white;border-radius:12px;padding:14px 18px;text-align:left;box-shadow:0 1px 4px rgba(0,0,0,0.08);">
@@ -1017,6 +1021,50 @@ const safariHistory = [
         'wikipedia.org': () => `<div style="min-height:100%;background:white;padding:24px;"><div style="max-width:600px;margin:0 auto;"><div style="font-size:28px;font-weight:300;text-align:center;margin-bottom:16px;">Wikipedia</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">${['Phishing','Internet fraud','Cybersecurity','Social engineering','Email spoofing','Identity theft'].map(t=>`<div style="border:1px solid #eee;border-radius:6px;padding:10px 14px;cursor:pointer;"><div style="font-size:13px;color:#0645ad;font-weight:500;">${t}</div></div>`).join('')}</div></div></div>`,
         'amazon.com': () => `<div style="min-height:100%;background:#eaeded;"><div style="background:#131921;padding:10px 16px;display:flex;align-items:center;gap:12px;"><span style="color:#ff9900;font-size:18px;font-weight:700;">amazon</span><input placeholder="Search Amazon" style="flex:1;padding:7px 12px;border-radius:4px;border:none;outline:none;font-size:13px;" /></div><div style="padding:16px;display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">${['Sony WH-1000XM4','Apple AirPods Pro','Kindle Paperwhite'].map((name,i)=>`<div style="background:white;border-radius:8px;padding:12px;cursor:pointer;"><img src="https://picsum.photos/160/160?random=${i+80}" style="width:100%;border-radius:6px;" /><div style="font-size:12px;font-weight:500;margin-top:8px;">${name}</div></div>`).join('')}</div></div>`,
         'instagram.com': () => `<div style="min-height:100%;background:#fafafa;"><div style="background:white;border-bottom:1px solid #eee;padding:10px 16px;text-align:center;font-size:20px;font-weight:600;font-family:Georgia,serif;">Instagram</div><div style="max-width:480px;margin:20px auto;">${[{user:'sara.k',img:70},{user:'jake.wilson',img:71}].map(p=>`<div style="background:white;border:1px solid #eee;border-radius:8px;overflow:hidden;margin-bottom:12px;"><div style="display:flex;align-items:center;gap:10px;padding:10px;"><img src="https://i.pravatar.cc/32?img=${p.img}" style="width:32px;height:32px;border-radius:50%;" /><span style="font-size:13px;font-weight:600;">${p.user}</span></div><img src="https://picsum.photos/480/480?random=${p.img}" style="width:100%;display:block;" /></div>`).join('')}</div></div>`,
+      
+      'freeflix.tv': () => `
+  <div style="min-height:100%;background:#0d0d0d;color:white;font-family:Arial,sans-serif;position:relative;overflow:hidden;">
+    <div style="background:#1a1a2e;padding:10px 16px;display:flex;align-items:center;gap:12px;border-bottom:2px solid #e50914;">
+      <span style="color:#e50914;font-size:18px;font-weight:900;">FREE</span><span style="color:white;font-size:18px;font-weight:900;">FLIX</span>
+      <span style="background:#e50914;color:white;font-size:9px;padding:2px 6px;border-radius:4px;font-weight:700;">HD FREE</span>
+      <input placeholder="Search movies..." style="flex:1;padding:6px 12px;border-radius:4px;border:none;background:#2a2a2a;color:white;font-size:13px;outline:none;" />
+    </div>
+
+    <!-- POPUP AD 1 -->
+    <div id="popup-ad-1" style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:99999;background:white;border-radius:8px;padding:20px;width:320px;box-shadow:0 20px 60px rgba(0,0,0,0.8);text-align:center;">
+      <div style="font-size:11px;color:#aaa;text-align:right;margin-bottom:8px;cursor:pointer;" onclick="document.getElementById('popup-ad-1').style.display='none'">✕ close</div>
+      <div style="font-size:28px;margin-bottom:8px;">🎉</div>
+      <div style="font-size:16px;font-weight:700;color:#e50914;margin-bottom:8px;">YOU ARE TODAY'S WINNER!</div>
+      <div style="font-size:13px;color:#333;margin-bottom:16px;">Your IP has been selected to receive a FREE iPhone 15! Click below to claim before it expires.</div>
+      <button onclick="clickedScamButton()" style="background:#e50914;color:white;border:none;border-radius:6px;padding:12px 24px;font-size:14px;font-weight:700;cursor:pointer;width:100%;">CLAIM NOW →</button>
+    </div>
+
+    <!-- BANNER AD -->
+    <div style="background:linear-gradient(90deg,#ff6b00,#e50914);padding:8px;text-align:center;font-size:12px;font-weight:700;cursor:pointer;" onclick="clickedScamButton()">
+      ⚠️ YOUR DEVICE HAS 3 VIRUSES! CLICK HERE TO REMOVE IMMEDIATELY ⚠️
+    </div>
+
+    <div style="padding:16px;">
+      <div style="font-size:14px;font-weight:700;color:#e50914;margin-bottom:12px;">🔥 TRENDING NOW — ALL FREE HD</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;">
+        ${['Avengers','Spider-Man','The Batman','Top Gun','Black Panther','Doctor Strange','Thor','Interstellar'].map((title,i)=>`
+          <div onclick="document.getElementById('popup-ad-2').style.display='flex'" style="cursor:pointer;border-radius:8px;overflow:hidden;background:#1a1a1a;position:relative;">
+            <img src="https://picsum.photos/120/160?random=${i+90}" style="width:100%;display:block;" />
+            <div style="position:absolute;top:4px;right:4px;background:#e50914;color:white;font-size:8px;padding:2px 5px;border-radius:3px;font-weight:700;">HD</div>
+            <div style="padding:6px;font-size:10px;color:white;">${title}</div>
+          </div>`).join('')}
+      </div>
+    </div>
+
+    <!-- POPUP AD 2 (triggered on movie click) -->
+    <div id="popup-ad-2" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:99999;background:white;border-radius:8px;padding:20px;width:300px;box-shadow:0 20px 60px rgba(0,0,0,0.8);text-align:center;flex-direction:column;align-items:center;">
+      <div style="font-size:11px;color:#aaa;text-align:right;width:100%;cursor:pointer;margin-bottom:8px;" onclick="document.getElementById('popup-ad-2').style.display='none'">✕</div>
+      <div style="font-size:14px;font-weight:700;color:#333;margin-bottom:8px;">Install Free Player to Watch</div>
+      <div style="font-size:12px;color:#666;margin-bottom:16px;">You need to install our secure media player to stream this content for free.</div>
+      <button onclick="clickedScamButton()" style="background:#00aa44;color:white;border:none;border-radius:6px;padding:10px 24px;font-size:13px;font-weight:700;cursor:pointer;width:100%;margin-bottom:8px;">⬇ Install Player (Free)</button>
+      <div style="font-size:10px;color:#aaa;">By installing you agree to our terms</div>
+    </div>
+  </div>`,
       };
 
      function safariRenderPage(site, query) {

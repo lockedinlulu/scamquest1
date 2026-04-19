@@ -1350,11 +1350,22 @@ function resetGame() {
   initializePreviews();
   updateHeartsDisplay();
   updateScoreDisplay();
-  updateWidgetHUD(3, 0); // 👈 add this
+  updateWidgetHUD(3, 0);
   document.getElementById("gameover-screen").style.display = "none";
   document.getElementById("go-phase-3").style.display = "none";
   document.getElementById("go-phase-1").style.display = "none";
   document.getElementById("go-phase-2").style.display = "none";
+
+  // reset Safari
+  if (typeof safariGoHome === 'function') safariGoHome();
+  const tab = document.getElementById('safari-tab-active');
+  if (tab) tab.style.display = 'none';
+  const page = document.getElementById('safari-page');
+  if (page) { page.style.display = 'none'; page.innerHTML = ''; }
+  const newtab = document.getElementById('safari-newtab');
+  if (newtab) newtab.style.display = 'block';
+  const urlBar = document.getElementById('safari-url');
+  if (urlBar) urlBar.value = '';
 }
 
 window.resetGame = resetGame;
