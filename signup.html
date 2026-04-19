@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Create Account</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+<div class="top-bar">
+  <div class="left">
+    <span class="apple-logo">🍎</span>
+    <div class="power-controls">
+      <button onclick="document.body.style.visibility='hidden'">Sleep</button>
+      <button onclick="location.reload()">Restart</button>
+      <button onclick="document.body.innerHTML='Shutting down...'">Shutdown</button>
+    </div>
+  </div>
+  <div class="right">
+    <span>📶</span>
+    <span>🔋 87%</span>
+    <span id="time">--:--</span>
+  </div>
+</div>
+
+<div class="screen active">
+  <div class="login-window">
+    <div class="title-bar">
+      <div class="mac-buttons">
+        <span class="dot red" onclick="window.location.href='index.html'"></span>
+        <span class="dot yellow"></span>
+        <span class="dot green"></span>
+      </div>
+      <span class="title">Create Account</span>
+    </div>
+
+    <div class="content">
+      <div class="profile">
+        <img src="https://i.pravatar.cc/100" />
+      </div>
+
+      <h2>Create Account</h2>
+
+      <input id="usernameDisplay" placeholder="Username" />
+      <input id="username" placeholder="Email" />
+      <input id="password" type="password" placeholder="Password" />
+
+      <button id="signupBtn">Create Account</button>
+
+      <p id="message"></p>
+
+      <div class="login-footer">
+        <span>Already have an account?</span>
+        <a href="index.html">Login</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="module" src="script.js"></script>
+
+<script>
+  function startClock() {
+    const el = document.getElementById("time");
+    if (!el) return;
+    function tick() {
+      el.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+    tick();
+    setInterval(tick, 1000);
+  }
+  window.addEventListener("DOMContentLoaded", startClock);
+</script>
+
+</body>
+</html>

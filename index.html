@@ -1,0 +1,443 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ScamQuest OS</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+    <!-- ================= LOGIN SCREEN ================= -->
+    <div id="login-screen" class="screen active">
+      <div class="top-bar">
+        <div class="left">
+          <span class="apple-logo">🍎</span>
+          <div class="power-controls">
+            <button onclick="document.body.style.visibility = 'hidden'">
+              Sleep
+            </button>
+            <button onclick="location.reload()">Restart</button>
+            <button onclick="shutdown()">Shutdown</button>
+          </div>
+        </div>
+        <div class="right">
+          <span>📶</span>
+          <span>🔋 87%</span>
+          <span id="clock">--:--</span>
+        </div>
+      </div>
+
+      <div class="login-window">
+        <div class="title-bar">
+          <div class="mac-buttons">
+            <span class="dot red"></span>
+            <span class="dot yellow"></span>
+            <span class="dot green"></span>
+          </div>
+          <span class="title">Login</span>
+        </div>
+
+        <div class="content">
+          <div class="profile">
+            <img src="https://i.pravatar.cc/100" />
+          </div>
+
+          <h2>Welcome</h2>
+
+          <input id="username" placeholder="Email or Username" />
+          <input id="password" type="password" placeholder="Password" />
+
+          <button id="loginBtn">Login</button>
+          <button id="guestBtn" class="guest-btn">Continue as Guest</button>
+
+          <p id="message"></p>
+
+          <div class="login-footer">
+            <span>New here?</span>
+            <a href="signup.html">Create account</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= DESKTOP ================= -->
+    <div id="desktop" class="screen hidden">
+      <div class="top-bar">
+        <div class="left">
+          <span class="apple-logo">🍎</span>
+          <div class="power-controls">
+            <button onclick="sleep()">Sleep</button>
+            <button onclick="restart()">Restart</button>
+            <button onclick="shutdown()">Shutdown</button>
+          </div>
+        </div>
+        <div class="right">
+          <span>📶</span>
+          <span>🔋 87%</span>
+          <span id="clock-desktop">--:--</span>
+        </div>
+      </div>
+
+      <!-- DESKTOP ICONS -->
+      <div class="desktop-icons">
+        <div class="icon" onclick="openWindow('window-messages')">
+          💬<span>Messages</span>
+        </div>
+        <div class="icon" onclick="openWindow('window-notes')">
+          📝<span>Notes</span>
+        </div>
+        <div class="icon" onclick="openWindow('window-safari')">
+          🧭<span>Safari</span>
+        </div>
+        <div class="icon" onclick="openWindow('window-photos')">
+          🖼️<span>Photos</span>
+        </div>
+        <div class="icon" onclick="openWindow('window-settings')">
+          ⚙️<span>Settings</span>
+        </div>
+        <div class="icon" onclick="openWindow('window-files')">
+          📁<span>Files</span>
+        </div>
+        <div class="icon" onclick="openWindow('window-recycle')">
+          🗑️<span>Recycle</span>
+        </div>
+        <div class="icon" onclick="openWindow('window-appstore')">
+          🛍️<span>App Store</span>
+        </div>
+      </div>
+
+      <!-- ================= GENERIC WINDOWS ================= -->
+
+      <div id="window-notes" class="window hidden">
+        <div class="window-bar">
+          <div class="mac-buttons">
+            <span class="dot red" onclick="closeWindow('window-notes')"></span
+            ><span class="dot yellow"></span><span class="dot green"></span>
+          </div>
+          <span>Notes</span>
+        </div>
+        <div class="window-content">Your notes app.</div>
+      </div>
+
+      <div id="window-safari" class="window hidden">
+        <div class="window-bar">
+          <div class="mac-buttons">
+            <span class="dot red" onclick="closeWindow('window-safari')"></span
+            ><span class="dot yellow"></span><span class="dot green"></span>
+          </div>
+          <span>Safari</span>
+        </div>
+        <div class="window-content">Web browsing simulation.</div>
+      </div>
+
+      <div id="window-settings" class="window hidden">
+        <div class="window-bar">
+          <div class="mac-buttons">
+            <span
+              class="dot red"
+              onclick="closeWindow('window-settings')"
+            ></span
+            ><span class="dot yellow"></span><span class="dot green"></span>
+          </div>
+          <span>Settings</span>
+        </div>
+        <div class="window-content">System settings.</div>
+      </div>
+
+      <div id="window-files" class="window hidden">
+        <div class="window-bar">
+          <div class="mac-buttons">
+            <span class="dot red" onclick="closeWindow('window-files')"></span
+            ><span class="dot yellow"></span><span class="dot green"></span>
+          </div>
+          <span>Files</span>
+        </div>
+        <div class="window-content">File system browser.</div>
+      </div>
+
+      <div id="window-recycle" class="window hidden">
+        <div class="window-bar">
+          <div class="mac-buttons">
+            <span class="dot red" onclick="closeWindow('window-recycle')"></span
+            ><span class="dot yellow"></span><span class="dot green"></span>
+          </div>
+          <span>Recycle Bin</span>
+        </div>
+        <div class="window-content">Deleted files appear here.</div>
+      </div>
+
+      <div id="window-appstore" class="window hidden">
+        <div class="window-bar">
+          <div class="mac-buttons">
+            <span
+              class="dot red"
+              onclick="closeWindow('window-appstore')"
+            ></span
+            ><span class="dot yellow"></span><span class="dot green"></span>
+          </div>
+          <span>App Store</span>
+        </div>
+        <div class="window-content">Download apps here.</div>
+      </div>
+
+      <!-- ================= PHOTOS ================= -->
+      <div
+        id="window-photos"
+        class="window hidden"
+        style="width: 600px; height: 420px"
+      >
+        <div class="window-bar">
+          <div class="mac-buttons">
+            <span class="dot red" onclick="closeWindow('window-photos')"></span>
+            <span
+              class="dot yellow"
+              onclick="minimizeWindow('window-photos')"
+            ></span>
+            <span
+              class="dot green"
+              onclick="toggleFullscreen('window-photos')"
+            ></span>
+          </div>
+          <span>Photos</span>
+        </div>
+        <div
+          class="window-content"
+          style="padding: 0; display: flex; height: calc(100% - 36px)"
+        >
+          <div class="photos-sidebar">
+            <div class="section-title">DEVICES</div>
+            <div class="device" id="macbook">💻 MacBook</div>
+            <div class="section-title">ALBUMS</div>
+            <div class="device">📷 Recents</div>
+            <div class="device">⭐ Favorites</div>
+          </div>
+          <div class="photos-main" id="photosMain">
+            <p class="hint">Select a device to view photos</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= MESSAGES ================= -->
+      <div id="window-messages" class="window hidden">
+        <div class="window-bar">
+          <div class="mac-buttons">
+            <span
+              class="dot red"
+              onclick="closeWindow('window-messages')"
+            ></span>
+            <span
+              class="dot yellow"
+              onclick="minimizeWindow('window-messages')"
+            ></span>
+            <span
+              class="dot green"
+              onclick="maximizeWindow('window-messages')"
+            ></span>
+          </div>
+          <span>Messages</span>
+          <div class="game-hud">
+            <span id="hearts-display">❤️❤️❤️</span>
+            <span id="score-display">⭐ 0</span>
+          </div>
+        </div>
+
+        <!-- CHAT SCREEN -->
+        <div id="chat-screen" class="chat-screen hidden">
+          <div class="chat-header">
+            <span class="back-btn" onclick="closeChat()">←</span>
+            <span id="chat-name">Name</span>
+            <div id="verdict-badge" class="verdict-badge hidden">
+              <button class="verdict-btn scam" onclick="submitVerdict(true)">
+                ❌ Scam
+              </button>
+              <button class="verdict-btn legit" onclick="submitVerdict(false)">
+                ✅ Legit
+              </button>
+            </div>
+          </div>
+          <div id="chat-messages" class="chat-messages"></div>
+          <div class="chat-input">
+            <input id="chat-input-field" placeholder="iMessage" />
+            <button onclick="sendMessage()">Send</button>
+          </div>
+        </div>
+
+        <div class="window-content messages-app">
+          <div class="messages-body">
+            <div class="search-wrapper">
+              <input class="messages-search" placeholder="Search messages..." />
+            </div>
+            <div class="pinned-section"></div>
+            <div class="chat-list"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOAST -->
+    <div id="toast" class="toast hidden"></div>
+
+    <script type="module" src="script.js"></script>
+
+    <script>
+      function startClock() {
+        const ids = ["clock", "clock-desktop"];
+        function tick() {
+          const t = new Date().toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          });
+          ids.forEach((id) => {
+            const el = document.getElementById(id);
+            if (el) el.textContent = t;
+          });
+        }
+        tick();
+        setInterval(tick, 1000);
+      }
+      window.addEventListener("DOMContentLoaded", startClock);
+    </script><script>
+// ================= WINDOW MANAGER =================
+
+// Open window (allows multiple at once)
+function openWindow(id) {
+  const win = document.getElementById(id);
+  if (!win) return;
+  win.classList.remove("hidden");
+  focusWindow(win);
+}
+
+// Close window
+function closeWindow(id) {
+  const win = document.getElementById(id);
+  if (!win) return;
+  win.classList.add("hidden");
+}
+
+// Minimize window
+function minimizeWindow(id) {
+  const win = document.getElementById(id);
+  if (!win) return;
+  win.style.transition = "transform 0.3s ease, opacity 0.3s ease";
+  win.style.transform = "scale(0.1) translateY(500px)";
+  win.style.opacity = "0";
+  setTimeout(() => {
+    win.classList.add("hidden");
+    win.style.transform = "";
+    win.style.opacity = "";
+    win.style.transition = "";
+  }, 300);
+}
+
+// Maximize window
+function maximizeWindow(id) {
+  const win = document.getElementById(id);
+  if (!win) return;
+  win.classList.toggle("fullscreen");
+}
+
+// Bring window to front
+let highestZ = 100;
+function focusWindow(win) {
+  highestZ++;
+  win.style.zIndex = highestZ;
+}
+
+// ================= DRAGGING =================
+function makeDraggable(win) {
+  const bar = win.querySelector(".window-bar");
+  if (!bar) return;
+
+  let isDragging = false;
+  let startX, startY, startLeft, startTop;
+
+  bar.addEventListener("mousedown", (e) => {
+    // Don't drag if clicking buttons or dots
+    if (e.target.closest("button") || e.target.closest(".dot") || e.target.closest(".game-hud")) return;
+
+    isDragging = true;
+    focusWindow(win);
+
+    const rect = win.getBoundingClientRect();
+    startX = e.clientX;
+    startY = e.clientY;
+    startLeft = rect.left;
+    startTop = rect.top;
+
+    // Switch from transform-based centering to fixed position
+    win.style.left = startLeft + "px";
+    win.style.top = startTop + "px";
+    win.style.transform = "none";
+
+    e.preventDefault();
+  });
+
+  document.addEventListener("mousemove", (e) => {
+    if (!isDragging) return;
+    const dx = e.clientX - startX;
+    const dy = e.clientY - startY;
+    win.style.left = (startLeft + dx) + "px";
+    win.style.top = (startTop + dy) + "px";
+  });
+
+  document.addEventListener("mouseup", () => {
+    isDragging = false;
+  });
+
+  // Focus on click anywhere on window
+  win.addEventListener("mousedown", () => focusWindow(win));
+}
+
+// ================= RESIZING =================
+function makeResizable(win) {
+  const handle = document.createElement("div");
+  handle.style.cssText = `
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 16px;
+    height: 16px;
+    cursor: se-resize;
+    z-index: 999;
+    background: transparent;
+  `;
+  win.style.position = "absolute";
+  win.appendChild(handle);
+
+  let isResizing = false;
+  let startX, startY, startW, startH;
+
+  handle.addEventListener("mousedown", (e) => {
+    isResizing = true;
+    startX = e.clientX;
+    startY = e.clientY;
+    startW = win.offsetWidth;
+    startH = win.offsetHeight;
+    e.preventDefault();
+    e.stopPropagation();
+  });
+
+  document.addEventListener("mousemove", (e) => {
+    if (!isResizing) return;
+    const newW = Math.max(300, startW + (e.clientX - startX));
+    const newH = Math.max(200, startH + (e.clientY - startY));
+    win.style.width = newW + "px";
+    win.style.height = newH + "px";
+  });
+
+  document.addEventListener("mouseup", () => {
+    isResizing = false;
+  });
+}
+
+// ================= INIT ALL WINDOWS =================
+window.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll(".window").forEach(win => {
+    makeDraggable(win);
+    makeResizable(win);
+  });
+});
+</script>
+  </body>
+</html>
