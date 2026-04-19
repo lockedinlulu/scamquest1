@@ -634,3 +634,17 @@
 .icon.running .dock-dot {
   display: block;
 }
+
+
+
+* {
+  cursor: default;
+}
+
+input, textarea, [contenteditable="true"] {
+  cursor: text;
+}
+
+button, .icon, .chat-item, .dot, [onclick] {
+  cursor: pointer;
+}

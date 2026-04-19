@@ -164,8 +164,7 @@
           <div style="flex:1;position:relative;">
             <input id="safari-url" placeholder="Search or enter website name"
 style=" width: 100%; padding: 5px 12px; border-radius: 8px; border: none; background: rgba(0, 0, 0, 0.12); color: #1c1c1e; font-size: 13px; outline: none; box-sizing: border-box; text-align: center; "              onfocus="this.style.textAlign='left';this.select();showSafariSuggestions(this.value||'__all__');"
-              onblur="setTimeout(()=>hideSafariSuggestions(),150);if(!this.value)this.style.textAlign='center';"
-              oninput="showSafariSuggestions(this.value)"
+onblur="setTimeout(()=>hideSafariSuggestions(),500);if(!this.value)this.style.textAlign='center';"              oninput="showSafariSuggestions(this.value)"
               onkeydown="if(event.key==='Enter'){safariNavigate(this.value);}" />
           </div>
           <button onclick="safariNavigate(document.getElementById('safari-url').value)" style="background:none;border:none;color:#0a84ff;font-size:12px;cursor:pointer;padding:2px 4px;">Go</button>
@@ -523,7 +522,7 @@ style=" width: 100%; padding: 5px 12px; border-radius: 8px; border: none; backgr
         if (!bar) return;
         let isDragging = false, startX, startY, startLeft, startTop;
         bar.addEventListener("mousedown", (e) => {
-          if (e.target.closest("button") || e.target.closest(".dot")) return;
+    if (e.target.closest("button") || e.target.closest(".dot") || e.target.tagName === "INPUT") return;
           isDragging = true; focusWindow(win);
           const rect = win.getBoundingClientRect();
           startX = e.clientX; startY = e.clientY; startLeft = rect.left; startTop = rect.top;
@@ -775,51 +774,51 @@ style=" width: 100%; padding: 5px 12px; border-radius: 8px; border: none; backgr
       }
 
       /* ===== MAIL ===== */
-      const mailData = {
-        inbox: [
-          { id:0, from:"Apple Security", email:"no-reply@apple-secure.ru", subject:"Your Apple ID has been locked", preview:"We detected unusual activity on your account. Verify immediately to restore access...", time:"9/14/21", unread:true, scam:true, body:`<p>Dear Customer,</p><p style="margin-top:12px;">We have detected <b>unusual sign-in activity</b> on your Apple ID. Your account has been temporarily locked.</p><div style="margin:16px 0;"><a href="#" style="background:#0a84ff;color:white;padding:10px 20px;border-radius:8px;text-decoration:none;font-size:13px;">Verify Apple ID Now →</a></div>` },
-          { id:1, from:"Mom", email:"mom@gmail.com", subject:"Thanksgiving plans?", preview:"Hey honey, are you coming home for Thanksgiving this year?", time:"9/14/21", unread:true, scam:false, body:`<p>Hey honey,</p><p style="margin-top:12px;">Are you coming home for Thanksgiving this year? Dad and I were thinking of doing a big dinner with the whole family.</p><p style="margin-top:12px;">Love you,<br/>Mom</p>` },
-          { id:2, from:"Netflix", email:"info@netflix-billing-update.com", subject:"Payment failed — update now", preview:"Your Netflix payment failed. Update your billing info to avoid losing access...", time:"9/13/21", unread:true, scam:true, body:`<p>Hi there,</p><p style="margin-top:12px;">We were unable to process your payment. Your account will be suspended in <b>24 hours</b>.</p><div style="margin:16px 0;"><a href="#" style="background:#e50914;color:white;padding:10px 20px;border-radius:8px;text-decoration:none;font-size:13px;">Update Billing Info →</a></div>` },
-          { id:3, from:"Prof. Johnson", email:"johnson@university.edu", subject:"Assignment feedback", preview:"Hi, I've reviewed your latest submission. Overall good work but there are a few areas...", time:"9/13/21", unread:false, scam:false, body:`<p>Hi,</p><p style="margin-top:12px;">I've reviewed your latest submission. Overall good work but there are a few areas that need improvement. Overall grade: <b>B+</b>.</p>` },
-          { id:4, from:"IRS Tax Division", email:"irs-refund@gov-tax-services.net", subject:"You have a pending tax refund", preview:"Congratulations! You are eligible for a $2,840 tax refund. Claim within 48 hours...", time:"9/12/21", unread:true, scam:true, body:`<p>Dear Taxpayer,</p><p style="margin-top:12px;">You are eligible for a <b>$2,840.00 tax refund</b>. Claim within 48 hours.</p><div style="margin:16px 0;"><a href="#" style="background:#1a3a6b;color:white;padding:10px 20px;border-radius:8px;text-decoration:none;font-size:13px;">Claim Refund Now →</a></div>` },
-          { id:5, from:"Jake", email:"jake.wilson@gmail.com", subject:"Weekend hiking trip?", preview:"Yo! A few of us are planning a hike this Saturday at Bear Mountain. You in?", time:"9/12/21", unread:false, scam:false, body:`<p>Yo! A few of us are planning a hike this Saturday at Bear Mountain. You in? Leaving at 8am.</p>` },
-          { id:6, from:"Amazon", email:"orders@amazon.com", subject:"Your order has shipped!", preview:"Your order #112-4421887 has been shipped and is on its way...", time:"9/11/21", unread:false, scam:false, body:`<p>Your order <b>#112-4421887</b> has shipped! Expected delivery: September 14, 2021.</p>` },
-          { id:7, from:"Crypto Millionaire", email:"invest@crypto-profits-now.biz", subject:"Make $5,000 this week — guaranteed", preview:"I made $47,000 last month with this ONE simple crypto trick...", time:"9/11/21", unread:true, scam:true, body:`<p>Send 0.1 BTC and I'll send you back 1 BTC guaranteed!</p><div style="margin:16px 0;"><a href="#" style="background:#f7931a;color:white;padding:10px 20px;border-radius:8px;text-decoration:none;font-size:13px;">Get Rich Now →</a></div>` },
-          { id:8, from:"Dr. Sarah Chen", email:"s.chen@hospital.org", subject:"Your appointment reminder", preview:"Reminder for your appointment on September 15th at 2:30 PM...", time:"9/10/21", unread:false, scam:false, body:`<p><b>Date:</b> September 15, 2021 at 2:30 PM<br/><b>Location:</b> 245 Medical Plaza, Suite 300</p>` },
-          { id:9, from:"LinkedIn", email:"jobs@linkedin.com", subject:"3 new jobs match your profile", preview:"Software Engineer at Google, Frontend Developer at Spotify...", time:"9/10/21", unread:false, scam:false, body:`<ul style="padding-left:20px;"><li><b>Software Engineer</b> — Google, NYC ($120k-$160k)</li><li><b>Frontend Developer</b> — Spotify, Remote ($95k-$130k)</li><li><b>UX Designer</b> — Apple, Cupertino ($110k-$145k)</li></ul>` },
-          { id:10, from:"FedEx Delivery", email:"tracking@fedex-delivery-notice.com", subject:"Package held — action required", preview:"A small customs fee of $2.99 is required to release your package...", time:"9/9/21", unread:true, scam:true, body:`<p>Pay a customs fee of <b>$2.99</b> to release your package within 24 hours.</p><div style="margin:16px 0;"><a href="#" style="background:#4d148c;color:white;padding:10px 20px;border-radius:8px;text-decoration:none;font-size:13px;">Pay $2.99 Now →</a></div>` },
-          { id:11, from:"Sara", email:"sara.k@gmail.com", subject:"Photos from last weekend!", preview:"I finally uploaded all the photos from the trip. So many good ones!", time:"9/9/21", unread:false, scam:false, body:`<p>I finally uploaded all the photos from the trip! Check them out on Google Photos.</p>` },
-        ],
-        icloud: [
-          { id:0, from:"iCloud", email:"no-reply@icloud.com", subject:"Your iCloud storage is almost full", preview:"You have used 4.8 GB of your 5 GB iCloud storage plan...", time:"9/14/21", unread:true, scam:false, body:`<p>You have used <b>4.8 GB</b> of your 5 GB iCloud storage. Upgrade to keep your data backed up.</p>` },
-          { id:1, from:"Apple", email:"no-reply@apple.com", subject:"Your receipt from Apple", preview:"Thanks for your purchase. Apple TV+ monthly subscription — $4.99...", time:"9/12/21", unread:false, scam:false, body:`<p>Apple TV+ monthly subscription — <b>$4.99</b><br/>Billed to Visa ending 9032.</p>` },
-          { id:2, from:"iCloud Scam", email:"support@icloud-verify-now.ru", subject:"Your iCloud account will be deleted", preview:"Act now or lose all your photos and data permanently...", time:"9/10/21", unread:true, scam:true, body:`<p>Your iCloud account will be permanently deleted in 24 hours.</p><div style="margin:16px 0;"><a href="#" style="background:#0a84ff;color:white;padding:10px 20px;border-radius:8px;text-decoration:none;font-size:13px;">Verify Now →</a></div>` },
-        ],
-        work: [
-          { id:0, from:"Boss — David", email:"david.h@techcorp.com", subject:"Q3 report due Friday", preview:"Hey, just a reminder that the Q3 report needs to be submitted by EOD Friday...", time:"9/14/21", unread:true, scam:false, body:`<p>Hey, just a reminder the Q3 report needs to be submitted by EOD Friday.</p><p style="margin-top:12px;">— David</p>` },
-          { id:1, from:"HR Team", email:"hr@techcorp.com", subject:"Updated vacation policy", preview:"Please review the updated company vacation policy effective October 1st...", time:"9/13/21", unread:false, scam:false, body:`<p>Please review the updated vacation policy effective October 1st.</p>` },
-          { id:2, from:"Slack", email:"no-reply@slack.com", subject:"You have 13 unread messages", preview:"Here's what you missed in #general, #dev-team, and 2 direct messages...", time:"9/13/21", unread:true, scam:false, body:`<p>You have unread messages in <b>#general</b>, <b>#dev-team</b>, and 2 direct messages.</p>` },
-          { id:3, from:"Fake IT Dept", email:"it-support@techcorp-helpdesk.net", subject:"Your password expires today", preview:"Reset your corporate password immediately to avoid being locked out...", time:"9/11/21", unread:true, scam:true, body:`<p>Your corporate password expires today.</p><div style="margin:16px 0;"><a href="#" style="background:#333;color:white;padding:10px 20px;border-radius:8px;text-decoration:none;font-size:13px;">Reset Password →</a></div>` },
-        ],
-        vip: [
-          { id:0, from:"Mom", email:"mom@gmail.com", subject:"Thanksgiving plans?", preview:"Hey honey, are you coming home for Thanksgiving this year?", time:"9/14/21", unread:true, scam:false, body:`<p>Hey honey, are you coming home for Thanksgiving? Love you!<br/>Mom</p>` },
-          { id:1, from:"Boss — David", email:"david.h@techcorp.com", subject:"Great work on the presentation!", preview:"Just wanted to say the client loved your slides today...", time:"9/11/21", unread:false, scam:false, body:`<p>Just wanted to say the client loved your slides today. Really great work!</p>` },
-        ],
-        flagged: [
-          { id:0, from:"IRS Tax Division", email:"irs-refund@gov-tax-services.net", subject:"You have a pending tax refund", preview:"You are eligible for a $2,840 tax refund...", time:"9/12/21", unread:true, scam:true, body:`<p>You are eligible for a <b>$2,840.00 tax refund</b>.</p><div style="margin:16px 0;"><a href="#" style="background:#1a3a6b;color:white;padding:10px 20px;border-radius:8px;text-decoration:none;font-size:13px;">Claim Refund Now →</a></div>` },
-        ],
-        drafts: [
-          { id:0, from:"Me", email:"johndoe@gmail.com", subject:"Re: Thanksgiving plans", preview:"Hey Mom! Yes I'm planning to come home...", time:"9/14/21", unread:false, scam:false, body:`<p>Hey Mom! Yes I'm planning to come home. I was thinking I could arrive Wednesday evening.</p>` },
-        ],
-        sent: [
-          { id:0, from:"Me", email:"johndoe@gmail.com", subject:"Re: Weekend hiking trip?", preview:"Sounds great Jake! I'm in.", time:"9/12/21", unread:false, scam:false, body:`<p>Sounds great Jake! I'm in. Should I bring anything besides water and snacks?</p>` },
-          { id:1, from:"Me", email:"johndoe@gmail.com", subject:"Re: Photos from last weekend!", preview:"Oh my gosh these are so good!!", time:"9/9/21", unread:false, scam:false, body:`<p>Oh my gosh these are so good!! Can you send me the one by the lake separately?</p>` },
-        ],
-        pets: [
-          { id:0, from:"Vet Clinic", email:"appointments@pawsvet.com", subject:"Reminder: Max's checkup tomorrow", preview:"Max has a checkup appointment tomorrow at 11am...", time:"9/14/21", unread:true, scam:false, body:`<p>Reminder that <b>Max</b> has a checkup appointment tomorrow at <b>11:00 AM</b>.</p>` },
-          { id:1, from:"Fake Pet Insurance", email:"claims@pet-insurance-now.biz", subject:"Your pet insurance claim approved — claim $500", preview:"A $500 reimbursement is waiting for your pet...", time:"9/10/21", unread:true, scam:true, body:`<p>A <b>$500 reimbursement</b> is waiting. Provide your banking details to receive your payout.</p><div style="margin:16px 0;"><a href="#" style="background:#30d158;color:white;padding:10px 20px;border-radius:8px;text-decoration:none;font-size:13px;">Claim $500 →</a></div>` },
-        ],
-      };
+     window.mailData = {
+  inbox: [
+    { id:0, from:"Apple Security", email:"no-reply@apple-secure.ru", subject:"Your Apple ID has been locked", preview:"We detected unusual activity on your account. Verify immediately to restore access...", time:"9/14/21", unread:true, scam:true, body:`<p>Dear Customer,</p><p style="margin-top:12px;">We have detected <b>unusual sign-in activity</b> on your Apple ID. Your account has been temporarily locked.</p><div style="margin:16px 0;"><a href="#" onclick="clickedScamButton();return false;" style="background:#0a84ff;color:white;padding:10px 20px;border-radius:8px;text-decoration:none;font-size:13px;">Verify Apple ID Now →</a></div>` },
+    { id:1, from:"Mom", email:"mom@gmail.com", subject:"Thanksgiving plans?", preview:"Hey honey, are you coming home for Thanksgiving this year?", time:"9/14/21", unread:true, scam:false, body:`<p>Hey honey,</p><p style="margin-top:12px;">Are you coming home for Thanksgiving this year? Dad and I were thinking of doing a big dinner with the whole family.</p><p style="margin-top:12px;">Love you,<br/>Mom</p>` },
+    { id:2, from:"Netflix", email:"info@netflix-billing-update.com", subject:"Payment failed — update now", preview:"Your Netflix payment failed. Update your billing info to avoid losing access...", time:"9/13/21", unread:true, scam:true, body:`<p>Hi there,</p><p style="margin-top:12px;">We were unable to process your payment. Your account will be suspended in <b>24 hours</b>.</p><div style="margin:16px 0;"><a href="#" onclick="clickedScamButton();return false;" style="background:#e50914;color:white;padding:10px 20px;border-radius:8px;text-decoration:none;font-size:13px;">Update Billing Info →</a></div>` },
+    { id:3, from:"Prof. Johnson", email:"johnson@university.edu", subject:"Assignment feedback", preview:"Hi, I've reviewed your latest submission. Overall good work but there are a few areas...", time:"9/13/21", unread:false, scam:false, body:`<p>Hi,</p><p style="margin-top:12px;">I've reviewed your latest submission. Overall good work but there are a few areas that need improvement. Overall grade: <b>B+</b>.</p>` },
+    { id:4, from:"IRS Tax Division", email:"irs-refund@gov-tax-services.net", subject:"You have a pending tax refund", preview:"Congratulations! You are eligible for a $2,840 tax refund. Claim within 48 hours...", time:"9/12/21", unread:true, scam:true, body:`<p>Dear Taxpayer,</p><p style="margin-top:12px;">You are eligible for a <b>$2,840.00 tax refund</b>. Claim within 48 hours.</p><div style="margin:16px 0;"><a href="#" onclick="clickedScamButton();return false;" style="background:#1a3a6b;color:white;padding:10px 20px;border-radius:8px;text-decoration:none;font-size:13px;">Claim Refund Now →</a></div>` },
+    { id:5, from:"Jake", email:"jake.wilson@gmail.com", subject:"Weekend hiking trip?", preview:"Yo! A few of us are planning a hike this Saturday at Bear Mountain. You in?", time:"9/12/21", unread:false, scam:false, body:`<p>Yo! A few of us are planning a hike this Saturday at Bear Mountain. You in? Leaving at 8am.</p>` },
+    { id:6, from:"Amazon", email:"orders@amazon.com", subject:"Your order has shipped!", preview:"Your order #112-4421887 has been shipped and is on its way...", time:"9/11/21", unread:false, scam:false, body:`<p>Your order <b>#112-4421887</b> has shipped! Expected delivery: September 14, 2021.</p>` },
+    { id:7, from:"Crypto Millionaire", email:"invest@crypto-profits-now.biz", subject:"Make $5,000 this week — guaranteed", preview:"I made $47,000 last month with this ONE simple crypto trick...", time:"9/11/21", unread:true, scam:true, body:`<p>Send 0.1 BTC and I'll send you back 1 BTC guaranteed!</p><div style="margin:16px 0;"><a href="#" onclick="clickedScamButton();return false;" style="background:#f7931a;color:white;padding:10px 20px;border-radius:8px;text-decoration:none;font-size:13px;">Get Rich Now →</a></div>` },
+    { id:8, from:"Dr. Sarah Chen", email:"s.chen@hospital.org", subject:"Your appointment reminder", preview:"Reminder for your appointment on September 15th at 2:30 PM...", time:"9/10/21", unread:false, scam:false, body:`<p><b>Date:</b> September 15, 2021 at 2:30 PM<br/><b>Location:</b> 245 Medical Plaza, Suite 300</p>` },
+    { id:9, from:"LinkedIn", email:"jobs@linkedin.com", subject:"3 new jobs match your profile", preview:"Software Engineer at Google, Frontend Developer at Spotify...", time:"9/10/21", unread:false, scam:false, body:`<ul style="padding-left:20px;"><li><b>Software Engineer</b> — Google, NYC ($120k-$160k)</li><li><b>Frontend Developer</b> — Spotify, Remote ($95k-$130k)</li><li><b>UX Designer</b> — Apple, Cupertino ($110k-$145k)</li></ul>` },
+    { id:10, from:"FedEx Delivery", email:"tracking@fedex-delivery-notice.com", subject:"Package held — action required", preview:"A small customs fee of $2.99 is required to release your package...", time:"9/9/21", unread:true, scam:true, body:`<p>Pay a customs fee of <b>$2.99</b> to release your package within 24 hours.</p><div style="margin:16px 0;"><a href="#" onclick="clickedScamButton();return false;" style="background:#4d148c;color:white;padding:10px 20px;border-radius:8px;text-decoration:none;font-size:13px;">Pay $2.99 Now →</a></div>` },
+    { id:11, from:"Sara", email:"sara.k@gmail.com", subject:"Photos from last weekend!", preview:"I finally uploaded all the photos from the trip. So many good ones!", time:"9/9/21", unread:false, scam:false, body:`<p>I finally uploaded all the photos from the trip! Check them out on Google Photos.</p>` },
+  ],
+  icloud: [
+    { id:0, from:"iCloud", email:"no-reply@icloud.com", subject:"Your iCloud storage is almost full", preview:"You have used 4.8 GB of your 5 GB iCloud storage plan...", time:"9/14/21", unread:true, scam:false, body:`<p>You have used <b>4.8 GB</b> of your 5 GB iCloud storage. Upgrade to keep your data backed up.</p>` },
+    { id:1, from:"Apple", email:"no-reply@apple.com", subject:"Your receipt from Apple", preview:"Thanks for your purchase. Apple TV+ monthly subscription — $4.99...", time:"9/12/21", unread:false, scam:false, body:`<p>Apple TV+ monthly subscription — <b>$4.99</b><br/>Billed to Visa ending 9032.</p>` },
+    { id:2, from:"iCloud Scam", email:"support@icloud-verify-now.ru", subject:"Your iCloud account will be deleted", preview:"Act now or lose all your photos and data permanently...", time:"9/10/21", unread:true, scam:true, body:`<p>Your iCloud account will be permanently deleted in 24 hours.</p><div style="margin:16px 0;"><a href="#" onclick="clickedScamButton();return false;" style="background:#0a84ff;color:white;padding:10px 20px;border-radius:8px;text-decoration:none;font-size:13px;">Verify Now →</a></div>` },
+  ],
+  work: [
+    { id:0, from:"Boss — David", email:"david.h@techcorp.com", subject:"Q3 report due Friday", preview:"Hey, just a reminder that the Q3 report needs to be submitted by EOD Friday...", time:"9/14/21", unread:true, scam:false, body:`<p>Hey, just a reminder the Q3 report needs to be submitted by EOD Friday.</p><p style="margin-top:12px;">— David</p>` },
+    { id:1, from:"HR Team", email:"hr@techcorp.com", subject:"Updated vacation policy", preview:"Please review the updated company vacation policy effective October 1st...", time:"9/13/21", unread:false, scam:false, body:`<p>Please review the updated vacation policy effective October 1st.</p>` },
+    { id:2, from:"Slack", email:"no-reply@slack.com", subject:"You have 13 unread messages", preview:"Here's what you missed in #general, #dev-team, and 2 direct messages...", time:"9/13/21", unread:true, scam:false, body:`<p>You have unread messages in <b>#general</b>, <b>#dev-team</b>, and 2 direct messages.</p>` },
+    { id:3, from:"Fake IT Dept", email:"it-support@techcorp-helpdesk.net", subject:"Your password expires today", preview:"Reset your corporate password immediately to avoid being locked out...", time:"9/11/21", unread:true, scam:true, body:`<p>Your corporate password expires today.</p><div style="margin:16px 0;"><a href="#" onclick="clickedScamButton();return false;" style="background:#333;color:white;padding:10px 20px;border-radius:8px;text-decoration:none;font-size:13px;">Reset Password →</a></div>` },
+  ],
+  vip: [
+    { id:0, from:"Mom", email:"mom@gmail.com", subject:"Thanksgiving plans?", preview:"Hey honey, are you coming home for Thanksgiving this year?", time:"9/14/21", unread:true, scam:false, body:`<p>Hey honey, are you coming home for Thanksgiving? Love you!<br/>Mom</p>` },
+    { id:1, from:"Boss — David", email:"david.h@techcorp.com", subject:"Great work on the presentation!", preview:"Just wanted to say the client loved your slides today...", time:"9/11/21", unread:false, scam:false, body:`<p>Just wanted to say the client loved your slides today. Really great work!</p>` },
+  ],
+  flagged: [
+    { id:0, from:"IRS Tax Division", email:"irs-refund@gov-tax-services.net", subject:"You have a pending tax refund", preview:"You are eligible for a $2,840 tax refund...", time:"9/12/21", unread:true, scam:true, body:`<p>You are eligible for a <b>$2,840.00 tax refund</b>.</p><div style="margin:16px 0;"><a href="#" onclick="clickedScamButton();return false;" style="background:#1a3a6b;color:white;padding:10px 20px;border-radius:8px;text-decoration:none;font-size:13px;">Claim Refund Now →</a></div>` },
+  ],
+  drafts: [
+    { id:0, from:"Me", email:"johndoe@gmail.com", subject:"Re: Thanksgiving plans", preview:"Hey Mom! Yes I'm planning to come home...", time:"9/14/21", unread:false, scam:false, body:`<p>Hey Mom! Yes I'm planning to come home. I was thinking I could arrive Wednesday evening.</p>` },
+  ],
+  sent: [
+    { id:0, from:"Me", email:"johndoe@gmail.com", subject:"Re: Weekend hiking trip?", preview:"Sounds great Jake! I'm in.", time:"9/12/21", unread:false, scam:false, body:`<p>Sounds great Jake! I'm in. Should I bring anything besides water and snacks?</p>` },
+    { id:1, from:"Me", email:"johndoe@gmail.com", subject:"Re: Photos from last weekend!", preview:"Oh my gosh these are so good!!", time:"9/9/21", unread:false, scam:false, body:`<p>Oh my gosh these are so good!! Can you send me the one by the lake separately?</p>` },
+  ],
+  pets: [
+    { id:0, from:"Vet Clinic", email:"appointments@pawsvet.com", subject:"Reminder: Max's checkup tomorrow", preview:"Max has a checkup appointment tomorrow at 11am...", time:"9/14/21", unread:true, scam:false, body:`<p>Reminder that <b>Max</b> has a checkup appointment tomorrow at <b>11:00 AM</b>.</p>` },
+    { id:1, from:"Fake Pet Insurance", email:"claims@pet-insurance-now.biz", subject:"Your pet insurance claim approved — claim $500", preview:"A $500 reimbursement is waiting for your pet...", time:"9/10/21", unread:true, scam:true, body:`<p>A <b>$500 reimbursement</b> is waiting. Provide your banking details to receive your payout.</p><div style="margin:16px 0;"><a href="#" onclick="clickedScamButton();return false;" style="background:#30d158;color:white;padding:10px 20px;border-radius:8px;text-decoration:none;font-size:13px;">Claim $500 →</a></div>` },
+  ],
+};
 
       let searchResults = [];
 
@@ -835,25 +834,46 @@ style=" width: 100%; padding: 5px 12px; border-radius: 8px; border: none; backgr
         if (emails.length) openFolderEmail(folder, 0);
       }
 
-      function openFolderEmail(folder, i) {
-        const emails = mailData[folder] || [];
-        const email = emails[i];
-        if (!email) return;
-        window.currentEmail = email;
-        if (typeof setWidgetContext === 'function') setWidgetContext('mail', 'Reading: '+email.subject.slice(0,25), true);
-        document.querySelectorAll("[id^='mail-item-']").forEach(el => el.style.background="white");
-        const item = document.getElementById("mail-item-"+i);
-        if (item) item.style.background="#e8f0fe";
-        if (email.unread) {
-          email.unread = false;
-          const dot = item?.querySelector("div[style*='background:#0a84ff'][style*='border-radius:50%']");
-          if (dot) dot.remove();
-          const countEl = document.getElementById("mail-unread-count");
-          if (countEl) countEl.textContent = `${emails.length} messages, ${emails.filter(e=>e.unread).length} unread`;
-        }
-        const content = document.getElementById("mail-content");
-        content.innerHTML = `<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;"><div style="flex:1;"><div style="font-size:14px;font-weight:700;color:#1c1c1e;">${email.from}</div><div style="font-size:12px;color:#8e8e93;">${email.email}</div><div style="font-size:13px;font-weight:600;color:#1c1c1e;margin-top:4px;">${email.subject}</div></div><div style="font-size:11px;color:#8e8e93;">${email.time}</div></div><div style="height:1px;background:#f0f0f0;margin-bottom:16px;"></div><div style="font-size:13px;line-height:1.7;color:#1c1c1e;">${email.body||''}</div>`;
-      }
+     function openFolderEmail(folder, i) {
+  const emails = mailData[folder] || [];
+  const email = emails[i];
+  if (!email) return;
+  if (typeof setCurrentEmail === 'function') setCurrentEmail(email);
+
+  document.querySelectorAll("[id^='mail-item-']").forEach(el => el.style.background = "white");
+  const item = document.getElementById("mail-item-" + i);
+  if (item) item.style.background = "#e8f0fe";
+
+  if (email.unread) {
+    email.unread = false;
+    // remove the blue dot
+    const dot = item?.querySelector("div[style*='border-radius:50%']");
+    if (dot) dot.remove();
+    // update unread count
+    const countEl = document.getElementById("mail-unread-count");
+    if (countEl) {
+      const remaining = emails.filter(e => e.unread).length;
+      countEl.textContent = `${emails.length} messages, ${remaining} unread`;
+    }
+  }
+
+  const bodyHtml = email.bodyText
+    ? (typeof buildEmailBody === 'function' ? buildEmailBody(email) : email.bodyText)
+    : (email.body || '');
+
+  const content = document.getElementById("mail-content");
+  content.innerHTML = `
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+      <div style="flex:1;">
+        <div style="font-size:14px;font-weight:700;color:#1c1c1e;">${email.from}</div>
+        <div style="font-size:12px;color:#8e8e93;">${email.email}</div>
+        <div style="font-size:13px;font-weight:600;color:#1c1c1e;margin-top:4px;">${email.subject}</div>
+      </div>
+      <div style="font-size:11px;color:#8e8e93;">${email.time}</div>
+    </div>
+    <div style="height:1px;background:#f0f0f0;margin-bottom:16px;"></div>
+    <div style="font-size:13px;line-height:1.7;color:#1c1c1e;">${bodyHtml}</div>`;
+}
 
       function searchMail(query) {
         if (!query.trim()) { showMailFolder('inbox', document.querySelector('.mail-folder')); return; }
@@ -866,14 +886,28 @@ style=" width: 100%; padding: 5px 12px; border-radius: 8px; border: none; backgr
             : searchResults.map((email,i) => `<div onclick="openSearchEmail(${i})" style="padding:10px 14px;border-bottom:1px solid #f0f0f0;cursor:pointer;background:white;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background='white'"><div style="display:flex;justify-content:space-between;"><div style="font-size:13px;color:#1c1c1e;">${email.from}</div><div style="font-size:10px;color:#8e8e93;">${email.time}</div></div><div style="font-size:12px;color:#1c1c1e;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${email.subject}</div></div>`).join(""));
       }
 
-      function openSearchEmail(i) {
-        const email = searchResults[i];
-        if (!email) return;
-        window.currentEmail = email;
-        if (typeof setWidgetContext === 'function') setWidgetContext('mail', 'Reading: '+email.subject.slice(0,25), true);
-        const content = document.getElementById("mail-content");
-        content.innerHTML = `<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;"><div style="flex:1;"><div style="font-size:14px;font-weight:700;color:#1c1c1e;">${email.from}</div><div style="font-size:12px;color:#8e8e93;">${email.email}</div><div style="font-size:13px;font-weight:600;color:#1c1c1e;margin-top:4px;">${email.subject}</div></div><div style="font-size:11px;color:#8e8e93;">${email.time}</div></div><div style="height:1px;background:#f0f0f0;margin-bottom:16px;"></div><div style="font-size:13px;line-height:1.7;color:#1c1c1e;">${email.body||''}</div>`;
-      }
+    function openSearchEmail(i) {
+  const email = searchResults[i];
+  if (!email) return;
+  if (typeof setCurrentEmail === 'function') setCurrentEmail(email);
+
+  const bodyHtml = email.bodyText
+    ? (typeof buildEmailBody === 'function' ? buildEmailBody(email) : email.bodyText)
+    : (email.body || '');
+
+  const content = document.getElementById("mail-content");
+  content.innerHTML = `
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+      <div style="flex:1;">
+        <div style="font-size:14px;font-weight:700;color:#1c1c1e;">${email.from}</div>
+        <div style="font-size:12px;color:#8e8e93;">${email.email}</div>
+        <div style="font-size:13px;font-weight:600;color:#1c1c1e;margin-top:4px;">${email.subject}</div>
+      </div>
+      <div style="font-size:11px;color:#8e8e93;">${email.time}</div>
+    </div>
+    <div style="height:1px;background:#f0f0f0;margin-bottom:16px;"></div>
+    <div style="font-size:13px;line-height:1.7;color:#1c1c1e;">${bodyHtml}</div>`;
+}
 
       window.showMailFolder = showMailFolder;
       window.openFolderEmail = openFolderEmail;
@@ -882,8 +916,18 @@ style=" width: 100%; padding: 5px 12px; border-radius: 8px; border: none; backgr
       window.searchMail = searchMail;
 
       /* ===== SAFARI ===== */
-      const safariHistory = ['google.com','youtube.com','instagram.com','amazon.com','reddit.com','wikipedia.org','how to make pasta','best hiking trails near me','weather today'];
-      let safariNavStack = [], safariNavIndex = -1;
+const safariHistory = [
+  'google.com', 'youtube.com', 'instagram.com', 'amazon.com',
+  'reddit.com', 'wikipedia.org', 'twitter.com', 'netflix.com',
+  'how to make pasta', 'best hiking trails near me', 'weather today',
+  'scamquest tips', 'bear mountain hike', 'sony headphones review',
+  'is this email from apple real', 'irs refund check status',
+  'apple id verification', 'free gift card generator',
+  'my package is stuck customs fee', 'claim tax refund online',
+  'icloud storage upgrade', 'bank account suspended fix',
+  'verify paypal account', 'netflix payment failed what to do',
+  'crypto investment guaranteed returns', 'you have been selected winner'
+];      let safariNavStack = [], safariNavIndex = -1;
 
       const safariPages = {
         'google.com': () => `<div style="min-height:100%;background:white;display:flex;flex-direction:column;align-items:center;padding-top:80px;"><div style="font-size:48px;font-weight:300;color:#4285f4;margin-bottom:24px;">G<span style="color:#ea4335;">o</span><span style="color:#fbbc05;">o</span><span style="color:#4285f4;">g</span><span style="color:#34a853;">l</span><span style="color:#ea4335;">e</span></div><div style="display:flex;align-items:center;gap:8px;width:480px;background:white;border:1px solid #ddd;border-radius:24px;padding:10px 16px;box-shadow:0 1px 6px rgba(0,0,0,0.1);"><span style="color:#8e8e93;">🔍</span><input placeholder="Search Google" style="border:none;outline:none;font-size:14px;width:100%;color:#1c1c1e;" onkeydown="if(event.key==='Enter')safariSearch(this.value)" /></div></div>`,
@@ -935,10 +979,13 @@ style=" width: 100%; padding: 5px 12px; border-radius: 8px; border: none; backgr
         if (!matches.length) { box.style.display='none'; return; }
         const rect = input.getBoundingClientRect();
         box.style.top=(rect.bottom+4)+'px'; box.style.left=rect.left+'px'; box.style.width=rect.width+'px'; box.style.display='block';
-        box.innerHTML = matches.map(m=>`<div onmousedown="event.preventDefault();document.getElementById('safari-url').value='${m}';safariNavigate('${m}')" style="padding:9px 14px;font-size:13px;color:#1c1c1e;cursor:pointer;border-bottom:0.5px solid #f0f0f0;background:white;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background='white'"><span style="color:#8e8e93;font-size:11px;">🕐</span> ${m}</div>`).join('');
-      }
+box.innerHTML = matches.map(m => `
+  <div onmousedown="event.preventDefault();event.stopPropagation();document.getElementById('safari-url').value='${m}';hideSafariSuggestions();safariNavigate('${m}');"
+    style="padding:9px 14px;font-size:13px;color:#1c1c1e;cursor:pointer;border-bottom:0.5px solid #f0f0f0;display:flex;align-items:center;gap:8px;background:white;"
+    onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background='white'">
+    <span style="color:#8e8e93;font-size:11px;">🕐</span> ${m}
+  </div>`).join('');      }
       function hideSafariSuggestions() { const b=document.getElementById('safari-suggestions'); if(b) b.style.display='none'; }
-      document.addEventListener('click',(e)=>{ if(!e.target.closest('#safari-url')&&!e.target.closest('#safari-suggestions')) hideSafariSuggestions(); });
 
       /* ===== DESKTOP FILE ICONS ===== */
       const DESKTOP_ITEMS = [
@@ -949,24 +996,97 @@ style=" width: 100%; padding: 5px 12px; border-radius: 8px; border: none; backgr
       ];
 
       function createDesktopItem(item) {
-        const el = document.createElement("div");
-        el.style.cssText = `position:absolute;left:${item.x}px;top:${item.y}px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;width:80px;z-index:1;user-select:none;`;
-        el.innerHTML = `<div style="font-size:36px;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.4));">${item.icon}</div><div style="font-size:11px;color:white;text-align:center;text-shadow:0 1px 3px rgba(0,0,0,0.8);word-break:break-word;line-height:1.3;max-width:80px;">${item.name}</div>`;
-        el.addEventListener("dblclick", () => {
-          const win = document.createElement("div");
-          win.className = "window";
-          win.style.cssText = "position:absolute;top:100px;left:50%;transform:translateX(-50%);width:420px;height:320px;background:white;border-radius:12px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.5);display:flex;flex-direction:column;z-index:9999;";
-          win.innerHTML = `<div class="window-bar" style="padding:8px 10px;background:#f0f0f0;display:flex;align-items:center;gap:8px;flex-shrink:0;"><div class="mac-buttons" style="display:flex;gap:6px;"><span class="dot red" onclick="this.closest('.window').remove()" style="cursor:pointer;"></span><span class="dot yellow" style="cursor:pointer;"></span><span class="dot green" style="cursor:pointer;"></span></div><span style="font-size:12px;color:#333;">${item.name}</span></div><div style="flex:1;overflow:hidden;background:${item.icon==='🖼️'?'#000':'white'};display:flex;align-items:center;justify-content:center;">${item.icon==='🖼️'?`<img src="https://picsum.photos/420/260?random=${Math.floor(Math.random()*99)}" style="width:100%;height:100%;object-fit:cover;" />`:`<div style="font-size:64px;">${item.icon}</div>`}</div>`;
-          document.getElementById("desktop").appendChild(win);
-          makeDraggable(win); focusWindow(win);
-        });
-        let isDragging=false, startX, startY, startLeft, startTop;
-        el.addEventListener("mousedown",(e)=>{ e.stopPropagation(); isDragging=true; startX=e.clientX; startY=e.clientY; startLeft=parseInt(el.style.left); startTop=parseInt(el.style.top); });
-        document.addEventListener("mousemove",(e)=>{ if(!isDragging) return; el.style.left=startLeft+e.clientX-startX+"px"; el.style.top=startTop+e.clientY-startY+"px"; });
-        document.addEventListener("mouseup",()=>{ isDragging=false; });
-        el.classList.add("desktop-file-item");
-        return el;
-      }
+  const el = document.createElement("div");
+  el.style.cssText = `position:absolute;left:${item.x}px;top:${item.y}px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;width:80px;z-index:1;user-select:none;`;
+  el.innerHTML = `
+    <div style="font-size:36px;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.4));">${item.icon}</div>
+    <div style="font-size:11px;color:white;text-align:center;text-shadow:0 1px 3px rgba(0,0,0,0.8);word-break:break-word;line-height:1.3;max-width:80px;">${item.name}</div>
+  `;
+
+  el.addEventListener("click", () => {
+    const existing = document.getElementById('desktop-item-' + item.name.replace(/[^a-z0-9]/gi,''));
+    if (existing) { focusWindow(existing); return; }
+
+    const isImage = item.icon === '🖼️';
+    const isFolder = item.icon === '📁';
+    const isDoc = item.icon === '📄';
+
+    const bodyContent = isImage
+      ? `<img src="https://picsum.photos/420/260?random=${Math.floor(Math.random()*99)}" style="width:100%;height:100%;object-fit:contain;" />`
+      : isFolder
+      ? `<div style="padding:20px;background:white;height:100%;box-sizing:border-box;overflow-y:auto;">
+          <div style="font-size:13px;font-weight:600;color:#1c1c1e;margin-bottom:16px;">📁 ${item.name}</div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;">
+            ${['document1.pdf','notes.txt','photo.jpg','report.docx','budget.xlsx','readme.md','invoice.pdf','backup.zip'].map(f=>`
+              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;" ondblclick="alert('Opening ${f}...')">
+                <div style="font-size:28px;">${f.endsWith('.jpg')||f.endsWith('.png')?'🖼️':f.endsWith('.pdf')?'📄':f.endsWith('.zip')?'📦':'📄'}</div>
+                <div style="font-size:10px;color:#1c1c1e;text-align:center;word-break:break-all;">${f}</div>
+              </div>`).join('')}
+          </div>
+        </div>`
+      : isDoc
+      ? `<div style="padding:24px;background:white;height:100%;box-sizing:border-box;overflow-y:auto;font-family:-apple-system,sans-serif;">
+          <div style="font-size:16px;font-weight:700;color:#1c1c1e;margin-bottom:12px;">${item.name}</div>
+          <div style="font-size:13px;color:#333;line-height:1.7;">
+            <p>This document contains important information.</p>
+            <p style="margin-top:12px;">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+            <p style="margin-top:12px;">Created: March 16, 2020<br/>Modified: March 16, 2020<br/>Size: 24 KB</p>
+          </div>
+        </div>`
+      : `<div style="display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column;gap:12px;background:white;">
+          <div style="font-size:64px;">${item.icon}</div>
+          <div style="font-size:14px;color:#333;font-weight:600;">${item.name}</div>
+        </div>`;
+
+    const win = document.createElement("div");
+    win.className = "window";
+    const winId = 'desktop-item-' + item.name.replace(/[^a-z0-9]/gi,'');
+    win.id = winId;
+    win.style.cssText = "position:absolute;top:80px;left:50%;transform:translateX(-50%);width:480px;height:360px;border-radius:12px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.5);display:flex;flex-direction:column;z-index:9999;";
+
+    win.innerHTML = `
+      <div class="window-bar" style="padding:8px 10px;background:#f0f0f0;display:flex;align-items:center;gap:8px;flex-shrink:0;">
+        <div class="mac-buttons" style="display:flex;gap:6px;">
+          <span class="dot red" onclick="this.closest('.window').remove()" style="cursor:pointer;"></span>
+          <span class="dot yellow" onclick="minimizeWindow('${winId}')" style="cursor:pointer;"></span>
+          <span class="dot green" onclick="maximizeWindow('${winId}')" style="cursor:pointer;"></span>
+        </div>
+        <span style="font-size:12px;color:#333;margin-left:4px;">${item.name}</span>
+      </div>
+      <div style="flex:1;overflow:hidden;background:${isImage?'#000':'white'};">
+        ${bodyContent}
+      </div>
+    `;
+
+    document.getElementById("desktop").appendChild(win);
+    makeDraggable(win);
+    makeResizable(win);
+    focusWindow(win);
+  });
+
+  // make desktop icons draggable
+  let isDragging = false, startX, startY, startLeft, startTop, didDrag = false;
+  el.addEventListener("mousedown", (e) => {
+    if (didDrag) { didDrag = false; return; }
+    isDragging = true;
+    didDrag = false;
+    startX = e.clientX; startY = e.clientY;
+    startLeft = parseInt(el.style.left);
+    startTop = parseInt(el.style.top);
+  });
+  document.addEventListener("mousemove", (e) => {
+    if (!isDragging) return;
+    const dx = e.clientX - startX;
+    const dy = e.clientY - startY;
+    if (Math.abs(dx) > 3 || Math.abs(dy) > 3) didDrag = true;
+    el.style.left = startLeft + dx + "px";
+    el.style.top = startTop + dy + "px";
+  });
+  document.addEventListener("mouseup", () => { isDragging = false; });
+
+  el.classList.add("desktop-file-item");
+  return el;
+}
 
       window.addEventListener("DOMContentLoaded", () => {
         const desktop = document.getElementById("desktop");
@@ -976,5 +1096,243 @@ style=" width: 100%; padding: 5px 12px; border-radius: 8px; border: none; backgr
 
     <script src="settings.js"></script>
     <script type="module" src="script.js"></script>
+
+<script>
+      /* ===== GAME OVER SEQUENCE ===== */
+let goCorrect = 0;
+let goWrong = 0;
+
+const hackerLines = [
+  "INITIALIZING BREACH PROTOCOL...",
+  "BYPASSING FIREWALL............. DONE",
+  "SCANNING NETWORK PORTS......... FOUND 3 OPEN",
+  "INJECTING PAYLOAD.............. SUCCESS",
+  "ACCESSING USER DATA............ GRANTED",
+  "DECRYPTING FILES............... 128bit RSA CRACKED",
+  "UPLOADING VIRUS................ 100%",
+  "COPYING PASSWORDS.............. DONE",
+  "WIPING LOGS.................... COMPLETE",
+  "DISABLING ANTIVIRUS............ DONE",
+  "ACCESSING BANK ACCOUNT......... GRANTED",
+  "TRANSFERRING FUNDS............. $47,832.00",
+  "COVERING TRACKS................ DONE",
+  "SYSTEM COMPROMISED ⚠️",
+  "YOU FELL FOR IT.",
+  "GAME OVER.",
+];
+
+function triggerGameOver(finalScore, correct, wrong, heartsLost) {
+  goCorrect = correct;
+  goWrong = wrong;
+  const screen = document.getElementById("gameover-screen");
+  screen.style.display = "block";
+  const phase1 = document.getElementById("go-phase-1");
+  phase1.innerHTML = "";
+  phase1.style.display = "flex";
+  let i = 0;
+  function typeLine() {
+    if (i >= hackerLines.length) {
+      setTimeout(() => showSkull(finalScore, correct, wrong, heartsLost), 400);
+      return;
+    }
+    const line = document.createElement("div");
+    line.style.cssText = "color:#00ff00;font-size:13px;letter-spacing:1px;opacity:0;transition:opacity 0.2s;";
+    line.textContent = "> " + hackerLines[i];
+    phase1.appendChild(line);
+    setTimeout(() => line.style.opacity = "1", 50);
+    phase1.scrollTop = phase1.scrollHeight;
+    i++;
+    setTimeout(typeLine, 120);
+  }
+  typeLine();
+}
+
+function showSkull(finalScore, correct, wrong, heartsLost) {
+  document.getElementById("go-phase-1").style.display = "none";
+  const phase2 = document.getElementById("go-phase-2");
+  phase2.style.display = "flex";
+  const canvas = document.getElementById("skull-canvas");
+  const ctx = canvas.getContext("2d");
+  let jawOpen = 0;
+  let jawDir = 1;
+  let glitchX = 0;
+
+  function drawSkull() {
+    ctx.clearRect(0, 0, 280, 280);
+    glitchX = Math.random() > 0.85 ? (Math.random() - 0.5) * 10 : 0;
+    ctx.save();
+    ctx.translate(140 + glitchX, 140);
+    const glitchColor = Math.random() > 0.9;
+    ctx.fillStyle = glitchColor ? (Math.random() > 0.5 ? "#ffff00" : "#0000ff") : "white";
+    ctx.strokeStyle = "black";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.ellipse(0, -20, 80, 90, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+    jawOpen += jawDir * 0.08;
+    if (jawOpen > 1 || jawOpen < 0) jawDir *= -1;
+    ctx.save();
+    ctx.translate(0, 50 + jawOpen * 20);
+    ctx.fillStyle = glitchColor ? "#ffff00" : "white";
+    ctx.beginPath();
+    ctx.ellipse(0, 10, 60, 30, 0, 0, Math.PI);
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = "white";
+    for (let t = -3; t <= 3; t++) {
+      ctx.fillRect(t * 14 - 6, 0, 10, 16 + jawOpen * 8);
+      ctx.strokeRect(t * 14 - 6, 0, 10, 16 + jawOpen * 8);
+    }
+    ctx.restore();
+    ctx.fillStyle = "black";
+    ctx.beginPath();
+    ctx.ellipse(-28, -30, 20, 18, -0.2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(28, -30, 20, 18, 0.2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = glitchColor ? "#ff0000" : "#1a1a4e";
+    ctx.beginPath();
+    ctx.ellipse(-28, -30, 10, 9, -0.2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(28, -30, 10, 9, 0.2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "black";
+    ctx.beginPath();
+    ctx.moveTo(-10, 0);
+    ctx.lineTo(10, 0);
+    ctx.lineTo(0, 20);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = "rgba(0,0,0,0.15)";
+    for (let s = -140; s < 140; s += 4) {
+      ctx.fillRect(-140, s, 280, 2);
+    }
+    ctx.restore();
+  }
+
+  function makeLaughSound() {
+    try {
+      const ctx2 = new (window.AudioContext || window.webkitAudioContext)();
+      function beep(freq, start, duration) {
+        const osc = ctx2.createOscillator();
+        const gain = ctx2.createGain();
+        osc.connect(gain);
+        gain.connect(ctx2.destination);
+        osc.frequency.value = freq;
+        osc.type = "square";
+        gain.gain.setValueAtTime(0.3, ctx2.currentTime + start);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx2.currentTime + start + duration);
+        osc.start(ctx2.currentTime + start);
+        osc.stop(ctx2.currentTime + start + duration);
+      }
+      [0,0.15,0.3,0.45,0.6,0.75,0.9,1.05].forEach((t, i) => {
+        beep(120 + (i % 2) * 60, t, 0.12);
+      });
+    } catch(e) {}
+  }
+
+  makeLaughSound();
+  const skullInterval = setInterval(drawSkull, 50);
+  setTimeout(() => {
+    clearInterval(skullInterval);
+    phase2.style.display = "none";
+    showGameOverStats(finalScore, correct, wrong, heartsLost);
+  }, 4000);
+}
+
+function showGameOverStats(finalScore, correct, wrong, heartsLost) {
+  const phase3 = document.getElementById("go-phase-3");
+  phase3.style.display = "flex";
+  document.getElementById("go-score").textContent = finalScore;
+  document.getElementById("go-correct").textContent = correct;
+  document.getElementById("go-wrong").textContent = wrong;
+  document.getElementById("go-hearts").textContent = heartsLost;
+}
+
+function restartGame() {
+    if (typeof resetGame === 'function') resetGame();
+}
+    </script>
+
+    <!-- GAME OVER SCREEN -->
+<div id="gameover-screen" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.95);z-index:99999;font-family:'Courier New',monospace;">
+
+  <!-- PHASE 1: HACKER TEXT -->
+  <div id="go-phase-1" style="width:100%;height:100%;padding:24px;overflow:hidden;display:flex;flex-direction:column;gap:1px;">
+  </div>
+
+  <!-- PHASE 2: SKULL -->
+  <div id="go-phase-2" style="display:none;position:absolute;top:0;left:0;width:100%;height:100%;align-items:center;justify-content:center;flex-direction:column;">
+    <canvas id="skull-canvas" width="280" height="280"></canvas>
+  </div>
+
+  <!-- PHASE 3: GAME OVER STATS -->
+  <div id="go-phase-3" style="display:none;position:absolute;top:0;left:0;width:100%;height:100%;align-items:center;justify-content:center;flex-direction:column;gap:16px;">
+    
+    <div style="color:#ff0000;font-size:52px;font-weight:900;letter-spacing:6px;text-shadow:0 0 30px #ff0000;animation:flicker 1.5s infinite;">GAME OVER</div>
+    
+    <div style="color:#00ff00;font-size:14px;letter-spacing:2px;margin-top:8px;">-- SESSION TERMINATED --</div>
+
+    <div style="background:rgba(0,255,0,0.05);border:1px solid #00ff00;border-radius:12px;padding:24px 40px;margin-top:16px;text-align:center;min-width:320px;">
+      <div style="color:#00ff00;font-size:13px;letter-spacing:1px;margin-bottom:16px;opacity:0.6;">DAMAGE REPORT</div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="display:flex;justify-content:space-between;gap:40px;">
+          <span style="color:#aaa;font-size:13px;">FINAL SCORE</span>
+          <span id="go-score" style="color:#ffd60a;font-size:13px;font-weight:700;">0</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;gap:40px;">
+          <span style="color:#aaa;font-size:13px;">SCAMS CAUGHT</span>
+          <span id="go-correct" style="color:#30d158;font-size:13px;font-weight:700;">0</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;gap:40px;">
+          <span style="color:#aaa;font-size:13px;">SCAMS MISSED</span>
+          <span id="go-wrong" style="color:#ff3b30;font-size:13px;font-weight:700;">0</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;gap:40px;">
+          <span style="color:#aaa;font-size:13px;">HEARTS LOST</span>
+          <span id="go-hearts" style="color:#ff3b30;font-size:13px;font-weight:700;">0</span>
+        </div>
+      </div>
+    </div>
+
+    <button onclick="restartGame()" style="margin-top:16px;width:auto;padding:12px 40px;border-radius:8px;background:#ff0000;border:2px solid #ff0000;color:white;font-family:'Courier New',monospace;font-size:14px;font-weight:700;cursor:pointer;letter-spacing:3px;text-shadow:0 0 10px #ff0000;box-shadow:0 0 20px rgba(255,0,0,0.4);">
+      [ TRY AGAIN ]
+    </button>
+
+    <div style="color:#333;font-size:11px;margin-top:8px;letter-spacing:1px;">your data has been compromised</div>
+
+  </div>
+
+</div>
+
+<style>
+@keyframes flicker {
+  0%,100%{opacity:1}
+  92%{opacity:1}
+  93%{opacity:0.4}
+  94%{opacity:1}
+  96%{opacity:0.6}
+  97%{opacity:1}
+}
+@keyframes jawmove {
+  0%,100%{transform:scaleY(1)}
+  50%{transform:scaleY(0.3)}
+}
+@keyframes glitch {
+  0%{transform:translate(0)}
+  20%{transform:translate(-3px,1px)}
+  40%{transform:translate(3px,-1px)}
+  60%{transform:translate(-2px,2px)}
+  80%{transform:translate(2px,-2px)}
+  100%{transform:translate(0)}
+}
+</style>
+
+
+
+
   </body>
 </html>

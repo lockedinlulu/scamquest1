@@ -10,7 +10,24 @@ import {
   doc, getDoc, setDoc
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { sendToGroq, speakWithElevenLabs, stopSpeaking } from "./groq.js";
-import { GROQ_API_KEY } from "./config.js";
+import { GROQ_API_KEY, TAVILY_API_KEY } from "./config.js";
+
+
+
+async function searchTavily(query) {
+  const response = await fetch("https://api.tavily.com/search", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      api_key: TAVILY_API_KEY,
+      query: query,
+      max_results: 3,
+      search_depth: "basic"
+    })
+  });
+  const data = await response.json();
+  return data.results || [];
+}
 
 // --------------------
 // HELPERS
@@ -29,6 +46,7 @@ let ringtoneInterval = null;
 let ringtoneCtx = null;
 // add near the top with other state variables
 let currentEmail = null;
+let mailVerdicts = {};
 
 function playRingtone() {
   stopRingtone();
@@ -125,7 +143,8 @@ let contacts = [];
 let currentContact = null;
 let chatHistories = {};
 let messageCount = {};
-let verdicts = {};
+let msgVerdicts = {};   // verdicts from iMessage
+let ftVerdicts = {};    // verdicts from FaceTime
 let score = 0;
 let hearts = 3;
 
@@ -186,7 +205,7 @@ function generateContacts() {
     const isSubtle = Math.random() > 0.5;
     const scamPool = isSubtle ? SCAM_TYPES_SUBTLE : SCAM_TYPES_OBVIOUS;
     const subtleInstruction = isSubtle
-      ? " Start warm and normal. Do NOT mention money until at least the 3rd message. Never break character."
+      ? " Start warm and normal. Do NOT mention money until the 2rd message. The ask must appear before the final message. Never break character."
       : " Get to the point quickly but stay convincing. Never break character.";
 
     return {
@@ -202,7 +221,8 @@ function generateContacts() {
 
   chatHistories   = {};
   messageCount    = {};
-  verdicts        = {};
+ msgVerdicts = {};
+ftVerdicts  = {};
   ftHistories     = {};
   ftSystemPrompts = {};
   ftMessageCounts = {};
@@ -345,15 +365,14 @@ function buildEmailBody(email) {
     .map(p => `<p style="margin-top:10px;">${escapeHtml(p)}</p>`)
     .join('');
 
-  const button = email.scam && email.buttonText
-    ? `<div style="margin:16px 0;">
-        <a href="#" onclick="return false;" style="background:#0a84ff;color:white;padding:10px 20px;border-radius:8px;text-decoration:none;font-size:13px;display:inline-block;">
-          ${escapeHtml(email.buttonText)} →
-        </a>
-       </div>`
-    : '';
+const button = email.scam && email.buttonText
+  ? `<div style="margin:16px 0;">
+      <a href="#" onclick="event.preventDefault();clickedScamButton();return false;" style="background:#0a84ff;color:white;padding:10px 20px;border-radius:8px;text-decoration:none;font-size:13px;display:inline-block;">
+        ${escapeHtml(email.buttonText)} →
+      </a>
+     </div>`
+  : '';
 
-  // show external sender warning on roughly half of scam emails
   const showExternalWarning = email.scam && Math.random() > 0.5;
   const externalBanner = showExternalWarning
     ? `<div style="background:#fff8e8;border:1px solid #f0c040;border-radius:8px;padding:8px 12px;margin-bottom:12px;display:flex;align-items:center;gap:8px;">
@@ -362,15 +381,7 @@ function buildEmailBody(email) {
        </div>`
     : '';
 
-  return `
-    <div style="margin-bottom:16px;">
-      <b>From:</b> ${escapeHtml(email.from)} &lt;${escapeHtml(email.email)}&gt;
-    </div>
-    <div style="margin-bottom:16px;border-bottom:1px solid #eee;padding-bottom:16px;"></div>
-    ${externalBanner}
-    ${paragraphs}
-    ${button}
-  `;
+  return `${externalBanner}${paragraphs}${button}`;
 }
 
 function escapeHtml(str) {
@@ -421,10 +432,12 @@ Vary legit types: family catching up, friend making plans, work email, receipt/o
     const raw = data.choices?.[0]?.message?.content || "";
 
     // extract the array
-    const match = raw.match(/\[[\s\S]*\]/);
-    if (!match) throw new Error("No JSON array found in response");
+    
+let cleaned = raw.replace(/```json/g, '').replace(/```/g, '').trim();
+const match = cleaned.match(/\[[\s\S]*\]/);
+if (!match) throw new Error("No JSON array found in response");
+const emails = JSON.parse(match[0]);
 
-    const emails = JSON.parse(match[0]);
     if (!Array.isArray(emails) || emails.length === 0) throw new Error("Invalid array");
 
     // validate each email has required fields, drop malformed ones
@@ -450,15 +463,15 @@ Vary legit types: family catching up, friend making plans, work email, receipt/o
     if (clean.length === 0) throw new Error("No valid emails after filtering");
 
     // attach body builder so index.html rendering functions can use it
-    window.buildEmailBody = buildEmailBody;
+if (clean.length === 0) throw new Error("No valid emails after filtering");
+
     window.mailData.inbox = clean;
 
-    // if mail is open, refresh it
     const mailWin = document.getElementById("window-mail");
     if (mailWin && !mailWin.classList.contains("hidden")) {
       if (typeof window.showMailFolder === 'function') {
-  window.showMailFolder('inbox', document.querySelector('.mail-folder'));
-}
+        window.showMailFolder('inbox', document.querySelector('.mail-folder'));
+      }
     }
 
     console.log("✅ AI mail inbox generated:", clean.length, "emails");
@@ -482,7 +495,7 @@ function openWindow(id) {
     const callActive = document.getElementById("facetime-call").style.display === "flex";
     if (callActive && ftContact) {
       setWidgetContext('facetime', 'FaceTime with ' + ftContact.name, true);
-      if (verdicts[ftContact.name] !== undefined) showVerdictResult(ftContact.name);
+     if (ftVerdicts[ftContact.name] !== undefined) showVerdictResult(ftContact.name, 'facetime');
     } else {
       document.getElementById("facetime-list").style.display = "block";
       document.getElementById("facetime-call").style.display = "none";
@@ -509,6 +522,9 @@ function closeWindow(id) {
     document.getElementById('widget-context').textContent = "Nothing open yet...";
     document.getElementById('widget-verdict-section').style.display = 'none';
   }
+  if (id === "window-mail") {
+  currentEmail = null;
+}
 }
 
 function minimizeWindow(id) { closeWindow(id); }
@@ -603,6 +619,7 @@ function openPhotoViewer(index) {
 // CHAT
 // --------------------
 async function openChat(name) {
+    currentEmail = null;
   currentContact = contacts.find(c => c.name === name);
   if (!currentContact) return;
 
@@ -623,7 +640,7 @@ async function openChat(name) {
   });
 
   if (messageCount[name] >= MAX_MESSAGES) lockChat();
-  if (verdicts[name] !== undefined) showVerdictResult(name);
+if (msgVerdicts[name] !== undefined) showVerdictResult(name, 'messages');
 
   if (chatHistories[name].length === 0) {
     const botOpener = await sendToGroq([], currentContact.systemPrompt + " Start the conversation with a short, natural opening message. No disclaimers or warnings.");
@@ -648,7 +665,12 @@ function appendBubble(text, type) {
 function lockChat() {
   document.getElementById("chat-input-field").disabled = true;
   document.querySelector(".chat-input button").disabled = true;
-  setWidgetContext('messages', 'Chatting with ' + currentContact.name, true);
+
+  if (currentContact && msgVerdicts[currentContact.name] === undefined) {
+    setWidgetContext('messages', 'Chatting with ' + currentContact.name, true);
+  } else if (currentContact && msgVerdicts[currentContact.name] !== undefined) {
+    showVerdictResult(currentContact.name, 'messages');
+  }
 }
 
 async function sendMessage() {
@@ -680,59 +702,100 @@ async function sendMessage() {
 // --------------------
 function submitVerdict(isScam) {
   const ftCallVisible = document.getElementById("facetime-call")?.style.display === "flex";
-  const active = (ftCallVisible && ftContact) ? ftContact : currentContact;
-  
-  // handle mail verdict separately
+  const isFaceTime = ftCallVisible && ftContact;
+  const active = isFaceTime ? ftContact : currentContact;
+
   if (!active && !currentEmail) return;
-  if (currentEmail && !active) {
-    submitMailVerdict(isScam);
-    return;
-  }
-  // ... rest unchanged
+  if (currentEmail && !active) { submitMailVerdict(isScam); return; }
   if (!active) return;
 
   const name = active.name;
-  if (verdicts[name] !== undefined) return;
+  const verdictStore = isFaceTime ? ftVerdicts : msgVerdicts;
+
+  if (verdictStore[name] !== undefined) return;
 
   const correct = isScam === active.isScammer;
-  verdicts[name] = isScam;
+  verdictStore[name] = isScam;
 
-  if (correct) {
-    score += 100;
-    showToast("✅ Correct! +100");
-  } else {
-    hearts = Math.max(0, hearts - 1);
-    showToast("❌ Wrong! -1 heart");
-  }
+  if (correct) { score += 100; showToast("✅ Correct! +100"); }
+  else { hearts = Math.max(0, hearts - 1); showToast("❌ Wrong! -1 heart"); }
 
   updateHeartsDisplay();
   updateScoreDisplay();
-  showVerdictResult(name);
+  showVerdictResult(name, isFaceTime ? 'facetime' : 'messages');
 
-  if (ftCallVisible && ftContact) {
-    setTimeout(() => {
-      endFaceTimeCall();
-      ftContact = null;
-    }, 1200);
+  if (isFaceTime) {
+    setTimeout(() => { endFaceTimeCall(); ftContact = null; }, 1200);
   }
 
   if (hearts <= 0) setTimeout(() => gameOver(), 1000);
-  if (Object.keys(verdicts).length === TOTAL_CONTACTS) {
-    setTimeout(() => gameComplete(), 1500);
-  }
+
+  // game complete when every contact has been judged in at least one channel
+  const judged = new Set([...Object.keys(msgVerdicts), ...Object.keys(ftVerdicts)]);
+  if (judged.size >= TOTAL_CONTACTS) setTimeout(() => gameComplete(), 1500);
 }
 
-function showVerdictResult(name) {
+function showVerdictResult(name, channel) {
   const contact = contacts.find(c => c.name === name);
-  if (!contact || verdicts[name] === undefined) return;
-  const correct = verdicts[name] === contact.isScammer;
+  if (!contact) return;
+
+  const store = channel === 'facetime' ? ftVerdicts : msgVerdicts;
+  if (store[name] === undefined) return;
+
+  const correct = store[name] === contact.isScammer;
+
   document.getElementById('widget-verdict-section').innerHTML = `
     <div style="height:0.5px;background:rgba(255,255,255,0.1);margin-bottom:10px;"></div>
     <div style="font-size:9px;color:rgba(255,255,255,0.45);margin-bottom:7px;">YOUR VERDICT</div>
     <div style="text-align:center;font-size:13px;font-weight:600;color:${correct ? '#30d158' : '#ff3b30'};">
       ${correct ? '✅ Correct!' : '❌ Wrong!'}
-    </div>`;
+    </div>
+    <button onclick="event.stopPropagation();showLearnMore('${name}')" style="margin-top:10px;width:100%;padding:7px 0;border-radius:10px;border:none;background:rgba(255,255,255,0.12);color:white;font-size:11px;cursor:pointer;">🔍 Learn More</button>
+    <div id="learn-more-results" style="margin-top:8px;font-size:11px;color:rgba(255,255,255,0.7);max-height:150px;overflow-y:auto;"></div>`;
 }
+
+async function showLearnMore(name) {
+  const contact = contacts.find(c => c.name === name);
+  const resultsDiv = document.getElementById('learn-more-results');
+  if (!resultsDiv) return;
+
+  resultsDiv.innerHTML = `<div style="color:rgba(255,255,255,0.4);font-style:italic;">Searching...</div>`;
+
+  try {
+    // Use the actual chat history to identify the scam type
+    const history = chatHistories[name] || [];
+    const conversation = history.map(m => `${m.role === 'user' ? 'Player' : name}: ${m.content}`).join('\n');
+
+    let query;
+
+    if (contact?.isScammer) {
+      // Ask Groq to identify the scam type from the actual conversation
+      const scamType = await sendToGroq(
+        [{ role: "user", content: `Based on this conversation, identify in 5 words or less what type of scam this is. Only output the scam type name, nothing else.\n\n${conversation}` }],
+        "You are a scam identification expert. Respond with only a short scam type label like 'romance scam' or 'emergency money scam' or 'fake friend car repair scam'. No explanation, no punctuation."
+      );
+      query = `how to recognize and avoid ${scamType} warning signs`;
+    } else {
+      query = "how to recognize social engineering and scam tactics";
+    }
+
+    const results = await searchTavily(query);
+    if (results.length === 0) {
+      resultsDiv.innerHTML = `<div style="color:rgba(255,255,255,0.4);">No results found.</div>`;
+      return;
+    }
+    resultsDiv.innerHTML = results.map(r => `
+      <div style="margin-bottom:8px;padding-bottom:8px;border-bottom:0.5px solid rgba(255,255,255,0.1);">
+        <div style="font-weight:600;color:white;margin-bottom:2px;">${r.title}</div>
+        <div style="color:rgba(255,255,255,0.5);font-size:10px;margin-bottom:3px;">${r.url}</div>
+        <div>${r.content?.slice(0, 120)}...</div>
+      </div>`).join('');
+  } catch (err) {
+    resultsDiv.innerHTML = `<div style="color:#ff3b30;">Search failed. Try again.</div>`;
+  }
+}
+
+window.showLearnMore = showLearnMore;
 
 function showToast(msg) {
   const toast = document.getElementById("toast");
@@ -741,15 +804,7 @@ function showToast(msg) {
   setTimeout(() => toast.classList.add("hidden"), 2500);
 }
 
-function gameOver() {
-  showToast("💀 Game Over! Final score: " + score);
-  setTimeout(() => {
-    score = 0; hearts = 3;
-    generateContacts(); renderContacts();
-    updateHeartsDisplay(); updateScoreDisplay();
-    document.getElementById("chat-screen").classList.add("hidden");
-  }, 3000);
-}
+
 
 function gameComplete() {
   showToast("🎉 All done! Final score: " + score);
@@ -765,7 +820,9 @@ document.addEventListener("click", (e) => {
     e.target.closest("#scam-widget") ||
     e.target.closest("#shutdown-screen") ||
     e.target.closest("#incoming-call") ||
-    e.target.closest("[style*='99998']")
+    e.target.closest("#safari-suggestions") ||
+    e.target.closest("[style*='99998']") ||
+    e.target.closest(".desktop-file-item")
   ) return;
   document.querySelectorAll(".window:not(.hidden)").forEach(win => {
     win.classList.add("hidden");
@@ -843,9 +900,11 @@ function setWidgetContext(app, label, showVerdict = false) {
     </div>`;
 }
 
-function updateWidgetHUD(hearts, score) {
-  document.getElementById('widget-hearts').textContent = '❤️'.repeat(hearts) + '🖤'.repeat(3 - hearts);
-  document.getElementById('widget-score').textContent = score;
+function updateWidgetHUD(h, s) {
+  const heartsEl = document.getElementById('widget-hearts');
+  const scoreEl = document.getElementById('widget-score');
+  if (heartsEl) heartsEl.textContent = '❤️'.repeat(Math.max(0,h)) + '🖤'.repeat(Math.max(0, 3 - h));
+  if (scoreEl) scoreEl.textContent = s;
 }
 
 // --------------------
@@ -879,6 +938,7 @@ function renderFaceTimeContacts() {
 }
 
 async function startFaceTimeCall(contact) {
+    currentEmail = null;  
   ftContact = contact;
   currentContact = null;
 
@@ -897,11 +957,11 @@ async function startFaceTimeCall(contact) {
 
   setWidgetContext('facetime', 'FaceTime with ' + contact.name, true);
 
-  if (verdicts[contact.name] !== undefined) {
+  if (ftVerdicts[contact.name] !== undefined) {
     document.getElementById("ft-call-status").textContent = "Call ended";
     document.getElementById("ft-input").disabled = true;
     transcript.style.display = ftHistories[contact.name].length > 0 ? "block" : "none";
-    showVerdictResult(contact.name);
+    showVerdictResult(contact.name, 'facetime');
     return;
   }
 
@@ -1019,7 +1079,7 @@ function triggerIncomingCall() {
   const noActiveCall = document.getElementById("facetime-call").style.display !== "flex";
   const noBannerShowing = document.getElementById("incoming-call").style.display === "none" || document.getElementById("incoming-call").style.display === "";
   if (desktopVisible && noActiveCall && noBannerShowing && contacts.length > 0) {
-    const unjudged = contacts.filter(c => verdicts[c.name] === undefined);
+    const unjudged = contacts.filter(c => ftVerdicts[c.name] === undefined && msgVerdicts[c.name] === undefined);
     if (unjudged.length > 0) {
       incomingContact = shuffle(unjudged)[0];
       showIncomingCall(incomingContact);
@@ -1028,7 +1088,7 @@ function triggerIncomingCall() {
 }
 
 function scheduleFirstCall() {
-  const delay = (Math.random() * 10000) + 5000;
+  const delay = (Math.random() * 60000) + 60000; // 1-2 minutes
   setTimeout(() => {
     triggerIncomingCall();
     scheduleIncomingCall();
@@ -1036,7 +1096,7 @@ function scheduleFirstCall() {
 }
 
 function scheduleIncomingCall() {
-  const delay = (Math.random() * 25000) + 20000;
+  const delay = (Math.random() * 900000) + 300000; // 5-20 minutes
   setTimeout(() => {
     triggerIncomingCall();
     scheduleIncomingCall();
@@ -1103,10 +1163,10 @@ function updateDockIndicator(windowId, isOpen) {
 function submitMailVerdict(isScam) {
   if (!currentEmail) return;
   const key = 'mail_' + currentEmail.email + '_' + currentEmail.subject;
-  if (verdicts[key] !== undefined) return;
+  if (mailVerdicts[key] !== undefined) return;
+  mailVerdicts[key] = isScam;
 
   const correct = isScam === currentEmail.scam;
-  verdicts[key] = isScam;
 
   if (correct) {
     score += 100;
@@ -1119,17 +1179,61 @@ function submitMailVerdict(isScam) {
   updateHeartsDisplay();
   updateScoreDisplay();
 
-  // show result in widget
+  const searchQuery = currentEmail.scam
+    ? "how to identify and avoid " + currentEmail.subject
+    : "common email scam tactics to watch out for";
+
   document.getElementById('widget-verdict-section').innerHTML = `
     <div style="height:0.5px;background:rgba(255,255,255,0.1);margin-bottom:10px;"></div>
     <div style="font-size:9px;color:rgba(255,255,255,0.45);margin-bottom:7px;">YOUR VERDICT</div>
     <div style="text-align:center;font-size:13px;font-weight:600;color:${correct ? '#30d158' : '#ff3b30'};">
       ${correct ? '✅ Correct!' : '❌ Wrong!'}
-    </div>`;
+    </div>
+    <button onclick="event.stopPropagation();showMailLearnMore()" style="margin-top:10px;width:100%;padding:7px 0;border-radius:10px;border:none;background:rgba(255,255,255,0.12);color:white;font-size:11px;cursor:pointer;">🔍 Learn More</button>
+    <div id="learn-more-results" style="margin-top:8px;font-size:11px;color:rgba(255,255,255,0.7);max-height:150px;overflow-y:auto;"></div>`;
 
   if (hearts <= 0) setTimeout(() => gameOver(), 1000);
 }
 
+async function showMailLearnMore() {
+  if (!currentEmail) return;
+  const resultsDiv = document.getElementById('learn-more-results');
+  if (!resultsDiv) return;
+
+  resultsDiv.innerHTML = `<div style="color:rgba(255,255,255,0.4);font-style:italic;">Searching...</div>`;
+
+ const query = currentEmail.scam
+  ? "warning signs of scam: " + currentEmail.from + " " + currentEmail.subject + " fraud"
+  : "how to stay safe from phishing emails";
+
+  try {
+    const results = await searchTavily(query);
+    if (results.length === 0) {
+      resultsDiv.innerHTML = `<div style="color:rgba(255,255,255,0.4);">No results found.</div>`;
+      return;
+    }
+    resultsDiv.innerHTML = results.map(r => `
+      <div style="margin-bottom:8px;padding-bottom:8px;border-bottom:0.5px solid rgba(255,255,255,0.1);">
+        <div style="font-weight:600;color:white;margin-bottom:2px;">${r.title}</div>
+        <div style="color:rgba(255,255,255,0.5);font-size:10px;margin-bottom:3px;">${r.url}</div>
+        <div>${r.content?.slice(0, 120)}...</div>
+      </div>`).join('');
+  } catch (err) {
+    resultsDiv.innerHTML = `<div style="color:#ff3b30;">Search failed. Try again.</div>`;
+  }
+}
+
+window.showMailLearnMore = showMailLearnMore;
+
+function clickedScamButton() {
+  hearts = Math.max(0, hearts - 1);
+  showToast("❌ You clicked a scam link! -1 heart");
+  updateHeartsDisplay();
+  updateScoreDisplay();
+  if (hearts <= 0) setTimeout(() => gameOver(), 1000);
+}
+
+window.clickedScamButton = clickedScamButton;
 // --------------------
 // EXPOSE TO HTML
 // --------------------
@@ -1154,3 +1258,53 @@ window.endFaceTimeCall = endFaceTimeCall;
 window.closeFaceTime = closeFaceTime;
 window.acceptIncomingCall = acceptIncomingCall;
 window.declineIncomingCall = declineIncomingCall;
+window.setCurrentEmail = function(email) {
+  currentEmail = email;
+  if (email) {
+    const key = 'mail_' + email.email + '_' + email.subject;
+    const alreadyVoted = mailVerdicts[key] !== undefined;
+    setWidgetContext('mail', 'From: ' + email.from, !alreadyVoted);
+    if (alreadyVoted) {
+      const correct = mailVerdicts[key] === email.scam;
+      document.getElementById('widget-verdict-section').style.display = 'block';
+      document.getElementById('widget-verdict-section').innerHTML = `
+        <div style="height:0.5px;background:rgba(255,255,255,0.1);margin-bottom:10px;"></div>
+        <div style="font-size:9px;color:rgba(255,255,255,0.45);margin-bottom:7px;">YOUR VERDICT</div>
+        <div style="text-align:center;font-size:13px;font-weight:600;color:${correct ? '#30d158' : '#ff3b30'};">
+          ${correct ? '✅ Correct!' : '❌ Wrong!'}
+        </div>`;
+    }
+  }
+};
+
+function gameOver() {
+  const allVerdicts = { ...msgVerdicts, ...ftVerdicts };
+  const correct = Object.keys(allVerdicts).filter(name => {
+    const contact = contacts.find(c => c.name === name);
+    return contact && allVerdicts[name] === contact.isScammer;
+  }).length;
+  const wrong = Object.keys(allVerdicts).length - correct;
+  setTimeout(() => triggerGameOver(score, correct, wrong, 3 - hearts), 1000);
+}
+
+window.generateContacts = generateContacts;
+window.renderContacts = renderContacts;
+window.updateHeartsDisplay = updateHeartsDisplay;
+window.updateScoreDisplay = updateScoreDisplay;
+
+function resetGame() {
+  score = 0;
+  hearts = 3;
+  generateContacts();
+  renderContacts();
+  initializePreviews();
+  updateHeartsDisplay();
+  updateScoreDisplay();
+  updateWidgetHUD(3, 0); // 👈 add this
+  document.getElementById("gameover-screen").style.display = "none";
+  document.getElementById("go-phase-3").style.display = "none";
+  document.getElementById("go-phase-1").style.display = "none";
+  document.getElementById("go-phase-2").style.display = "none";
+}
+
+window.resetGame = resetGame;
