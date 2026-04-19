@@ -68,7 +68,7 @@
           <span class="title">Login</span>
         </div>
         <div class="content">
-          <div class="profile"><img src="https://i.pravatar.cc/100" /></div>
+          <div class="profile"><img src="cat.jpg" /></div>
           <h2>Welcome</h2>
           <input id="username" placeholder="Email or Username" />
           <input id="password" type="password" placeholder="Password" />
@@ -152,44 +152,67 @@
       </div>
 
       <!-- SAFARI -->
-      <div id="window-safari" class="window hidden" style="width:860px;height:560px;">
-        <div class="window-bar" style="display:flex;align-items:center;gap:8px;padding:0 10px;">
-          <div class="mac-buttons" style="display:flex;gap:6px;flex-shrink:0;">
-            <span class="dot red" onclick="closeWindow('window-safari')"></span>
-            <span class="dot yellow" onclick="minimizeWindow('window-safari')"></span>
-            <span class="dot green" onclick="maximizeWindow('window-safari')"></span>
-          </div>
-          <button onclick="safariGoBack()" onmousedown="event.stopPropagation()" style="background:none;border:none;color:#8e8e93;font-size:18px;cursor:pointer;padding:2px 6px;min-width:24px;line-height:1;">‹</button>
-          <button onclick="safariGoForward()" onmousedown="event.stopPropagation()" style="background:none;border:none;color:#8e8e93;font-size:18px;cursor:pointer;padding:2px 6px;min-width:24px;line-height:1;">›</button>
-          <div style="flex:1;position:relative;">
-            <input id="safari-url" placeholder="Search or enter website name"
-style=" width: 100%; padding: 5px 12px; border-radius: 8px; border: none; background: rgba(0, 0, 0, 0.12); color: #1c1c1e; font-size: 13px; outline: none; box-sizing: border-box; text-align: center; "              onfocus="this.style.textAlign='left';this.select();showSafariSuggestions(this.value||'__all__');"
-onblur="setTimeout(()=>hideSafariSuggestions(),500);if(!this.value)this.style.textAlign='center';"              oninput="showSafariSuggestions(this.value)"
-              onkeydown="if(event.key==='Enter'){safariNavigate(this.value);}" />
-          </div>
-          <button onclick="safariNavigate(document.getElementById('safari-url').value)" style="background:none;border:none;color:#0a84ff;font-size:12px;cursor:pointer;padding:2px 4px;">Go</button>
-        </div>
-        <div id="safari-content" style="height:calc(100% - 36px);overflow-y:auto;background:white;border-radius:0 0 12px 12px;">
-          <div id="safari-newtab" style="padding:40px 20px;text-align:center;background:#f5f5f7;min-height:100%;">
-            <div style="font-size:13px;font-weight:600;color:#1c1c1e;text-align:left;max-width:500px;margin:0 auto 12px;">Favorites</div>
-            <div style="display:flex;flex-wrap:wrap;gap:16px;justify-content:center;max-width:500px;margin:0 auto 32px;">
-              <div onclick="safariNavigate('google.com')" style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;width:64px;"><div style="width:52px;height:52px;border-radius:12px;background:white;display:flex;align-items:center;justify-content:center;font-size:26px;box-shadow:0 1px 4px rgba(0,0,0,0.12);">G</div><span style="font-size:11px;color:#1c1c1e;">Google</span></div>
-              <div onclick="safariNavigate('youtube.com')" style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;width:64px;"><div style="width:52px;height:52px;border-radius:12px;background:#ff0000;display:flex;align-items:center;justify-content:center;font-size:22px;color:white;box-shadow:0 1px 4px rgba(0,0,0,0.12);">▶</div><span style="font-size:11px;color:#1c1c1e;">YouTube</span></div>
-              <div onclick="safariNavigate('instagram.com')" style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;width:64px;"><div style="width:52px;height:52px;border-radius:12px;background:linear-gradient(135deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);display:flex;align-items:center;justify-content:center;font-size:24px;color:white;box-shadow:0 1px 4px rgba(0,0,0,0.12);">◻</div><span style="font-size:11px;color:#1c1c1e;">Instagram</span></div>
-              <div onclick="safariNavigate('amazon.com')" style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;width:64px;"><div style="width:52px;height:52px;border-radius:12px;background:#ff9900;display:flex;align-items:center;justify-content:center;font-size:22px;color:white;box-shadow:0 1px 4px rgba(0,0,0,0.12);">a</div><span style="font-size:11px;color:#1c1c1e;">Amazon</span></div>
-              <div onclick="safariNavigate('reddit.com')" style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;width:64px;"><div style="width:52px;height:52px;border-radius:12px;background:#ff4500;display:flex;align-items:center;justify-content:center;font-size:24px;color:white;box-shadow:0 1px 4px rgba(0,0,0,0.12);">r</div><span style="font-size:11px;color:#1c1c1e;">Reddit</span></div>
-              <div onclick="safariNavigate('wikipedia.org')" style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;width:64px;"><div style="width:52px;height:52px;border-radius:12px;background:white;display:flex;align-items:center;justify-content:center;font-size:24px;color:#1c1c1e;box-shadow:0 1px 4px rgba(0,0,0,0.12);">W</div><span style="font-size:11px;color:#1c1c1e;">Wikipedia</span></div>
-            </div>
-            <div style="font-size:13px;font-weight:600;color:#1c1c1e;text-align:left;max-width:500px;margin:0 auto 12px;">Privacy Report</div>
-            <div style="max-width:500px;margin:0 auto;background:white;border-radius:12px;padding:14px 18px;text-align:left;box-shadow:0 1px 4px rgba(0,0,0,0.08);">
-              <div style="font-size:12px;color:#8e8e93;">Safari has not encountered any trackers in the last seven days.</div>
-            </div>
-          </div>
-          <div id="safari-page" style="display:none;height:100%;"></div>
-        </div>
-      </div>
+     <!-- SAFARI -->
+<!-- SAFARI -->
+<div id="window-safari" class="window hidden" style="width:860px;height:560px;display:flex;flex-direction:column;overflow:hidden;">
 
-      <!-- SETTINGS -->
+  <!-- TOOLBAR (not using .window-bar class to avoid CSS conflicts) -->
+  <div id="safari-toolbar" class="window-bar" style="display:flex;align-items:center;gap:8px;padding:6px 10px;flex-shrink:0;min-height:44px;">
+    <div class="mac-buttons" style="display:flex;gap:6px;flex-shrink:0;">
+      <span class="dot red" onclick="closeWindow('window-safari')"></span>
+      <span class="dot yellow" onclick="minimizeWindow('window-safari')"></span>
+      <span class="dot green" onclick="maximizeWindow('window-safari')"></span>
+    </div>
+    <button onclick="event.stopPropagation();safariGoBack();" style="background:rgba(0,0,0,0.15);border:none;color:white;font-size:15px;font-weight:600;cursor:pointer;padding:3px 9px;border-radius:5px;width:auto;flex-shrink:0;line-height:1;">‹</button>
+    <button onclick="event.stopPropagation();safariGoForward();" style="background:rgba(0,0,0,0.15);border:none;color:white;font-size:15px;font-weight:600;cursor:pointer;padding:3px 9px;border-radius:5px;width:auto;flex-shrink:0;line-height:1;">›</button>
+    <button onclick="safariGoHome();" style="background:rgba(0,0,0,0.15);border:none;color:white;font-size:13px;cursor:pointer;padding:3px 8px;border-radius:5px;width:auto;flex-shrink:0;">🏠</button>
+    <input id="safari-url" placeholder="Search or enter website name"
+      style="flex:1;padding:5px 12px;border-radius:8px;border:none;background:rgba(255,255,255,0.2);color:white;font-size:13px;outline:none;box-sizing:border-box;text-align:center;"
+      onfocus="this.style.background='white';this.style.color='#1c1c1e';this.style.textAlign='left';this.select();showSafariSuggestions(this.value||'__all__');"
+      onblur="this.style.background='rgba(255,255,255,0.2)';this.style.color='white';setTimeout(()=>hideSafariSuggestions(),500);if(!this.value)this.style.textAlign='center';"
+      oninput="showSafariSuggestions(this.value)"
+      onkeydown="if(event.key==='Enter'){safariNavigate(this.value);}" />
+  </div>
+
+  <!-- TAB BAR -->
+  <div style="display:flex;align-items:stretch;background:#d4d4d4;border-bottom:1px solid #bbb;height:34px;padding:5px 8px 0;gap:2px;flex-shrink:0;">
+    <div id="safari-tab-home" onclick="safariShowNewTab()" style="display:flex;align-items:center;gap:5px;background:#f0f0f0;border-radius:6px 6px 0 0;padding:0 10px;min-width:100px;max-width:160px;height:100%;border:1px solid #bbb;border-bottom:1px solid #f0f0f0;margin-bottom:-1px;flex-shrink:0;cursor:pointer;" onmouseover="this.style.background='#e8e8e8'" onmouseout="this.style.background='#f0f0f0'">
+      <span style="font-size:11px;">🧭</span>
+      <span style="font-size:11px;color:#1c1c1e;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Start Page</span>
+    </div>
+ <div id="safari-tab-active" onclick="safariRestoreActiveTab()" style="display:none;align-items:center;gap:5px;background:white;border-radius:6px 6px 0 0;padding:0 10px;min-width:140px;max-width:200px;height:100%;border:1px solid #bbb;border-bottom:1px solid white;margin-bottom:-1px;flex-shrink:0;">
+  <span id="safari-tab-favicon" style="font-size:11px;">🌐</span>
+  <span id="safari-tab-title" style="font-size:11px;color:#1c1c1e;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Tab</span>
+  <span onclick="closeSafariTab()" style="color:#8e8e93;font-size:10px;cursor:pointer;padding:1px 3px;border-radius:3px;" onmouseover="this.style.background='rgba(0,0,0,0.1)'" onmouseout="this.style.background='none'">✕</span>
+</div>
+    <div style="display:flex;align-items:center;justify-content:center;width:26px;height:26px;cursor:pointer;color:#555;font-size:15px;border-radius:4px;margin-top:1px;" onmouseover="this.style.background='rgba(0,0,0,0.08)'" onmouseout="this.style.background='none'">+</div>
+  </div>
+  
+
+  <!-- PAGE CONTENT -->
+ <div id="safari-content" style="flex:1;overflow-y:auto;background:#f5f5f7;border-radius:0 0 12px 12px;">
+    <div id="safari-newtab" style="padding:40px 20px;text-align:center;background:#f5f5f7;min-height:100%;box-sizing:border-box;">
+      <div style="font-size:13px;font-weight:600;color:#1c1c1e;text-align:left;max-width:500px;margin:0 auto 12px;">Favorites</div>
+      <div style="display:flex;flex-wrap:wrap;gap:16px;justify-content:center;max-width:500px;margin:0 auto 32px;">
+        <div onclick="safariNavigate('google.com')" style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;width:64px;"><div style="width:52px;height:52px;border-radius:12px;background:white;display:flex;align-items:center;justify-content:center;font-size:26px;box-shadow:0 1px 4px rgba(0,0,0,0.12);">G</div><span style="font-size:11px;color:#1c1c1e;">Google</span></div>
+        <div onclick="safariNavigate('youtube.com')" style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;width:64px;"><div style="width:52px;height:52px;border-radius:12px;background:#ff0000;display:flex;align-items:center;justify-content:center;font-size:22px;color:white;box-shadow:0 1px 4px rgba(0,0,0,0.12);">▶</div><span style="font-size:11px;color:#1c1c1e;">YouTube</span></div>
+        <div onclick="safariNavigate('instagram.com')" style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;width:64px;"><div style="width:52px;height:52px;border-radius:12px;background:linear-gradient(135deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);display:flex;align-items:center;justify-content:center;font-size:24px;color:white;box-shadow:0 1px 4px rgba(0,0,0,0.12);">◻</div><span style="font-size:11px;color:#1c1c1e;">Instagram</span></div>
+        <div onclick="safariNavigate('amazon.com')" style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;width:64px;"><div style="width:52px;height:52px;border-radius:12px;background:#ff9900;display:flex;align-items:center;justify-content:center;font-size:22px;color:white;box-shadow:0 1px 4px rgba(0,0,0,0.12);">a</div><span style="font-size:11px;color:#1c1c1e;">Amazon</span></div>
+        <div onclick="safariNavigate('reddit.com')" style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;width:64px;"><div style="width:52px;height:52px;border-radius:12px;background:#ff4500;display:flex;align-items:center;justify-content:center;font-size:24px;color:white;box-shadow:0 1px 4px rgba(0,0,0,0.12);">r</div><span style="font-size:11px;color:#1c1c1e;">Reddit</span></div>
+        <div onclick="safariNavigate('wikipedia.org')" style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;width:64px;"><div style="width:52px;height:52px;border-radius:12px;background:white;display:flex;align-items:center;justify-content:center;font-size:24px;color:#1c1c1e;box-shadow:0 1px 4px rgba(0,0,0,0.12);">W</div><span style="font-size:11px;color:#1c1c1e;">Wikipedia</span></div>
+      </div>
+      <div style="font-size:13px;font-weight:600;color:#1c1c1e;text-align:left;max-width:500px;margin:0 auto 12px;">Privacy Report</div>
+      <div style="max-width:500px;margin:0 auto;background:white;border-radius:12px;padding:14px 18px;text-align:left;box-shadow:0 1px 4px rgba(0,0,0,0.08);">
+        <div style="font-size:12px;color:#8e8e93;">Safari has not encountered any trackers in the last seven days.</div>
+      </div>
+    </div>
+    <div id="safari-page" style="display:none;min-height:100%;"></div>
+  </div>
+</div>
+
+
+
+<!-- SETTINGS -->
       <div id="window-settings" class="window hidden" style="width:660px;height:520px;">
         <div class="window-bar">
           <div class="mac-buttons">
@@ -202,7 +225,7 @@ onblur="setTimeout(()=>hideSafariSuggestions(),500);if(!this.value)this.style.te
         <div style="display:flex;height:calc(100% - 36px);background:#f5f5f5;border-radius:0 0 12px 12px;overflow:hidden;color:#1c1c1e;">
           <div style="width:210px;min-width:210px;background:#ebebeb;border-right:0.5px solid #d0d0d0;display:flex;flex-direction:column;overflow:hidden;">
             <div onclick="settingsShowPanel('profile',null,this)" style="display:flex;align-items:center;gap:10px;padding:14px 12px 10px;border-bottom:0.5px solid #d8d8d8;cursor:pointer;background:rgba(0,0,0,0.07);">
-              <img src="https://i.pravatar.cc/100?img=33" style="width:42px;height:42px;border-radius:50%;border:1.5px solid rgba(0,0,0,0.15);flex-shrink:0;" />
+              <img src="cat.jpg" style="width:42px;height:42px;border-radius:12px;border:1.5px solid rgba(0,0,0,0.15);flex-shrink:0;" />
               <div>
                 <div style="font-size:13px;font-weight:600;color:#1c1c1e;" id="settings-display-name">John Doe</div>
                 <div style="font-size:11px;color:#8e8e93;margin-top:1px;">MacBook Account</div>
@@ -221,6 +244,9 @@ onblur="setTimeout(()=>hideSafariSuggestions(),500);if(!this.value)this.style.te
               <div class="settings-nav-item" onclick="settingsShowPanel('appearance',this)" style="display:flex;align-items:center;gap:9px;padding:7px 12px;cursor:pointer;border-radius:8px;margin:1px 6px;font-size:13px;color:#1c1c1e;"><div style="width:26px;height:26px;border-radius:6px;background:#5e5ce6;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;">🎨</div>Appearance</div>
               <div class="settings-nav-item" onclick="settingsShowPanel('notifications',this)" style="display:flex;align-items:center;gap:9px;padding:7px 12px;cursor:pointer;border-radius:8px;margin:1px 6px;font-size:13px;color:#1c1c1e;"><div style="width:26px;height:26px;border-radius:6px;background:#ff453a;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;">🔔</div>Notifications</div>
             </div>
+            <div class="settings-nav-item" onclick="settingsShowPanel('leaderboard',this)" style="display:flex;align-items:center;gap:9px;padding:7px 12px;cursor:pointer;border-radius:8px;margin:1px 6px;font-size:13px;color:#1c1c1e;">
+  <div style="width:26px;height:26px;border-radius:6px;background:#ffd60a;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;">🏆</div>Leaderboard
+</div>
           </div>
           <div id="settings-panel" style="flex:1;overflow-y:auto;padding:22px 26px;background:white;"></div>
         </div>
@@ -269,8 +295,30 @@ onblur="setTimeout(()=>hideSafariSuggestions(),500);if(!this.value)this.style.te
           </div>
           <span>Recycle Bin</span>
         </div>
-        <div class="window-content">Deleted files appear here.</div>
-      </div>
+<div style="padding:20px;background:#f5f5f5;height:calc(100% - 36px);border-radius:0 0 12px 12px;overflow-y:auto;color:#1c1c1e;">
+  <div style="font-size:22px;font-weight:700;margin-bottom:4px;">Recycle Bin</div>
+  <div style="font-size:11px;color:#8e8e93;margin-bottom:16px;">3 items</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px;">
+    <div style="display:flex;flex-direction:column;align-items:center;">
+      <div style="width:110px;height:90px;border-radius:12px;background:#f0f0f0;display:flex;align-items:center;justify-content:center;font-size:36px;border:0.5px solid rgba(0,0,0,0.08);">📄</div>
+      <div style="font-size:11px;font-weight:500;color:#1c1c1e;text-align:center;margin-top:6px;">March Report (old).docx</div>
+      <div style="font-size:10px;color:#8e8e93;">2 days ago</div>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;">
+      <div style="width:110px;height:90px;border-radius:12px;background:#f0f0f0;display:flex;align-items:center;justify-content:center;font-size:36px;border:0.5px solid rgba(0,0,0,0.08);">🖼️</div>
+      <div style="font-size:11px;font-weight:500;color:#1c1c1e;text-align:center;margin-top:6px;">screenshot_fail.png</div>
+      <div style="font-size:10px;color:#8e8e93;">Last week</div>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;">
+      <div style="width:110px;height:90px;border-radius:12px;background:#f0f0f0;display:flex;align-items:center;justify-content:center;font-size:36px;border:0.5px solid rgba(0,0,0,0.08);">📝</div>
+      <div style="font-size:11px;font-weight:500;color:#1c1c1e;text-align:center;margin-top:6px;">passwords_backup.txt</div>
+      <div style="font-size:10px;color:#8e8e93;">Last week</div>
+    </div>
+  </div>
+  <div style="margin-top:24px;padding-top:16px;border-top:1px solid #e0e0e0;display:flex;gap:10px;">
+    <button onclick="document.querySelector('#window-recycle .window-content div').innerHTML='<div style=\'text-align:center;color:#aaa;margin-top:60px;font-size:13px;\'>Recycle Bin is empty</div>'" style="background:#ff3b30;color:white;border:none;border-radius:8px;padding:8px 16px;font-size:13px;cursor:pointer;width:auto;">Empty Recycle Bin</button>
+  </div>
+</div>      </div>
 
       <!-- FACETIME -->
       <div id="window-facetime" class="window hidden" style="width:480px;height:520px;">
@@ -486,10 +534,10 @@ onblur="setTimeout(()=>hideSafariSuggestions(),500);if(!this.value)this.style.te
       function focusWindow(win) { highestZ++; win.style.zIndex = highestZ; }
 
       function openWindow(id) {
-        const win = document.getElementById(id);
-        if (!win) return;
-        win.classList.remove("hidden");
-        focusWindow(win);
+  const win = document.getElementById(id);
+  if (!win) return;
+  win.classList.remove("hidden");
+  focusWindow(win);
         if (id === 'window-notes') initNotes();
         if (id === 'window-mail') initMail();
         if (id === 'window-files') showFilesSection('myfiles', document.querySelector('.files-nav-item'));
@@ -518,25 +566,31 @@ onblur="setTimeout(()=>hideSafariSuggestions(),500);if(!this.value)this.style.te
       function toggleFullscreen(id) { maximizeWindow(id); }
 
       function makeDraggable(win) {
-        const bar = win.querySelector(".window-bar");
-        if (!bar) return;
-        let isDragging = false, startX, startY, startLeft, startTop;
-        bar.addEventListener("mousedown", (e) => {
-    if (e.target.closest("button") || e.target.closest(".dot") || e.target.tagName === "INPUT") return;
-          isDragging = true; focusWindow(win);
-          const rect = win.getBoundingClientRect();
-          startX = e.clientX; startY = e.clientY; startLeft = rect.left; startTop = rect.top;
-          win.style.left = startLeft+"px"; win.style.top = startTop+"px"; win.style.transform = "none";
-          e.preventDefault();
-        });
-        document.addEventListener("mousemove", (e) => {
-          if (!isDragging) return;
-          win.style.left = (startLeft + e.clientX - startX)+"px";
-          win.style.top  = (startTop  + e.clientY - startY)+"px";
-        });
-        document.addEventListener("mouseup", () => { isDragging = false; });
-        win.addEventListener("mousedown", () => focusWindow(win));
-      }
+  const bar = win.querySelector(".window-bar");
+  if (!bar) return;
+  let isDragging = false, startX, startY, startLeft, startTop, hasDragged;
+  bar.addEventListener("mousedown", (e) => {
+    if (e.target.closest("button") || e.target.closest(".dot") || e.target.closest(".game-hud")) return;
+    isDragging = true; hasDragged = false; focusWindow(win);
+    const rect = win.getBoundingClientRect();
+    startX = e.clientX; startY = e.clientY; startLeft = rect.left; startTop = rect.top;
+    win.style.left = startLeft+"px"; win.style.top = startTop+"px"; win.style.transform = "none";
+    e.preventDefault();
+  });
+  document.addEventListener("mousemove", (e) => {
+    if (!isDragging) return;
+    const dx = e.clientX - startX;
+    const dy = e.clientY - startY;
+    if (Math.abs(dx) > 3 || Math.abs(dy) > 3) hasDragged = true;
+    win.style.left = (startLeft + dx)+"px";
+    win.style.top = (startTop + dy)+"px";
+  });
+  document.addEventListener("mouseup", () => { isDragging = false; });
+  bar.addEventListener("click", (e) => {
+    if (hasDragged) e.stopPropagation();
+  });
+  win.addEventListener("mousedown", () => focusWindow(win));
+}
 
       function makeResizable(win) {
         const handle = document.createElement("div");
@@ -646,6 +700,14 @@ onblur="setTimeout(()=>hideSafariSuggestions(),500);if(!this.value)this.style.te
 
       /* ===== NOTES ===== */
       const notesData = [
+        { 
+  title:"🏆 Leaderboard", 
+  date:"Live", 
+  preview:"Loading scores...", 
+  tag:"#work", 
+  content:`<div style="font-size:11px;color:#8e8e93;text-align:center;margin-bottom:16px;">Live Rankings</div><div style="font-weight:700;font-size:18px;margin-bottom:12px;">🏆 Leaderboard</div><div id="notes-leaderboard-content" style="font-size:13px;color:#333;line-height:2;">Loading...</div>`,
+  pinned: true
+},
         { title:"Grocery List 🛒", date:"Today, 10:42", preview:"Don't forget milk...", tag:"#personal", content:`<div style="font-size:11px;color:#8e8e93;text-align:center;margin-bottom:16px;">Today at 10:42</div><div style="font-weight:700;font-size:18px;margin-bottom:12px;">Grocery List 🛒</div><div>☐ Milk</div><div>☐ Eggs</div><div>☐ Bread</div><div>☐ Butter</div><div>☐ Orange juice</div><div>☐ Pasta</div><div>☑ Cheese (already got)</div><div style="margin-top:12px;color:#8e8e93;font-size:12px;">#personal</div>` },
         { title:"Passwords 🔑", date:"Today, 09:15", preview:"Netflix: john123...", tag:"#passwords", content:`<div style="font-size:11px;color:#8e8e93;text-align:center;margin-bottom:16px;">Today at 09:15</div><div style="font-weight:700;font-size:18px;margin-bottom:12px;">Passwords 🔑</div><div><b>Netflix:</b> john123!</div><div><b>Instagram:</b> johndoe@99</div><div><b>Bank PIN:</b> 4821</div><div><b>Gmail:</b> johnD0e_2024</div><div><b>WiFi:</b> HomeNetwork_5G / password88</div><div><b>Amazon:</b> j.doe@email.com / Shopping44!</div><div style="margin-top:12px;color:#8e8e93;font-size:12px;">#passwords</div>` },
         { title:"Job Opportunity 💼", date:"Yesterday, 16:30", preview:"Call Mike re: internship...", tag:"#work", content:`<div style="font-size:11px;color:#8e8e93;text-align:center;margin-bottom:16px;">Yesterday at 16:30</div><div style="font-weight:700;font-size:18px;margin-bottom:12px;">Job Opportunity 💼</div><div>Call <b>Mike</b> about the internship position at TechCorp.</div><div style="margin-top:8px;"><b>📞 Number:</b> (917) 555-0143</div><div style="margin-top:8px;"><b>Best time to call:</b> Weekdays 9am–5pm</div><div style="margin-top:12px;color:#8e8e93;font-size:12px;">#work</div>` },
@@ -708,6 +770,9 @@ onblur="setTimeout(()=>hideSafariSuggestions(),500);if(!this.value)this.style.te
           ? `<div style="color:#ff3b30;font-size:12px;margin-bottom:8px;">🗑️ This note is in Recently Deleted — read only</div><div style="font-size:13px;color:#aaa;font-style:italic;">${note.userNote||"No additional notes."}</div>`
           : `<div contenteditable="true" id="note-editable-${i}" data-max="${maxChars}" oninput="handleNoteInput(this,${i})" style="min-height:60px;font-size:13px;color:#333;outline:none;line-height:1.6;font-family:-apple-system,sans-serif;white-space:pre-wrap;">${note.userNote||""}</div><div id="note-charcount-${i}" style="font-size:11px;color:#8e8e93;text-align:right;margin-top:4px;">${maxChars-(note.userNote?.length||0)} chars remaining</div>`
         }</div></div>`;
+        if (note.pinned) {
+  loadNotesLeaderboard();
+}
       }
 
       function handleNoteInput(el, i) {
@@ -938,37 +1003,65 @@ const safariHistory = [
         'instagram.com': () => `<div style="min-height:100%;background:#fafafa;"><div style="background:white;border-bottom:1px solid #eee;padding:10px 16px;text-align:center;font-size:20px;font-weight:600;font-family:Georgia,serif;">Instagram</div><div style="max-width:480px;margin:20px auto;">${[{user:'sara.k',img:70},{user:'jake.wilson',img:71}].map(p=>`<div style="background:white;border:1px solid #eee;border-radius:8px;overflow:hidden;margin-bottom:12px;"><div style="display:flex;align-items:center;gap:10px;padding:10px;"><img src="https://i.pravatar.cc/32?img=${p.img}" style="width:32px;height:32px;border-radius:50%;" /><span style="font-size:13px;font-weight:600;">${p.user}</span></div><img src="https://picsum.photos/480/480?random=${p.img}" style="width:100%;display:block;" /></div>`).join('')}</div></div>`,
       };
 
-      function safariRenderPage(site, query) {
-        document.getElementById('safari-newtab').style.display='none';
-        document.getElementById('safari-page').style.display='block';
-        const page = document.getElementById('safari-page');
-        if (site === 'search') {
-          document.getElementById('safari-url').value = query;
-          page.innerHTML = `<div style="min-height:100%;background:white;padding:16px 24px;"><div style="font-size:13px;color:#8e8e93;margin-bottom:16px;">Search results for "<b style="color:#1c1c1e;">${query}</b>"</div>${['Wikipedia','Reddit','Amazon','YouTube','Google'].map((name,i)=>`<div style="margin-bottom:20px;cursor:pointer;" onclick="safariNavigate('${name.toLowerCase()}.${i===4?'com':'org'}')"><div style="font-size:11px;color:#8e8e93;">${name.toLowerCase()}.${i===4?'com':'org'}</div><div style="font-size:15px;color:#0645ad;margin:2px 0;">${query} — ${name}</div><div style="font-size:13px;color:#4d4d4d;">Find information about ${query} on ${name}.</div></div>`).join('')}</div>`;
-        } else if (safariPages[site]) {
-          document.getElementById('safari-url').value = site;
-          page.innerHTML = safariPages[site]();
-        } else {
-          document.getElementById('safari-url').value = site;
-          page.innerHTML = `<div style="padding:40px;text-align:center;color:#8e8e93;font-size:14px;">Cannot connect to ${site}</div>`;
-        }
-        hideSafariSuggestions();
-      }
+     function safariRenderPage(site, query) {
+        const tab = document.getElementById('safari-tab-active');
+  if (tab && site !== 'home') tab.style.display = 'flex';
+  if (tab && site === 'home') tab.style.display = 'none';
+        const favicons = {'google.com':'🌐','youtube.com':'▶','reddit.com':'🟠','wikipedia.org':'📖','amazon.com':'📦','instagram.com':'📸'};
+  const titles = {'google.com':'Google','youtube.com':'YouTube','reddit.com':'Reddit','wikipedia.org':'Wikipedia','amazon.com':'Amazon','instagram.com':'Instagram','home':'New Tab','search':query||'Search'};
+  const fav = document.getElementById('safari-tab-favicon');
+  const ttl = document.getElementById('safari-tab-title');
+  if (fav) fav.textContent = favicons[site] || '🌐';
+  if (ttl) ttl.textContent = titles[site] || site;
+  if (site === 'home') {
+    document.getElementById('safari-url').value = '';
+    document.getElementById('safari-newtab').style.display = 'block';
+    document.getElementById('safari-page').style.display = 'none';
+    hideSafariSuggestions();
+    return;
+  }
+  document.getElementById('safari-newtab').style.display = 'none';
+  document.getElementById('safari-page').style.display = 'block';
+  const page = document.getElementById('safari-page');
+  if (site === 'search') {
+    document.getElementById('safari-url').value = query;
+    page.innerHTML = `<div style="min-height:100%;background:white;padding:16px 24px;">
+      <div style="font-size:13px;color:#8e8e93;margin-bottom:16px;">Search results for "<b style="color:#1c1c1e;">${query}</b>"</div>
+      ${['Wikipedia','Reddit','Amazon','YouTube','Google'].map((name,i)=>`
+        <div style="margin-bottom:20px;cursor:pointer;" onclick="safariNavigate('${name.toLowerCase()}.${i===4?'com':'org'}')">
+          <div style="font-size:11px;color:#8e8e93;">${name.toLowerCase()}.${i===4?'com':'org'}</div>
+          <div style="font-size:15px;color:#0645ad;margin:2px 0;">${query} — ${name}</div>
+          <div style="font-size:13px;color:#4d4d4d;">Find information about ${query} on ${name}.</div>
+        </div>`).join('')}
+    </div>`;
+  } else if (safariPages[site]) {
+    document.getElementById('safari-url').value = site;
+    page.innerHTML = safariPages[site]();
+  } else {
+    document.getElementById('safari-url').value = site;
+    page.innerHTML = `<div style="padding:40px;text-align:center;color:#8e8e93;font-size:14px;">Cannot connect to ${site}</div>`;
+  }
+  hideSafariSuggestions();
+}
 
       function safariNavigate(input) {
-        if (!input||!input.trim()) return;
-        if (!safariHistory.includes(input)) safariHistory.unshift(input);
-        const isUrl = input.includes('.') && !input.includes(' ');
-        const site = isUrl ? input.replace(/^https?:\/\//,'').replace(/^www\./,'').split('/')[0] : 'search';
-        const query = isUrl ? '' : input;
-        safariNavStack = safariNavStack.slice(0, safariNavIndex+1);
-        safariNavStack.push({site, query});
-        safariNavIndex = safariNavStack.length-1;
-        safariRenderPage(site, query);
-      }
-      function safariSearch(query) { if (query.trim()) safariNavigate(query); }
-      function safariGoBack() { if (safariNavIndex<1) return; safariNavIndex--; const {site,query}=safariNavStack[safariNavIndex]; safariRenderPage(site,query); }
-      function safariGoForward() { if (safariNavIndex>=safariNavStack.length-1) return; safariNavIndex++; const {site,query}=safariNavStack[safariNavIndex]; safariRenderPage(site,query); }
+  if (!input.trim()) return;
+  if (!safariHistory.includes(input)) safariHistory.unshift(input);
+  const isUrl = input.includes('.') && !input.includes(' ');
+  const site = isUrl ? input.replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0] : 'search';
+  const query = isUrl ? '' : input;
+
+  // push home to stack if stack is empty
+  if (safariNavStack.length === 0) {
+    safariNavStack.push({site: 'home', query: ''});
+    safariNavIndex = 0;
+  }
+
+  safariNavStack = safariNavStack.slice(0, safariNavIndex + 1);
+  safariNavStack.push({site, query});
+  safariNavIndex = safariNavStack.length - 1;
+  safariRenderPage(site, query);
+}
 
       function showSafariSuggestions(val) {
         const box = document.getElementById('safari-suggestions');
@@ -987,6 +1080,95 @@ box.innerHTML = matches.map(m => `
   </div>`).join('');      }
       function hideSafariSuggestions() { const b=document.getElementById('safari-suggestions'); if(b) b.style.display='none'; }
 
+
+function safariGoForward() {
+  if (safariNavIndex >= safariNavStack.length - 1) return;
+  safariNavIndex++;
+  const { site, query } = safariNavStack[safariNavIndex];
+  safariRenderPage(site, query);
+}
+
+
+
+
+      function safariGoBack() {
+  if (safariNavIndex <= 0) return;
+  safariNavIndex--;
+  const {site, query} = safariNavStack[safariNavIndex];
+  safariRenderPage(site, query);
+}
+
+
+
+function safariSearch(query) { if (query.trim()) safariNavigate(query); }
+
+window.safariGoBack = safariGoBack;
+window.safariGoForward = safariGoForward;
+window.safariNavigate = safariNavigate;
+window.safariRenderPage = safariRenderPage;
+window.safariSearch = safariSearch;
+// add right after window.safariSearch = safariSearch;
+function safariGoHome() {
+  // Push home into the nav stack so back/forward still works
+  safariNavStack = safariNavStack.slice(0, safariNavIndex + 1);
+  safariNavStack.push({ site: 'home', query: '' });
+  safariNavIndex = safariNavStack.length - 1;
+
+  document.getElementById('safari-url').value = '';
+  document.getElementById('safari-newtab').style.display = 'block';
+  document.getElementById('safari-page').style.display = 'none';
+
+  // Don't touch the active tab — just deselect it visually
+  const activeTab = document.getElementById('safari-tab-active');
+  if (activeTab) {
+    activeTab.style.background = 'transparent';
+    activeTab.style.borderBottom = 'none';
+  }
+
+  hideSafariSuggestions();
+}
+window.safariGoHome = safariGoHome;
+
+function safariShowNewTab() {
+  document.getElementById('safari-url').value = '';
+  document.getElementById('safari-newtab').style.display = 'block';
+  document.getElementById('safari-page').style.display = 'none';
+
+  // Deselect active tab visually but don't hide it
+  const activeTab = document.getElementById('safari-tab-active');
+  if (activeTab) {
+    activeTab.style.background = 'transparent';
+    activeTab.style.borderBottom = 'none';
+  }
+  // Highlight the start page tab
+  const homeTab = document.getElementById('safari-tab-home');
+  if (homeTab) homeTab.style.background = '#f0f0f0';
+}
+window.safariShowNewTab = safariShowNewTab;
+
+function safariRestoreActiveTab() {
+  document.getElementById('safari-newtab').style.display = 'none';
+  document.getElementById('safari-page').style.display = 'block';
+
+  // Re-highlight active tab, de-highlight start page
+  const activeTab = document.getElementById('safari-tab-active');
+  if (activeTab) {
+    activeTab.style.background = 'white';
+    activeTab.style.borderBottom = '1px solid white';
+  }
+  const homeTab = document.getElementById('safari-tab-home');
+  if (homeTab) homeTab.style.background = '#f0f0f0';
+}
+window.safariRestoreActiveTab = safariRestoreActiveTab;
+
+function closeSafariTab() {
+  // Hide the active tab
+  const tab = document.getElementById('safari-tab-active');
+  if (tab) tab.style.display = 'none';
+  // Go home
+  safariGoHome();
+}
+window.closeSafariTab = closeSafariTab;
       /* ===== DESKTOP FILE ICONS ===== */
       const DESKTOP_ITEMS = [
         { icon:"📁", name:"Mac Stacks Tip", x:120, y:80 },
@@ -1301,6 +1483,14 @@ function restartGame() {
     <button onclick="restartGame()" style="margin-top:16px;width:auto;padding:12px 40px;border-radius:8px;background:#ff0000;border:2px solid #ff0000;color:white;font-family:'Courier New',monospace;font-size:14px;font-weight:700;cursor:pointer;letter-spacing:3px;text-shadow:0 0 10px #ff0000;box-shadow:0 0 20px rgba(255,0,0,0.4);">
       [ TRY AGAIN ]
     </button>
+    <button onclick="toggleDeathLeaderboard()" style="margin-top:8px;width:auto;padding:10px 40px;border-radius:8px;background:transparent;border:2px solid #00ff00;color:#00ff00;font-family:'Courier New',monospace;font-size:14px;font-weight:700;cursor:pointer;letter-spacing:3px;">
+  [ LEADERBOARD ]
+</button>
+
+<div id="death-leaderboard" style="display:none;margin-top:16px;background:rgba(0,255,0,0.05);border:1px solid #00ff00;border-radius:12px;padding:16px 32px;min-width:320px;">
+  <div style="color:#00ff00;font-size:11px;letter-spacing:2px;margin-bottom:12px;text-align:center;">-- TOP SCORES --</div>
+  <div id="death-leaderboard-rows" style="color:#aaa;font-size:13px;text-align:center;">Loading...</div>
+</div>
 
     <div style="color:#333;font-size:11px;margin-top:8px;letter-spacing:1px;">your data has been compromised</div>
 
@@ -1329,6 +1519,9 @@ function restartGame() {
   80%{transform:translate(2px,-2px)}
   100%{transform:translate(0)}
 }
+
+
+
 </style>
 
 

@@ -1,4 +1,5 @@
 import { auth, db } from "./firebase.js";
+window._auth = auth;
 import {
   signInWithEmailAndPassword,
   signOut,
@@ -11,7 +12,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { sendToGroq, speakWithElevenLabs, stopSpeaking } from "./groq.js";
 import { GROQ_API_KEY, TAVILY_API_KEY } from "./config.js";
-
+import { collection, getDocs, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 
 async function searchTavily(query) {
@@ -344,6 +345,9 @@ function startGame() {
   document.getElementById("desktop").classList.remove("hidden");
 
   score = 0; hearts = 3;
+
+  const sidebarName = document.getElementById('settings-display-name');
+  if (sidebarName) sidebarName.textContent = auth.currentUser?.displayName || 'Guest';
   generateContacts();
   renderContacts();
   initializePreviews();
@@ -762,14 +766,12 @@ async function showLearnMore(name) {
   resultsDiv.innerHTML = `<div style="color:rgba(255,255,255,0.4);font-style:italic;">Searching...</div>`;
 
   try {
-    // Use the actual chat history to identify the scam type
     const history = chatHistories[name] || [];
     const conversation = history.map(m => `${m.role === 'user' ? 'Player' : name}: ${m.content}`).join('\n');
 
     let query;
 
     if (contact?.isScammer) {
-      // Ask Groq to identify the scam type from the actual conversation
       const scamType = await sendToGroq(
         [{ role: "user", content: `Based on this conversation, identify in 5 words or less what type of scam this is. Only output the scam type name, nothing else.\n\n${conversation}` }],
         "You are a scam identification expert. Respond with only a short scam type label like 'romance scam' or 'emergency money scam' or 'fake friend car repair scam'. No explanation, no punctuation."
@@ -784,24 +786,22 @@ async function showLearnMore(name) {
       resultsDiv.innerHTML = `<div style="color:rgba(255,255,255,0.4);">No results found.</div>`;
       return;
     }
-    resultsDiv.innerHTML = results.map(r => `
-      <div style="margin-bottom:8px;padding-bottom:8px;border-bottom:0.5px solid rgba(255,255,255,0.1);">
-        <div style="font-weight:600;color:white;margin-bottom:2px;">${r.title}</div>
-        <div style="color:rgba(255,255,255,0.5);font-size:10px;margin-bottom:3px;">${r.url}</div>
-        <div>${r.content?.slice(0, 120)}...</div>
-      </div>`).join('');
+
+    openWindow('window-safari');
+safariNavigate(query);
+resultsDiv.innerHTML = `<div style="color:rgba(255,255,255,0.5);font-style:italic;font-size:11px;">Opened in Safari ↗</div>`;
+
   } catch (err) {
     resultsDiv.innerHTML = `<div style="color:#ff3b30;">Search failed. Try again.</div>`;
   }
 }
 
+
+
 window.showLearnMore = showLearnMore;
 
 function showToast(msg) {
-  const toast = document.getElementById("toast");
-  toast.textContent = msg;
-  toast.classList.remove("hidden");
-  setTimeout(() => toast.classList.add("hidden"), 2500);
+ 
 }
 
 
@@ -821,6 +821,7 @@ document.addEventListener("click", (e) => {
     e.target.closest("#shutdown-screen") ||
     e.target.closest("#incoming-call") ||
     e.target.closest("#safari-suggestions") ||
+    e.target.closest("#learn-more-modal") ||    // ← ADD THIS LINE
     e.target.closest("[style*='99998']") ||
     e.target.closest(".desktop-file-item")
   ) return;
@@ -1202,9 +1203,9 @@ async function showMailLearnMore() {
 
   resultsDiv.innerHTML = `<div style="color:rgba(255,255,255,0.4);font-style:italic;">Searching...</div>`;
 
- const query = currentEmail.scam
-  ? "warning signs of scam: " + currentEmail.from + " " + currentEmail.subject + " fraud"
-  : "how to stay safe from phishing emails";
+  const query = currentEmail.scam
+    ? "warning signs of scam: " + currentEmail.from + " " + currentEmail.subject + " fraud"
+    : "how to stay safe from phishing emails";
 
   try {
     const results = await searchTavily(query);
@@ -1212,12 +1213,10 @@ async function showMailLearnMore() {
       resultsDiv.innerHTML = `<div style="color:rgba(255,255,255,0.4);">No results found.</div>`;
       return;
     }
-    resultsDiv.innerHTML = results.map(r => `
-      <div style="margin-bottom:8px;padding-bottom:8px;border-bottom:0.5px solid rgba(255,255,255,0.1);">
-        <div style="font-weight:600;color:white;margin-bottom:2px;">${r.title}</div>
-        <div style="color:rgba(255,255,255,0.5);font-size:10px;margin-bottom:3px;">${r.url}</div>
-        <div>${r.content?.slice(0, 120)}...</div>
-      </div>`).join('');
+
+    openWindow('window-safari');
+safariNavigate(query);
+
   } catch (err) {
     resultsDiv.innerHTML = `<div style="color:#ff3b30;">Search failed. Try again.</div>`;
   }
@@ -1277,13 +1276,25 @@ window.setCurrentEmail = function(email) {
   }
 };
 
-function gameOver() {
+async function gameOver() {
   const allVerdicts = { ...msgVerdicts, ...ftVerdicts };
   const correct = Object.keys(allVerdicts).filter(name => {
     const contact = contacts.find(c => c.name === name);
     return contact && allVerdicts[name] === contact.isScammer;
   }).length;
   const wrong = Object.keys(allVerdicts).length - correct;
+
+  // Save score to Firestore
+  const user = auth.currentUser;
+  if (user) {
+    const displayName = user.displayName || 'Guest';
+    await setDoc(doc(db, 'leaderboard', user.uid), {
+      name: displayName,
+      score: score,
+      timestamp: Date.now()
+    }, { merge: true }); // merge:true keeps their best score if you want
+  }
+
   setTimeout(() => triggerGameOver(score, correct, wrong, 3 - hearts), 1000);
 }
 
@@ -1308,3 +1319,101 @@ function resetGame() {
 }
 
 window.resetGame = resetGame;
+
+function openLearnMoreModal(results, title) {
+  const existing = document.getElementById('learn-more-modal');
+  if (existing) { existing.remove(); return; }
+
+  const modal = document.createElement('div');
+  modal.id = 'learn-more-modal';
+  modal.className = 'window';
+  modal.style.cssText = `
+    position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+    width:540px;height:480px;z-index:99999;display:flex;flex-direction:column;
+  `;
+
+  modal.innerHTML = `
+    <div class="window-bar" style="display:flex;align-items:center;gap:8px;padding:0 12px;">
+      <div class="mac-buttons" style="display:flex;gap:6px;">
+        <span class="dot red" onclick="document.getElementById('learn-more-modal').remove()" style="cursor:pointer;"></span>
+        <span class="dot yellow" onclick="minimizeWindow('learn-more-modal')" style="cursor:pointer;"></span>
+        <span class="dot green" onclick="maximizeWindow('learn-more-modal')" style="cursor:pointer;"></span>
+      </div>
+      <span style="font-size:12px;color:#1c1c1e;font-weight:500;flex:1;text-align:center;margin-right:52px;">🔍 Learn More</span>
+    </div>
+    <div style="flex:1;overflow-y:auto;padding:16px 20px;background:white;border-radius:0 0 12px 12px;display:flex;flex-direction:column;gap:12px;">
+      <div style="font-size:11px;color:#8e8e93;margin-bottom:4px;">${title}</div>
+      ${results.map(r => `
+        <a href="${r.url}" target="_blank" rel="noopener noreferrer"
+          style="display:block;background:#f5f5f7;border:0.5px solid #e0e0e0;
+          border-radius:10px;padding:14px;text-decoration:none;"
+          onmouseover="this.style.background='#ebebed'"
+          onmouseout="this.style.background='#f5f5f7'">
+          <div style="font-size:13px;font-weight:600;color:#0a84ff;margin-bottom:4px;">${r.title}</div>
+          <div style="font-size:11px;color:#8e8e93;margin-bottom:6px;">${r.url}</div>
+          <div style="font-size:12px;color:#3a3a3c;line-height:1.5;">${r.content?.slice(0, 220)}...</div>
+        </a>
+      `).join('')}
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+  makeDraggable(modal);
+  makeResizable(modal);
+  focusWindow(modal);
+}
+
+async function loadNotesLeaderboard() {
+  const el = document.getElementById('notes-leaderboard-content');
+  if (!el) return;
+  try {
+    const { getDocs, query, orderBy, limit, collection } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+    const { db } = await import("./firebase.js");
+    const snapshot = await getDocs(query(collection(db, 'leaderboard'), orderBy('score', 'desc'), limit(10)));
+    if (snapshot.empty) { el.innerHTML = '<div style="color:#aaa;">No scores yet.</div>'; return; }
+    const medals = ['🥇','🥈','🥉'];
+    el.innerHTML = snapshot.docs.map((d, i) => {
+      const { name, score } = d.data();
+      return `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f0f0f0;">
+        <span>${medals[i] || (i+1)+'.'} ${name}</span>
+        <span style="color:#c8930a;font-weight:600;">⭐ ${score}</span>
+      </div>`;
+    }).join('');
+  } catch(e) {
+    const el2 = document.getElementById('notes-leaderboard-content');
+    if (el2) el2.innerHTML = '<div style="color:#aaa;">Could not load scores.</div>';
+  }
+}
+
+window.loadNotesLeaderboard = loadNotesLeaderboard;
+
+let deathLeaderboardLoaded = false;
+
+async function toggleDeathLeaderboard() {
+  const panel = document.getElementById('death-leaderboard');
+  const isHidden = panel.style.display === 'none';
+  panel.style.display = isHidden ? 'block' : 'none';
+
+  if (isHidden && !deathLeaderboardLoaded) {
+    deathLeaderboardLoaded = true;
+    try {
+      const { getDocs, query, orderBy, limit, collection } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+      const { db } = await import("./firebase.js");
+      const snapshot = await getDocs(query(collection(db, 'leaderboard'), orderBy('score', 'desc'), limit(10)));
+      const medals = ['🥇','🥈','🥉'];
+      const rows = document.getElementById('death-leaderboard-rows');
+      if (snapshot.empty) { rows.innerHTML = 'No scores yet.'; return; }
+      rows.innerHTML = snapshot.docs.map((d, i) => {
+        const { name, score } = d.data();
+        return `<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(0,255,0,0.15);font-family:'Courier New',monospace;">
+          <span style="color:${i<3?'#00ff00':'#aaa'};">${medals[i] || (i+1)+'.'} ${name}</span>
+          <span style="color:#ffd60a;">⭐ ${score}</span>
+        </div>`;
+      }).join('');
+    } catch(e) {
+      document.getElementById('death-leaderboard-rows').innerHTML = 'Could not load scores.';
+    }
+  }
+}
+
+window.toggleDeathLeaderboard = toggleDeathLeaderboard;

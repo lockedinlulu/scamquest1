@@ -15,12 +15,13 @@ function _chips(opts, sel, group) {
 }
 
 const SETTINGS_PANELS = {
-  profile() {
-    const name  = 'John Doe';
-    const email = 'johndoe@icloud.com';
+ profile() {
+    const user  = window._auth?.currentUser;
+    const name  = user?.displayName || 'Guest';
+    const email = user?.email || '—';
     return `
       <div style="display:flex;flex-direction:column;align-items:center;text-align:center;margin-bottom:22px;">
-        <img src="https://i.pravatar.cc/150?img=33" style="width:72px;height:72px;border-radius:50%;border:2px solid rgba(0,0,0,0.12);margin-bottom:12px;"/>
+<img src="cat.jpg" style="width:72px;height:72px;border-radius:12px;border:2px solid rgba(0,0,0,0.12);margin-bottom:12px;"/>
         <div style="font-size:19px;font-weight:500;color:#1c1c1e;">${name}</div>
         <div style="font-size:12px;color:#8e8e93;margin-top:3px;">MacBook Account</div>
         <div style="font-size:12px;color:#aaa;margin-top:2px;">${email}</div>
@@ -106,7 +107,17 @@ const SETTINGS_PANELS = {
       ${_card(_row(_rl('Style'),_chips(['Banner','Alert','None'],'Banner','alert'),true))}
       ${_lbl('Game Events')}
       ${_card(_row(_rl('Scam detected'),_toggle(true))+_row(_rl('Heart lost'),_toggle(true))+_row(_rl('Round complete'),_toggle(false),true))}`;
-  }
+      
+  },
+  async leaderboard() {
+  const snapshot = await getDocs(query(collection(db, 'leaderboard'), orderBy('score', 'desc'), limit(10)));
+  const rows = snapshot.docs.map((d, i) => {
+    const { name, score } = d.data();
+    const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i+1}.`;
+    return _row(`<div style="font-size:13px;color:#1c1c1e;">${medal} ${name}</div>`, `<div style="font-size:13px;color:#ffd60a;font-weight:600;">⭐ ${score}</div>`, i === snapshot.docs.length - 1);
+  }).join('');
+  return `${_title('Leaderboard')}${_card(rows || '<div style="padding:14px;color:#aaa;text-align:center;font-size:13px;">No scores yet</div>')}`;
+}
 };
 
 // ── public API ──
@@ -116,14 +127,19 @@ window.settingsShowPanel = function(name, navEl, pillEl) {
     el.style.background = 'transparent';
     el.style.color = '#1c1c1e';
   });
-  const pill = document.getElementById('settings-pill-profile');
-  if (pill) pill.style.background = 'transparent';
-
-  if (navEl)  { navEl.style.background = '#0a84ff'; navEl.style.color = 'white'; }
+  if (navEl) { navEl.style.background = '#0a84ff'; navEl.style.color = 'white'; }
   if (pillEl) { pillEl.style.background = 'rgba(0,0,0,0.07)'; }
 
   const panel = document.getElementById('settings-panel');
-  if (panel && SETTINGS_PANELS[name]) panel.innerHTML = SETTINGS_PANELS[name]();
+  if (!panel || !SETTINGS_PANELS[name]) return;
+
+  const result = SETTINGS_PANELS[name]();
+  if (result instanceof Promise) {
+    panel.innerHTML = '<div style="padding:30px;text-align:center;color:#aaa;font-size:13px;">Loading...</div>';
+    result.then(html => panel.innerHTML = html);
+  } else {
+    panel.innerHTML = result;
+  }
 };
 
 window.settingsFilter = function(q) {
