@@ -9,7 +9,8 @@ import {
 import {
   doc, getDoc, setDoc
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-import { sendToGroq } from "./groq.js";
+// top of file — add stopSpeaking to the import
+import { sendToGroq, speakWithElevenLabs, stopSpeaking } from "./groq.js";
 
 // --------------------
 // HELPERS
@@ -133,11 +134,13 @@ function renderContacts() {
 function updateHeartsDisplay() {
   const display = document.getElementById("hearts-display");
   if (display) display.textContent = "❤️".repeat(hearts) + "🖤".repeat(3 - hearts);
+  updateWidgetHUD(hearts, score);
 }
 
 function updateScoreDisplay() {
   const display = document.getElementById("score-display");
   if (display) display.textContent = `⭐ ${score}`;
+  updateWidgetHUD(hearts, score);
 }
 
 // --------------------
@@ -206,12 +209,14 @@ async function login() {
 function startGame() {
   document.getElementById("login-screen").classList.add("hidden");
   document.getElementById("desktop").classList.remove("hidden");
+  
   score = 0; hearts = 3;
   generateContacts();
   renderContacts(); // show "..." placeholders immediately
   initializePreviews(); // load real previews in background
   updateHeartsDisplay();
   updateScoreDisplay();
+  document.getElementById('scam-widget').style.display = 'block';
 }
 
 // --------------------
@@ -220,6 +225,9 @@ function startGame() {
 function openWindow(id) {
   const win = document.getElementById(id);
   if (win) win.classList.remove("hidden");
+  if (id === 'window-notes') setTimeout(() => { if (typeof initNotes === 'function') initNotes(); }, 50);
+  if (id === 'window-appstore') setTimeout(() => { if (typeof showCategory === 'function') showCategory('discover', document.querySelector('.as-cat')); }, 50);
+  if (id === 'window-files') setTimeout(() => { if (typeof showFilesSection === 'function') showFilesSection('myfiles', document.querySelector('.files-nav-item')); }, 50);
 }
 
 function closeWindow(id) {
@@ -246,12 +254,34 @@ function toggleFullscreen(id) {
   if (win) win.classList.toggle("fullscreen");
 }
 
-function shutdown() { document.getElementById("desktop").classList.add("hidden"); }
+function shutdown() {
+  const screen = document.getElementById("shutdown-screen");
+  screen.style.display = "flex";
+  document.getElementById("shutdown-prompt").style.display = "flex";
+  document.getElementById("shutdown-final").style.display = "none";
+}
 function restart() { location.reload(); }
 function sleep() {
   document.body.style.backgroundColor = "#000";
   document.getElementById("desktop").style.visibility = "hidden";
 }
+
+function cancelShutdown() {
+  document.getElementById("shutdown-screen").style.display = "none";
+}
+
+function confirmShutdown() {
+  document.getElementById("shutdown-prompt").style.display = "none";
+  document.getElementById("shutdown-final").style.display = "flex";
+  setTimeout(() => {
+    document.getElementById("shutdown-screen").style.background = "black";
+    document.getElementById("shutdown-final").style.display = "none";
+    setTimeout(() => location.reload(), 500);
+  }, 2000);
+}
+
+// and at the bottom with your other window. exposures:
+
 
 // --------------------
 // PHOTOS APP
@@ -268,7 +298,10 @@ function openPhotoGrid() {
     const img = document.createElement("img");
     img.src = src;
     img.style.cssText = "width:100%;cursor:pointer;border-radius:4px;";
-    img.addEventListener("click", () => openPhotoViewer(index));
+    img.addEventListener("click", (e) => {
+  e.stopPropagation();
+  openPhotoViewer(index);
+});
     grid.appendChild(img);
   });
 
@@ -288,14 +321,16 @@ function openPhotoViewer(index) {
     </div>
   `;
 
-  document.getElementById("prevBtn").onclick = () => {
-    currentPhotoIndex = (currentPhotoIndex - 1 + PHOTOS.length) % PHOTOS.length;
-    document.getElementById("viewerImg").src = PHOTOS[currentPhotoIndex];
-  };
-  document.getElementById("nextBtn").onclick = () => {
-    currentPhotoIndex = (currentPhotoIndex + 1) % PHOTOS.length;
-    document.getElementById("viewerImg").src = PHOTOS[currentPhotoIndex];
-  };
+document.getElementById("prevBtn").onclick = (e) => {
+  e.stopPropagation();
+  currentPhotoIndex = (currentPhotoIndex - 1 + PHOTOS.length) % PHOTOS.length;
+  document.getElementById("viewerImg").src = PHOTOS[currentPhotoIndex];
+};
+document.getElementById("nextBtn").onclick = (e) => {
+  e.stopPropagation();
+  currentPhotoIndex = (currentPhotoIndex + 1) % PHOTOS.length;
+  document.getElementById("viewerImg").src = PHOTOS[currentPhotoIndex];
+};
 }
 
 // --------------------
@@ -306,10 +341,12 @@ async function openChat(name) {
   if (!currentContact) return;
 
   document.getElementById("chat-name").textContent = name;
+  document.getElementById("chat-name").textContent = name;
+setWidgetContext('messages', 'Chatting with ' + name, true);
   const msgContainer = document.getElementById("chat-messages");
   msgContainer.innerHTML = "";
   document.getElementById("chat-screen").classList.remove("hidden");
-  document.getElementById("verdict-badge").classList.add("hidden");
+
   document.getElementById("chat-input-field").disabled = false;
   document.querySelector(".chat-input button").disabled = false;
 
@@ -342,7 +379,7 @@ function appendBubble(text, type) {
 function lockChat() {
   document.getElementById("chat-input-field").disabled = true;
   document.querySelector(".chat-input button").disabled = true;
-  document.getElementById("verdict-badge").classList.remove("hidden");
+  setWidgetContext('messages', 'Chatting with ' + currentContact.name, true);
 }
 
 async function sendMessage() {
@@ -401,13 +438,14 @@ function submitVerdict(isScam) {
 
 function showVerdictResult(name) {
   const contact = contacts.find(c => c.name === name);
-  const badge = document.getElementById("verdict-badge");
-  badge.classList.remove("hidden");
   if (verdicts[name] !== undefined) {
     const correct = verdicts[name] === contact.isScammer;
-    badge.innerHTML = correct
-      ? `<span class="verdict-result correct">✅ Correct!</span>`
-      : `<span class="verdict-result wrong">❌ Wrong!</span>`;
+    document.getElementById('widget-verdict-section').innerHTML = `
+      <div style="height:0.5px;background:rgba(255,255,255,0.1);margin-bottom:10px;"></div>
+      <div style="font-size:9px;color:rgba(255,255,255,0.45);margin-bottom:7px;">YOUR VERDICT</div>
+      <div style="text-align:center;font-size:13px;font-weight:600;color:${correct ? '#30d158' : '#ff3b30'};">
+        ${correct ? '✅ Correct!' : '❌ Wrong!'}
+      </div>`;
   }
 }
 
@@ -436,8 +474,7 @@ function gameComplete() {
 // CLICK OUTSIDE
 // --------------------
 document.addEventListener("click", (e) => {
-  if (e.target.closest(".desktop-icons") || e.target.closest(".window")) return;
-  document.querySelectorAll(".window:not(.hidden)").forEach(win => {
+if (e.target.closest(".desktop-icons") || e.target.closest(".window") || e.target.closest("#scam-widget") || e.target.closest("#shutdown-screen") || e.target.closest("[style*='99998']")) return;  document.querySelectorAll(".window:not(.hidden)").forEach(win => {
     win.classList.add("hidden");
     if (win.id === "window-messages") {
       document.getElementById("chat-screen").classList.add("hidden");
@@ -483,7 +520,179 @@ window.addEventListener("DOMContentLoaded", () => {
   const macbook = document.getElementById("macbook");
   if (macbook) macbook.addEventListener("click", openPhotoGrid);
 });
+function toggleScamWidget() {
+  const body = document.getElementById('widget-body');
+  const btn = document.getElementById('widget-toggle-btn');
+  const isCollapsed = body.style.maxHeight === '0px';
+  body.style.transition = 'max-height 0.3s ease';
+  body.style.maxHeight = isCollapsed ? '400px' : '0px';
+  body.style.overflow = 'hidden';
+  btn.textContent = isCollapsed ? '−' : '+';
+}
 
+function setWidgetContext(app, label, showVerdict = false) {
+  document.getElementById('widget-context').textContent = label;
+  const section = document.getElementById('widget-verdict-section');
+  section.style.display = showVerdict ? 'block' : 'none';
+  section.innerHTML = `
+    <div style="height:0.5px;background:rgba(255,255,255,0.1);margin-bottom:10px;"></div>
+    <div style="font-size:9px;color:rgba(255,255,255,0.45);margin-bottom:7px;">YOUR VERDICT</div>
+    <div style="display:flex;gap:7px;">
+      <button onclick="event.stopPropagation();submitVerdict(true)" style="flex:1;padding:7px 0;border-radius:10px;border:none;background:#ff3b30;color:white;font-size:11px;font-weight:600;cursor:pointer;">Scam</button>
+      <button onclick="event.stopPropagation();submitVerdict(false)" style="flex:1;padding:7px 0;border-radius:10px;border:none;background:#30d158;color:white;font-size:11px;font-weight:600;cursor:pointer;">Legit</button>
+    </div>`;
+}
+
+function updateWidgetHUD(hearts, score) {
+  document.getElementById('widget-hearts').textContent = '❤️'.repeat(hearts) + '🖤'.repeat(3 - hearts);
+  document.getElementById('widget-score').textContent = score;
+}
+
+
+
+// --------------------
+// FACETIME STATE
+// --------------------
+let ftContact = null;
+let ftHistory = [];
+let ftMessageCount = 0;
+const FT_MAX_MESSAGES = 4; // calls are shorter than texts
+
+const FACETIME_SCAM_PROMPTS = [
+  "You are a scammer on a FaceTime call pretending to be from Apple Support. Claim their iCloud was hacked and you need their Apple ID to secure it.",
+  "You are a scammer pretending to be a grandchild in trouble, calling from a friend's phone. You need bail money urgently.",
+  "You are a scammer pretending to be from their bank's fraud department. There's suspicious activity and you need to verify their card number.",
+];
+
+const FACETIME_NORMAL_PROMPTS = [
+  "You are a friend calling to catch up over FaceTime. Be warm and casual.",
+  "You are a family member calling to check in. Keep it natural and warm.",
+];
+
+// --------------------
+// FACETIME FUNCTIONS
+// --------------------
+function renderFaceTimeContacts() {
+  const container = document.getElementById("facetime-contacts");
+  container.innerHTML = "";
+
+  contacts.forEach(c => {
+    const row = document.createElement("div");
+    row.style.cssText = "display:flex;align-items:center;gap:12px;padding:10px 14px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,0.05);";
+    row.onmouseenter = () => row.style.background = "rgba(255,255,255,0.06)";
+    row.onmouseleave = () => row.style.background = "transparent";
+    row.onclick = () => startFaceTimeCall(c);
+    row.innerHTML = `
+      <img src="https://i.pravatar.cc/80?img=${c.avatarId}" style="width:40px;height:40px;border-radius:50%;">
+      <div style="flex:1;">
+        <div style="font-size:13px;font-weight:600;color:white;">${c.name}</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.4);">📹 FaceTime</div>
+      </div>
+      <div style="font-size:11px;color:#0a84ff;">Call</div>
+    `;
+    container.appendChild(row);
+  });
+}
+
+async function startFaceTimeCall(contact) {
+  ftContact = contact;
+  ftHistory = [];
+  ftMessageCount = 0;
+
+  // swap list → call screen
+  document.getElementById("facetime-list").style.display = "none";
+  const callScreen = document.getElementById("facetime-call");
+  callScreen.style.display = "flex";
+
+  document.getElementById("ft-avatar").src = `https://i.pravatar.cc/80?img=${contact.avatarId}`;
+  document.getElementById("ft-caller-name").textContent = contact.name;
+  document.getElementById("ft-call-status").textContent = "Connecting...";
+  document.getElementById("ft-transcript").style.display = "none";
+  document.getElementById("ft-transcript").innerHTML = "";
+  document.getElementById("ft-input").disabled = true;
+
+  setWidgetContext('facetime', 'FaceTime with ' + contact.name, true);
+
+  // pick system prompt
+  const isScammer = contact.isScammer;
+  const promptPool = isScammer ? FACETIME_SCAM_PROMPTS : FACETIME_NORMAL_PROMPTS;
+  ftContact.ftSystemPrompt = GAME_CONTEXT + " " + shuffle(promptPool)[0] + " Keep responses to 1-2 sentences max, like a real call. No disclaimers.";
+
+  // short fake ring delay
+  await new Promise(r => setTimeout(r, 1500));
+  document.getElementById("ft-call-status").textContent = "Connected";
+
+  // opener
+  const opener = await sendToGroq([], ftContact.ftSystemPrompt + " You just connected. Say a natural opening line.");
+  ftHistory.push({ role: "assistant", content: opener });
+  appendFTTranscript(contact.name, opener);
+
+  // speak it
+  document.getElementById("ft-visualiser").style.display = "flex";
+  await speakWithElevenLabs(opener, contact.isScammer);
+  document.getElementById("ft-visualiser").style.display = "none";
+
+  document.getElementById("ft-input").disabled = false;
+  document.getElementById("ft-transcript").style.display = "block";
+}
+
+async function sendFaceTimeMessage() {
+  if (!ftContact || ftMessageCount >= FT_MAX_MESSAGES) return;
+  const input = document.getElementById("ft-input");
+  const text = input.value.trim();
+  if (!text) return;
+
+  input.value = "";
+  input.disabled = true;
+  appendFTTranscript("You", text);
+  ftHistory.push({ role: "user", content: text });
+  ftMessageCount++;
+
+  if (ftMessageCount >= FT_MAX_MESSAGES) {
+    document.getElementById("ft-call-status").textContent = "Call ended — give your verdict";
+    input.disabled = true;
+    return;
+  }
+
+  const reply = await sendToGroq(ftHistory, ftContact.ftSystemPrompt);
+  ftHistory.push({ role: "assistant", content: reply });
+  appendFTTranscript(ftContact.name, reply);
+
+  document.getElementById("ft-visualiser").style.display = "flex";
+  await speakWithElevenLabs(reply, ftContact.isScammer);
+  document.getElementById("ft-visualiser").style.display = "none";
+
+  input.disabled = false;
+  input.focus();
+}
+
+function appendFTTranscript(speaker, text) {
+  const t = document.getElementById("ft-transcript");
+  t.style.display = "block";
+  const line = document.createElement("div");
+  line.style.marginBottom = "4px";
+  line.innerHTML = `<span style="color:rgba(255,255,255,0.4);font-size:11px;">${speaker}:</span> ${text}`;
+  t.appendChild(line);
+  t.scrollTop = t.scrollHeight;
+}
+
+function endFaceTimeCall() {
+  document.getElementById("facetime-call").style.display = "none";
+  document.getElementById("facetime-list").style.display = "block";
+  ftContact = null;
+  ftHistory = [];
+}
+
+function closeFaceTime() {
+  endFaceTimeCall();
+  closeWindow("window-facetime");
+}
+
+// expose
+window.renderFaceTimeContacts = renderFaceTimeContacts;
+window.sendFaceTimeMessage = sendFaceTimeMessage;
+window.endFaceTimeCall = endFaceTimeCall;
+window.closeFaceTime = closeFaceTime;
 // --------------------
 // EXPOSE TO HTML
 // --------------------
@@ -499,3 +708,6 @@ window.restart = restart;
 window.sleep = sleep;
 window.sendMessage = sendMessage;
 window.submitVerdict = submitVerdict;
+window.toggleScamWidget = toggleScamWidget;
+window.cancelShutdown = cancelShutdown;
+window.confirmShutdown = confirmShutdown;

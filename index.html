@@ -7,6 +7,47 @@
     <link rel="stylesheet" href="style.css" />
   </head>
 
+  <!-- SCAM WIDGET (outside body intentionally kept as-is) -->
+  <div id="scam-widget" style="position:fixed;top:40px;right:12px;z-index:9999;width:220px;background:rgba(40,40,40,0.82);backdrop-filter:blur(20px);border-radius:18px;border:0.5px solid rgba(255,255,255,0.15);overflow:hidden;font-family:-apple-system,sans-serif;color:white;display:none;">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px 6px;">
+      <div style="display:flex;align-items:center;gap:7px;">
+        <div style="width:28px;height:28px;border-radius:8px;background:#0a84ff;display:flex;align-items:center;justify-content:center;font-size:15px;">🔍</div>
+        <div>
+          <div style="font-size:11px;font-weight:600;">Scam Detector</div>
+          <div style="font-size:9px;color:rgba(255,255,255,0.45);">ScamQuest OS</div>
+        </div>
+      </div>
+      <button onclick="toggleScamWidget()" id="widget-toggle-btn" style="background:rgba(255,255,255,0.1);border:none;color:rgba(255,255,255,0.6);width:20px;height:20px;border-radius:50%;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;padding:0;line-height:1;">−</button>
+    </div>
+    <div id="widget-body">
+      <div style="height:0.5px;background:rgba(255,255,255,0.1);margin:0 14px;"></div>
+      <div style="display:flex;justify-content:space-between;padding:10px 14px 8px;">
+        <div style="text-align:center;">
+          <div style="font-size:9px;color:rgba(255,255,255,0.45);margin-bottom:3px;">HEARTS</div>
+          <div id="widget-hearts">❤️❤️❤️</div>
+        </div>
+        <div style="width:0.5px;background:rgba(255,255,255,0.1);"></div>
+        <div style="text-align:center;">
+          <div style="font-size:9px;color:rgba(255,255,255,0.45);margin-bottom:3px;">SCORE</div>
+          <div id="widget-score" style="font-size:18px;font-weight:600;color:#ffd60a;">0</div>
+        </div>
+      </div>
+      <div style="height:0.5px;background:rgba(255,255,255,0.1);margin:0 14px;"></div>
+      <div style="padding:10px 14px 6px;">
+        <div style="font-size:9px;color:rgba(255,255,255,0.45);margin-bottom:6px;">CURRENTLY VIEWING</div>
+        <div id="widget-context" style="font-size:12px;color:rgba(255,255,255,0.5);font-style:italic;">Nothing open yet...</div>
+      </div>
+      <div id="widget-verdict-section" style="padding:6px 14px 12px;display:none;">
+        <div style="height:0.5px;background:rgba(255,255,255,0.1);margin-bottom:10px;"></div>
+        <div style="font-size:9px;color:rgba(255,255,255,0.45);margin-bottom:7px;">YOUR VERDICT</div>
+        <div style="display:flex;gap:7px;">
+          <button onclick="event.stopPropagation();submitVerdict(true)" style="flex:1;padding:7px 0;border-radius:10px;border:none;background:#ff3b30;color:white;font-size:11px;font-weight:600;cursor:pointer;">Scam</button>
+          <button onclick="event.stopPropagation();submitVerdict(false)" style="flex:1;padding:7px 0;border-radius:10px;border:none;background:#30d158;color:white;font-size:11px;font-weight:600;cursor:pointer;">Legit</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <body>
     <!-- ================= LOGIN SCREEN ================= -->
     <div id="login-screen" class="screen active">
@@ -14,20 +55,16 @@
         <div class="left">
           <span class="apple-logo">🍎</span>
           <div class="power-controls">
-            <button onclick="document.body.style.visibility = 'hidden'">
-              Sleep
-            </button>
+            <button onclick="document.body.style.visibility='hidden'">Sleep</button>
             <button onclick="location.reload()">Restart</button>
             <button onclick="shutdown()">Shutdown</button>
           </div>
         </div>
         <div class="right">
-          <span>📶</span>
-          <span>🔋 87%</span>
+          <span>📶</span><span>🔋 87%</span>
           <span id="clock">--:--</span>
         </div>
       </div>
-
       <div class="login-window">
         <div class="title-bar">
           <div class="mac-buttons">
@@ -37,22 +74,14 @@
           </div>
           <span class="title">Login</span>
         </div>
-
         <div class="content">
-          <div class="profile">
-            <img src="https://i.pravatar.cc/100" />
-          </div>
-
+          <div class="profile"><img src="https://i.pravatar.cc/100" /></div>
           <h2>Welcome</h2>
-
           <input id="username" placeholder="Email or Username" />
           <input id="password" type="password" placeholder="Password" />
-
           <button id="loginBtn">Login</button>
           <button id="guestBtn" class="guest-btn">Continue as Guest</button>
-
           <p id="message"></p>
-
           <div class="login-footer">
             <span>New here?</span>
             <a href="signup.html">Create account</a>
@@ -73,138 +102,302 @@
           </div>
         </div>
         <div class="right">
-          <span>📶</span>
-          <span>🔋 87%</span>
+          <span>📶</span><span>🔋 87%</span>
           <span id="clock-desktop">--:--</span>
         </div>
       </div>
 
-      <!-- DESKTOP ICONS -->
+      <!-- DOCK -->
       <div class="desktop-icons">
-        <div class="icon" onclick="openWindow('window-messages')">
-          💬<span>Messages</span>
-        </div>
-        <div class="icon" onclick="openWindow('window-notes')">
-          📝<span>Notes</span>
-        </div>
-        <div class="icon" onclick="openWindow('window-safari')">
-          🧭<span>Safari</span>
-        </div>
-        <div class="icon" onclick="openWindow('window-photos')">
-          🖼️<span>Photos</span>
-        </div>
-        <div class="icon" onclick="openWindow('window-settings')">
-          ⚙️<span>Settings</span>
-        </div>
-        <div class="icon" onclick="openWindow('window-files')">
-          📁<span>Files</span>
-        </div>
-        <div class="icon" onclick="openWindow('window-recycle')">
-          🗑️<span>Recycle</span>
-        </div>
-        <div class="icon" onclick="openWindow('window-appstore')">
-          🛍️<span>App Store</span>
-        </div>
+        <div class="icon" onclick="openWindow('window-messages')">💬<span>Messages</span></div>
+        <div class="icon" onclick="openWindow('window-notes')">📝<span>Notes</span></div>
+        <div class="icon" onclick="openWindow('window-safari')">🧭<span>Safari</span></div>
+        <div class="icon" onclick="openWindow('window-photos')">🖼️<span>Photos</span></div>
+        <div class="icon" onclick="openWindow('window-settings')">⚙️<span>Settings</span></div>
+        <div class="icon" onclick="openWindow('window-files')">📁<span>Files</span></div>
+        <div class="icon" onclick="openWindow('window-recycle')">🗑️<span>Recycle</span></div>
+        <div class="icon" onclick="openAppStore()">🛍️<span>App Store</span></div>
+        <div class="icon" onclick="openWindow('window-mail')">✉️<span>Mail</span></div>
+        <div class="icon" onclick="openWindow('window-facetime');renderFaceTimeContacts()">📹<span>FaceTime</span></div>
       </div>
 
-      <!-- ================= GENERIC WINDOWS ================= -->
-
-      <div id="window-notes" class="window hidden">
+      <!-- ================= NOTES ================= -->
+      <div id="window-notes" class="window hidden" style="width:750px;height:500px;">
         <div class="window-bar">
           <div class="mac-buttons">
-            <span class="dot red" onclick="closeWindow('window-notes')"></span
-            ><span class="dot yellow"></span><span class="dot green"></span>
+            <span class="dot red" onclick="closeWindow('window-notes')"></span>
+            <span class="dot yellow" onclick="minimizeWindow('window-notes')"></span>
+            <span class="dot green" onclick="maximizeWindow('window-notes')"></span>
           </div>
           <span>Notes</span>
         </div>
-        <div class="window-content">Your notes app.</div>
+        <div style="display:flex;height:calc(100% - 36px);background:#f5f5f0;border-radius:0 0 12px 12px;overflow:hidden;color:#000;">
+          <div style="width:200px;min-width:200px;background:#f0efe8;border-right:1px solid #ddd;display:flex;flex-direction:column;overflow:hidden;">
+            <div style="padding:10px 12px;border-bottom:1px solid #ddd;">
+              <div style="font-size:11px;font-weight:700;color:#8e8e93;text-transform:uppercase;margin-bottom:8px;">iCloud</div>
+<div id="notes-folder" style="display:flex;align-items:center;justify-content:space-between;padding:6px 8px;background:rgba(0,0,0,0.07);border-radius:6px;cursor:pointer;">                <div style="display:flex;align-items:center;gap:6px;font-size:13px;">📁 <span style="font-weight:500;">Notes</span></div>
+                <span style="font-size:11px;color:#8e8e93;">8</span>
+              </div>
+<div id="notes-recently-deleted" style="display:flex;align-items:center;justify-content:space-between;padding:6px 8px;cursor:pointer;border-radius:6px;">                <div style="display:flex;align-items:center;gap:6px;font-size:13px;">🗑️ <span>Recently Deleted</span></div>
+                <span style="font-size:11px;color:#8e8e93;">2</span>
+              </div>
+            </div>
+            <div style="padding:10px 12px;">
+              <div style="font-size:11px;font-weight:700;color:#8e8e93;text-transform:uppercase;margin-bottom:8px;">Tags</div>
+              <div style="display:flex;flex-wrap:wrap;gap:6px;">
+                <span class="notes-tag" data-tag="all" style="background:rgba(0,0,0,0.08);border-radius:12px;padding:3px 10px;font-size:11px;cursor:pointer;">All Tags</span>
+<span class="notes-tag" data-tag="#work" style="background:rgba(0,0,0,0.08);border-radius:12px;padding:3px 10px;font-size:11px;cursor:pointer;">#work</span>
+<span class="notes-tag" data-tag="#personal" style="background:rgba(0,0,0,0.08);border-radius:12px;padding:3px 10px;font-size:11px;cursor:pointer;">#personal</span>
+<span class="notes-tag" data-tag="#passwords" style="background:rgba(0,0,0,0.08);border-radius:12px;padding:3px 10px;font-size:11px;cursor:pointer;">#passwords</span>
+              </div>
+            </div>
+            <div style="padding:0 8px 8px;flex:1;overflow-y:auto;">
+              <button style="width:100%;background:none;border:none;color:#8e8e93;font-size:12px;cursor:pointer;text-align:left;padding:6px 4px;">⊕ New Folder</button>
+            </div>
+          </div>
+          <div id="notes-list" style="width:220px;min-width:220px;background:#f5f5f0;border-right:1px solid #ddd;overflow-y:auto;"></div>
+          <div id="notes-content" style="flex:1;background:white;padding:20px 24px;overflow-y:auto;font-size:14px;line-height:1.6;color:#000;">
+            <div style="color:#aaa;text-align:center;margin-top:80px;">Select a note</div>
+          </div>
+        </div>
       </div>
 
+      <!-- ================= SAFARI ================= -->
       <div id="window-safari" class="window hidden">
         <div class="window-bar">
           <div class="mac-buttons">
-            <span class="dot red" onclick="closeWindow('window-safari')"></span
-            ><span class="dot yellow"></span><span class="dot green"></span>
+            <span class="dot red" onclick="closeWindow('window-safari')"></span>
+            <span class="dot yellow"></span><span class="dot green"></span>
           </div>
           <span>Safari</span>
         </div>
         <div class="window-content">Web browsing simulation.</div>
       </div>
 
-      <div id="window-settings" class="window hidden">
+      <!-- ================= SETTINGS ================= -->
+      <div id="window-settings" class="window hidden" style="width:660px;height:520px;">
         <div class="window-bar">
           <div class="mac-buttons">
-            <span
-              class="dot red"
-              onclick="closeWindow('window-settings')"
-            ></span
-            ><span class="dot yellow"></span><span class="dot green"></span>
+            <span class="dot red" onclick="closeWindow('window-settings')"></span>
+            <span class="dot yellow" onclick="minimizeWindow('window-settings')"></span>
+            <span class="dot green" onclick="maximizeWindow('window-settings')"></span>
           </div>
           <span>Settings</span>
         </div>
-        <div class="window-content">System settings.</div>
-      </div>
-
-      <div id="window-files" class="window hidden">
-        <div class="window-bar">
-          <div class="mac-buttons">
-            <span class="dot red" onclick="closeWindow('window-files')"></span
-            ><span class="dot yellow"></span><span class="dot green"></span>
+        <div style="display:flex;height:calc(100% - 36px);background:#f5f5f5;border-radius:0 0 12px 12px;overflow:hidden;color:#1c1c1e;">
+          <div style="width:210px;min-width:210px;background:#ebebeb;border-right:0.5px solid #d0d0d0;display:flex;flex-direction:column;overflow:hidden;">
+            <div onclick="settingsShowPanel('profile',null,this)" style="display:flex;align-items:center;gap:10px;padding:14px 12px 10px;border-bottom:0.5px solid #d8d8d8;cursor:pointer;background:rgba(0,0,0,0.07);">
+              <img src="https://i.pravatar.cc/100?img=33" style="width:42px;height:42px;border-radius:50%;border:1.5px solid rgba(0,0,0,0.15);flex-shrink:0;" />
+              <div>
+                <div style="font-size:13px;font-weight:600;color:#1c1c1e;" id="settings-display-name">John Doe</div>
+                <div style="font-size:11px;color:#8e8e93;margin-top:1px;">MacBook Account</div>
+              </div>
+            </div>
+            <div style="padding:8px 10px;border-bottom:0.5px solid #d8d8d8;">
+              <input id="settings-search" placeholder="Search" oninput="settingsFilter(this.value)" style="width:100%;padding:7px 10px;border-radius:8px;border:none;background:#d1d1d6;color:#1c1c1e;font-size:12px;outline:none;box-sizing:border-box;" />
+            </div>
+            <div id="settings-nav" style="flex:1;overflow-y:auto;">
+              <div style="padding:10px 14px 4px;font-size:10px;color:#8e8e93;text-transform:uppercase;letter-spacing:0.5px;font-weight:500;">System</div>
+              <div class="settings-nav-item" onclick="settingsShowPanel('wifi',this)" style="display:flex;align-items:center;gap:9px;padding:7px 12px;cursor:pointer;border-radius:8px;margin:1px 6px;font-size:13px;color:#1c1c1e;"><div style="width:26px;height:26px;border-radius:6px;background:#0a84ff;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;">📶</div>Wi-Fi</div>
+              <div class="settings-nav-item" onclick="settingsShowPanel('bluetooth',this)" style="display:flex;align-items:center;gap:9px;padding:7px 12px;cursor:pointer;border-radius:8px;margin:1px 6px;font-size:13px;color:#1c1c1e;"><div style="width:26px;height:26px;border-radius:6px;background:#0a84ff;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;">🔷</div>Bluetooth</div>
+              <div class="settings-nav-item" onclick="settingsShowPanel('battery',this)" style="display:flex;align-items:center;gap:9px;padding:7px 12px;cursor:pointer;border-radius:8px;margin:1px 6px;font-size:13px;color:#1c1c1e;"><div style="width:26px;height:26px;border-radius:6px;background:#30d158;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;">🔋</div>Battery</div>
+              <div class="settings-nav-item" onclick="settingsShowPanel('wallpaper',this)" style="display:flex;align-items:center;gap:9px;padding:7px 12px;cursor:pointer;border-radius:8px;margin:1px 6px;font-size:13px;color:#1c1c1e;"><div style="width:26px;height:26px;border-radius:6px;background:#5e5ce6;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;">🖼️</div>Wallpaper</div>
+              <div style="padding:10px 14px 4px;font-size:10px;color:#8e8e93;text-transform:uppercase;letter-spacing:0.5px;font-weight:500;">Preferences</div>
+              <div class="settings-nav-item" onclick="settingsShowPanel('appearance',this)" style="display:flex;align-items:center;gap:9px;padding:7px 12px;cursor:pointer;border-radius:8px;margin:1px 6px;font-size:13px;color:#1c1c1e;"><div style="width:26px;height:26px;border-radius:6px;background:#5e5ce6;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;">🎨</div>Appearance</div>
+              <div class="settings-nav-item" onclick="settingsShowPanel('notifications',this)" style="display:flex;align-items:center;gap:9px;padding:7px 12px;cursor:pointer;border-radius:8px;margin:1px 6px;font-size:13px;color:#1c1c1e;"><div style="width:26px;height:26px;border-radius:6px;background:#ff453a;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;">🔔</div>Notifications</div>
+            </div>
           </div>
-          <span>Files</span>
+          <div id="settings-panel" style="flex:1;overflow-y:auto;padding:22px 26px;background:white;"></div>
         </div>
-        <div class="window-content">File system browser.</div>
       </div>
 
+      <!-- ================= FILES ================= -->
+      <div id="window-files" class="window hidden" style="width:780px;height:520px;">
+  <div class="window-bar">
+    <div class="mac-buttons">
+      <span class="dot red" onclick="closeWindow('window-files')"></span>
+      <span class="dot yellow" onclick="minimizeWindow('window-files')"></span>
+      <span class="dot green" onclick="maximizeWindow('window-files')"></span>
+    </div>
+    <span>Files</span>
+  </div>
+
+  <div style="display:flex;height:calc(100% - 36px);background:#f5f5f5;border-radius:0 0 12px 12px;overflow:hidden;color:#1c1c1e;">
+
+    <!-- LEFT SIDEBAR -->
+    <div style="width:220px;min-width:220px;background:#ececec;border-right:1px solid #d0d0d0;display:flex;flex-direction:column;overflow:hidden;">
+
+      <!-- SEARCH -->
+      <div style="padding:10px 12px;">
+        <div style="display:flex;align-items:center;gap:6px;background:white;border-radius:8px;padding:6px 10px;border:0.5px solid #d0d0d0;">
+          <span style="color:#8e8e93;font-size:12px;">🔍</span>
+          <input placeholder="Search" style="border:none;background:transparent;outline:none;font-size:12px;color:#333;width:100%;" />
+        </div>
+      </div>
+
+      <!-- NAV -->
+      <div style="flex:1;overflow-y:auto;padding:4px 0;">
+
+        <div class="files-nav-item active-files-nav" onclick="showFilesSection('myfiles', this)" style="display:flex;align-items:center;gap:8px;padding:7px 14px;cursor:pointer;border-radius:8px;margin:1px 8px;background:#0a84ff;color:white;font-size:13px;">
+          <span style="font-size:16px;">🗂️</span> My Files
+        </div>
+        <div class="files-nav-item" onclick="showFilesSection('browser', this)" style="display:flex;align-items:center;gap:8px;padding:7px 14px;cursor:pointer;border-radius:8px;margin:1px 8px;color:#1c1c1e;font-size:13px;">
+          <span style="font-size:16px;">🌐</span> Browser
+        </div>
+        <div class="files-nav-item" onclick="showFilesSection('vpn', this)" style="display:flex;align-items:center;gap:8px;padding:7px 14px;cursor:pointer;border-radius:8px;margin:1px 8px;color:#1c1c1e;font-size:13px;">
+          <span style="font-size:16px;">🔒</span> VPN
+          <span style="margin-left:auto;width:8px;height:8px;border-radius:50%;background:#ff9f0a;"></span>
+        </div>
+        <div class="files-nav-item" onclick="showFilesSection('recent', this)" style="display:flex;align-items:center;gap:8px;padding:7px 14px;cursor:pointer;border-radius:8px;margin:1px 8px;color:#1c1c1e;font-size:13px;">
+          <span style="font-size:16px;">🕐</span> Recent Files
+          <span style="margin-left:auto;color:#8e8e93;font-size:11px;">›</span>
+        </div>
+
+        <div style="padding:8px 14px 4px;font-size:10px;font-weight:700;color:#8e8e93;text-transform:uppercase;letter-spacing:0.5px;margin-top:6px;">Connections</div>
+        <div class="files-nav-item" onclick="showFilesSection('myfiles', this)" style="display:flex;align-items:center;gap:8px;padding:7px 14px;cursor:pointer;border-radius:8px;margin:1px 8px;color:#1c1c1e;font-size:13px;">
+          <span style="font-size:16px;">📁</span> Files
+        </div>
+        <div class="files-nav-item" onclick="showFilesSection('icloud', this)" style="display:flex;align-items:center;gap:8px;padding:7px 14px;cursor:pointer;border-radius:8px;margin:1px 8px;color:#1c1c1e;font-size:13px;">
+          <span style="font-size:16px;">☁️</span> Documents - iCloud
+        </div>
+        <div class="files-nav-item" onclick="showFilesSection('computer', this)" style="display:flex;align-items:center;gap:8px;padding:7px 14px;cursor:pointer;border-radius:8px;margin:1px 8px;color:#1c1c1e;font-size:13px;">
+          <span style="font-size:16px;">🖥️</span> Computer
+        </div>
+        <div class="files-nav-item" onclick="showFilesSection('dropbox', this)" style="display:flex;align-items:center;gap:8px;padding:7px 14px;cursor:pointer;border-radius:8px;margin:1px 8px;color:#1c1c1e;font-size:13px;">
+          <span style="font-size:16px;">📦</span> John Doe
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;padding:7px 14px;cursor:pointer;border-radius:8px;margin:1px 8px;color:#0a84ff;font-size:13px;">
+          <span style="font-size:16px;">＋</span> Add Connection
+        </div>
+
+        <div style="padding:8px 14px 4px;font-size:10px;font-weight:700;color:#8e8e93;text-transform:uppercase;letter-spacing:0.5px;margin-top:6px;">Favorites</div>
+        <div style="margin:4px 14px;border:1.5px dashed #c0c0c0;border-radius:8px;padding:14px;font-size:11px;color:#aaa;text-align:center;">Drag and drop files or folders here to add them to Favorites list</div>
+      </div>
+
+      <!-- BOTTOM -->
+      <div style="padding:10px 14px;border-top:0.5px solid #d0d0d0;display:flex;justify-content:space-between;">
+<span style="font-size:18px;cursor:pointer;" onclick="closeWindow('window-files');openWindow('window-settings')">⚙️</span>      </div>
+    </div>
+
+    <!-- RIGHT CONTENT -->
+    <div id="files-content" style="flex:1;background:white;overflow-y:auto;padding:20px;">
+      <!-- populated by JS -->
+    </div>
+
+  </div>
+</div>
+
+      <!-- ================= RECYCLE ================= -->
       <div id="window-recycle" class="window hidden">
         <div class="window-bar">
           <div class="mac-buttons">
-            <span class="dot red" onclick="closeWindow('window-recycle')"></span
-            ><span class="dot yellow"></span><span class="dot green"></span>
+            <span class="dot red" onclick="closeWindow('window-recycle')"></span>
+            <span class="dot yellow"></span><span class="dot green"></span>
           </div>
           <span>Recycle Bin</span>
         </div>
         <div class="window-content">Deleted files appear here.</div>
       </div>
 
-      <div id="window-appstore" class="window hidden">
+      <!-- ================= FACETIME ================= -->
+      <div id="window-facetime" class="window hidden" style="width:480px;height:520px;">
         <div class="window-bar">
           <div class="mac-buttons">
-            <span
-              class="dot red"
-              onclick="closeWindow('window-appstore')"
-            ></span
-            ><span class="dot yellow"></span><span class="dot green"></span>
+            <span class="dot red" onclick="closeFaceTime()"></span>
+            <span class="dot yellow" onclick="minimizeWindow('window-facetime')"></span>
+            <span class="dot green" onclick="maximizeWindow('window-facetime')"></span>
+          </div>
+          <span>FaceTime</span>
+        </div>
+        <div id="facetime-list" style="height:calc(100% - 36px);overflow-y:auto;background:#1a1a1a;">
+          <div style="padding:12px 14px;font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.5px;">Recent</div>
+          <div id="facetime-contacts"></div>
+        </div>
+        <div id="facetime-call" style="display:none;height:calc(100% - 36px);background:#0a0a0a;flex-direction:column;position:relative;">
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;position:relative;">
+            <img id="ft-avatar" src="" style="width:90px;height:90px;border-radius:50%;border:3px solid rgba(255,255,255,0.2);">
+            <div id="ft-caller-name" style="font-size:18px;font-weight:600;color:white;"></div>
+            <div id="ft-call-status" style="font-size:13px;color:rgba(255,255,255,0.5);">Connecting...</div>
+            <div id="ft-visualiser" style="display:none;gap:3px;align-items:flex-end;height:28px;">
+              <style>
+                #ft-visualiser{display:flex}
+                .ft-bar{width:4px;border-radius:2px;background:#30d158;animation:ftpulse 0.8s ease-in-out infinite}
+                .ft-bar:nth-child(2){animation-delay:.1s;height:14px}
+                .ft-bar:nth-child(3){animation-delay:.2s;height:22px}
+                .ft-bar:nth-child(4){animation-delay:.3s;height:10px}
+                .ft-bar:nth-child(5){animation-delay:.15s;height:18px}
+                @keyframes ftpulse{0%,100%{transform:scaleY(.4)}50%{transform:scaleY(1)}}
+              </style>
+              <div class="ft-bar" style="height:10px;"></div>
+              <div class="ft-bar" style="height:14px;"></div>
+              <div class="ft-bar" style="height:22px;"></div>
+              <div class="ft-bar" style="height:10px;"></div>
+              <div class="ft-bar" style="height:18px;"></div>
+            </div>
+            <div style="position:absolute;bottom:12px;right:12px;width:72px;height:54px;background:#2a2a2a;border-radius:10px;border:1.5px solid rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-size:22px;">🙂</div>
+          </div>
+          <div id="ft-transcript" style="display:none;max-height:110px;overflow-y:auto;padding:8px 14px;background:rgba(255,255,255,0.04);font-size:12px;color:rgba(255,255,255,0.7);line-height:1.6;"></div>
+          <div style="padding:10px 14px;background:#1a1a1a;display:flex;gap:8px;align-items:center;">
+            <input id="ft-input" placeholder="Type your response..." onkeydown="if(event.key==='Enter')sendFaceTimeMessage()" style="flex:1;padding:8px 12px;border-radius:20px;border:1px solid rgba(255,255,255,0.15);background:#2c2c2c;color:white;font-size:13px;outline:none;width:auto;" />
+            <button onclick="sendFaceTimeMessage()" style="width:auto;padding:7px 16px;border-radius:20px;background:#0a84ff;font-size:13px;font-weight:600;border:none;color:white;cursor:pointer;">Send</button>
+            <button onclick="endFaceTimeCall()" style="width:auto;padding:7px 14px;border-radius:20px;background:#ff3b30;font-size:13px;border:none;color:white;cursor:pointer;">✕</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= APP STORE ================= -->
+      <div id="window-appstore" class="window hidden" style="width:700px;height:480px;">
+        <div class="window-bar">
+          <div class="mac-buttons">
+            <span class="dot red" onclick="closeWindow('window-appstore')"></span>
+            <span class="dot yellow" onclick="minimizeWindow('window-appstore')"></span>
+            <span class="dot green" onclick="maximizeWindow('window-appstore')"></span>
           </div>
           <span>App Store</span>
         </div>
-        <div class="window-content">Download apps here.</div>
+        <div style="display:flex;height:calc(100% - 36px);background:white;border-radius:0 0 12px 12px;overflow:hidden;color:#000;">
+          <div style="width:180px;min-width:180px;background:#f5f5f5;border-right:1px solid #e0e0e0;display:flex;flex-direction:column;padding:10px 0;">
+            <div style="padding:8px 10px 12px;">
+              <input placeholder="🔍 Search" style="width:100%;padding:6px 10px;border-radius:8px;border:none;background:#e0e0e0;color:#333;font-size:12px;outline:none;box-sizing:border-box;" />
+            </div>
+            <div style="font-size:10px;font-weight:700;color:#8e8e93;padding:0 14px 6px;text-transform:uppercase;letter-spacing:0.5px;">Discover</div>
+            <div class="as-cat" onclick="showCategory('discover',this)" style="display:flex;align-items:center;gap:8px;padding:7px 14px;cursor:pointer;border-radius:8px;margin:0 6px;background:#0a84ff;color:white;font-size:13px;"><span>🔍</span> Discover</div>
+            <div class="as-cat" onclick="showCategory('arcade',this)" style="display:flex;align-items:center;gap:8px;padding:7px 14px;cursor:pointer;border-radius:8px;margin:0 6px;color:#333;font-size:13px;"><span>🕹️</span> Arcade</div>
+            <div style="font-size:10px;font-weight:700;color:#8e8e93;padding:10px 14px 6px;text-transform:uppercase;letter-spacing:0.5px;">Categories</div>
+            <div class="as-cat" onclick="showCategory('create',this)" style="display:flex;align-items:center;gap:8px;padding:7px 14px;cursor:pointer;border-radius:8px;margin:0 6px;color:#333;font-size:13px;"><span>✏️</span> Create</div>
+            <div class="as-cat" onclick="showCategory('work',this)" style="display:flex;align-items:center;gap:8px;padding:7px 14px;cursor:pointer;border-radius:8px;margin:0 6px;color:#333;font-size:13px;"><span>💼</span> Work</div>
+            <div class="as-cat" onclick="showCategory('play',this)" style="display:flex;align-items:center;gap:8px;padding:7px 14px;cursor:pointer;border-radius:8px;margin:0 6px;color:#333;font-size:13px;"><span>🎮</span> Play</div>
+            <div style="font-size:10px;font-weight:700;color:#8e8e93;padding:10px 14px 6px;text-transform:uppercase;letter-spacing:0.5px;">My Account</div>
+            <div class="as-cat" onclick="showCategory('updates',this)" style="display:flex;align-items:center;gap:8px;padding:7px 14px;cursor:pointer;border-radius:8px;margin:0 6px;color:#333;font-size:13px;"><span>🔄</span> Updates</div>
+          </div>
+          <div id="appstore-content" style="flex:1;overflow-y:auto;background:white;padding:0;"></div>
+        </div>
+      </div>
+
+      <!-- ================= MAIL ================= -->
+      <div id="window-mail" class="window hidden">
+        <div class="window-bar">
+          <div class="mac-buttons">
+            <span class="dot red" onclick="closeWindow('window-mail')"></span>
+            <span class="dot yellow" onclick="minimizeWindow('window-mail')"></span>
+            <span class="dot green" onclick="maximizeWindow('window-mail')"></span>
+          </div>
+          <span>Mail</span>
+        </div>
+        <div class="window-content">Your inbox is empty.</div>
       </div>
 
       <!-- ================= PHOTOS ================= -->
-      <div
-        id="window-photos"
-        class="window hidden"
-        style="width: 600px; height: 420px"
-      >
+      <div id="window-photos" class="window hidden" style="width:600px;height:420px;">
         <div class="window-bar">
           <div class="mac-buttons">
             <span class="dot red" onclick="closeWindow('window-photos')"></span>
-            <span
-              class="dot yellow"
-              onclick="minimizeWindow('window-photos')"
-            ></span>
-            <span
-              class="dot green"
-              onclick="toggleFullscreen('window-photos')"
-            ></span>
+            <span class="dot yellow" onclick="minimizeWindow('window-photos')"></span>
+            <span class="dot green" onclick="toggleFullscreen('window-photos')"></span>
           </div>
           <span>Photos</span>
         </div>
-        <div
-          class="window-content"
-          style="padding: 0; display: flex; height: calc(100% - 36px)"
-        >
+        <div class="window-content" style="padding:0;display:flex;height:calc(100% - 36px);">
           <div class="photos-sidebar">
             <div class="section-title">DEVICES</div>
             <div class="device" id="macbook">💻 MacBook</div>
@@ -222,47 +415,23 @@
       <div id="window-messages" class="window hidden">
         <div class="window-bar">
           <div class="mac-buttons">
-            <span
-              class="dot red"
-              onclick="closeWindow('window-messages')"
-            ></span>
-            <span
-              class="dot yellow"
-              onclick="minimizeWindow('window-messages')"
-            ></span>
-            <span
-              class="dot green"
-              onclick="maximizeWindow('window-messages')"
-            ></span>
+            <span class="dot red" onclick="closeWindow('window-messages')"></span>
+            <span class="dot yellow" onclick="minimizeWindow('window-messages')"></span>
+            <span class="dot green" onclick="maximizeWindow('window-messages')"></span>
           </div>
           <span>Messages</span>
-          <div class="game-hud">
-            <span id="hearts-display">❤️❤️❤️</span>
-            <span id="score-display">⭐ 0</span>
-          </div>
         </div>
-
-        <!-- CHAT SCREEN -->
         <div id="chat-screen" class="chat-screen hidden">
           <div class="chat-header">
             <span class="back-btn" onclick="closeChat()">←</span>
             <span id="chat-name">Name</span>
-            <div id="verdict-badge" class="verdict-badge hidden">
-              <button class="verdict-btn scam" onclick="submitVerdict(true)">
-                ❌ Scam
-              </button>
-              <button class="verdict-btn legit" onclick="submitVerdict(false)">
-                ✅ Legit
-              </button>
-            </div>
           </div>
           <div id="chat-messages" class="chat-messages"></div>
           <div class="chat-input">
-            <input id="chat-input-field" placeholder="iMessage" />
+            <input id="chat-input-field" placeholder="iMessage" onkeydown="if(event.key==='Enter')sendMessage();" />
             <button onclick="sendMessage()">Send</button>
           </div>
         </div>
-
         <div class="window-content messages-app">
           <div class="messages-body">
             <div class="search-wrapper">
@@ -273,171 +442,450 @@
           </div>
         </div>
       </div>
-    </div>
+
+    </div><!-- end #desktop -->
 
     <!-- TOAST -->
     <div id="toast" class="toast hidden"></div>
 
-    <script type="module" src="script.js"></script>
+    <!-- SHUTDOWN SCREEN -->
+    <div id="shutdown-screen" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.85);z-index:99999;align-items:center;justify-content:center;flex-direction:column;gap:16px;color:white;text-align:center;">
+      <div id="shutdown-prompt" style="display:flex;flex-direction:column;align-items:center;gap:16px;">
+        <div style="font-size:48px;">💻</div>
+        <div style="font-size:18px;">Shutting down will lose all your progress.</div>
+        <div style="font-size:14px;color:rgba(255,255,255,0.6);">Are you sure?</div>
+        <div style="display:flex;gap:10px;">
+          <button onclick="cancelShutdown()" style="width:auto;background:rgba(255,255,255,0.15);border:none;color:white;padding:8px 20px;border-radius:8px;cursor:pointer;">Cancel</button>
+          <button onclick="confirmShutdown()" style="width:auto;background:#ff3b30;border:none;color:white;padding:8px 20px;border-radius:8px;cursor:pointer;">Shut Down</button>
+        </div>
+      </div>
+      <div id="shutdown-final" style="display:none;flex-direction:column;align-items:center;gap:16px;">
+        <div style="font-size:48px;">💻</div>
+        <div style="font-size:18px;opacity:0.7;">Shutting down...</div>
+      </div>
+    </div>
 
+    <!-- CLOCK -->
     <script>
       function startClock() {
-        const ids = ["clock", "clock-desktop"];
+        const ids = ["clock","clock-desktop"];
         function tick() {
-          const t = new Date().toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-          });
-          ids.forEach((id) => {
-            const el = document.getElementById(id);
-            if (el) el.textContent = t;
-          });
+          const t = new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});
+          ids.forEach(id => { const el = document.getElementById(id); if(el) el.textContent = t; });
         }
-        tick();
-        setInterval(tick, 1000);
+        tick(); setInterval(tick, 1000);
       }
       window.addEventListener("DOMContentLoaded", startClock);
-    </script><script>
-// ================= WINDOW MANAGER =================
+    </script>
 
-// Open window (allows multiple at once)
-function openWindow(id) {
+    <!-- WINDOW MANAGER -->
+    <script>
+       function openWindow(id) {
   const win = document.getElementById(id);
-  if (!win) return;
-  win.classList.remove("hidden");
-  focusWindow(win);
+  if (win) win.classList.remove("hidden");
+  if (id === 'window-notes') setTimeout(() => {
+    if (typeof initNotes === 'function') initNotes();
+  }, 50);
+  if (id === 'window-appstore') setTimeout(() => {
+    if (typeof showCategory === 'function') showCategory('discover', document.querySelector('.as-cat'));
+  }, 50);
 }
+      function closeWindow(id) {
+        const win = document.getElementById(id);
+        if (!win) return;
+        win.classList.add("hidden");
+      }
+      function minimizeWindow(id) {
+        const win = document.getElementById(id);
+        if (!win) return;
+        win.style.transition = "transform 0.3s ease, opacity 0.3s ease";
+        win.style.transform = "scale(0.1) translateY(500px)";
+        win.style.opacity = "0";
+        setTimeout(() => { win.classList.add("hidden"); win.style.transform=""; win.style.opacity=""; win.style.transition=""; }, 300);
+      }
+      function maximizeWindow(id) {
+        const win = document.getElementById(id);
+        if (win) win.classList.toggle("fullscreen");
+      }
+      function toggleFullscreen(id) { maximizeWindow(id); }
 
-// Close window
-function closeWindow(id) {
-  const win = document.getElementById(id);
-  if (!win) return;
-  win.classList.add("hidden");
-}
+      let highestZ = 100;
+      function focusWindow(win) { highestZ++; win.style.zIndex = highestZ; }
 
-// Minimize window
-function minimizeWindow(id) {
-  const win = document.getElementById(id);
-  if (!win) return;
-  win.style.transition = "transform 0.3s ease, opacity 0.3s ease";
-  win.style.transform = "scale(0.1) translateY(500px)";
-  win.style.opacity = "0";
-  setTimeout(() => {
-    win.classList.add("hidden");
-    win.style.transform = "";
-    win.style.opacity = "";
-    win.style.transition = "";
-  }, 300);
-}
+      function makeDraggable(win) {
+        const bar = win.querySelector(".window-bar");
+        if (!bar) return;
+        let isDragging = false, startX, startY, startLeft, startTop;
+        bar.addEventListener("mousedown", (e) => {
+          if (e.target.closest("button") || e.target.closest(".dot") || e.target.closest(".game-hud")) return;
+          isDragging = true; focusWindow(win);
+          const rect = win.getBoundingClientRect();
+          startX = e.clientX; startY = e.clientY; startLeft = rect.left; startTop = rect.top;
+          win.style.left = startLeft+"px"; win.style.top = startTop+"px"; win.style.transform = "none";
+          e.preventDefault();
+        });
+        document.addEventListener("mousemove", (e) => {
+          if (!isDragging) return;
+          win.style.left = (startLeft + e.clientX - startX)+"px";
+          win.style.top  = (startTop  + e.clientY - startY)+"px";
+        });
+        document.addEventListener("mouseup", () => { isDragging = false; });
+        win.addEventListener("mousedown", () => focusWindow(win));
+      }
 
-// Maximize window
-function maximizeWindow(id) {
-  const win = document.getElementById(id);
-  if (!win) return;
-  win.classList.toggle("fullscreen");
-}
+      function makeResizable(win) {
+        const handle = document.createElement("div");
+        handle.style.cssText = "position:absolute;bottom:0;right:0;width:16px;height:16px;cursor:se-resize;z-index:999;background:transparent;";
+        win.style.position = "absolute";
+        win.appendChild(handle);
+        let isResizing = false, startX, startY, startW, startH;
+        handle.addEventListener("mousedown", (e) => { isResizing=true; startX=e.clientX; startY=e.clientY; startW=win.offsetWidth; startH=win.offsetHeight; e.preventDefault(); e.stopPropagation(); });
+        document.addEventListener("mousemove", (e) => { if (!isResizing) return; win.style.width=Math.max(300,startW+(e.clientX-startX))+"px"; win.style.height=Math.max(200,startH+(e.clientY-startY))+"px"; });
+        document.addEventListener("mouseup", () => { isResizing = false; });
+      }
 
-// Bring window to front
-let highestZ = 100;
-function focusWindow(win) {
-  highestZ++;
-  win.style.zIndex = highestZ;
-}
+      window.addEventListener("DOMContentLoaded", () => {
+        document.querySelectorAll(".window").forEach(win => { makeDraggable(win); makeResizable(win); });
+      });
 
-// ================= DRAGGING =================
-function makeDraggable(win) {
-  const bar = win.querySelector(".window-bar");
-  if (!bar) return;
+      function shutdown() {
+        document.getElementById("shutdown-screen").style.display = "flex";
+        document.getElementById("shutdown-prompt").style.display = "flex";
+        document.getElementById("shutdown-final").style.display = "none";
+      }
+      function cancelShutdown() { document.getElementById("shutdown-screen").style.display = "none"; }
+      function confirmShutdown() {
+        document.getElementById("shutdown-prompt").style.display = "none";
+        document.getElementById("shutdown-final").style.display = "flex";
+        setTimeout(() => {
+          document.getElementById("shutdown-screen").style.background = "black";
+          document.getElementById("shutdown-final").style.display = "none";
+          setTimeout(() => location.reload(), 500);
+        }, 2000);
+      }
 
-  let isDragging = false;
-  let startX, startY, startLeft, startTop;
+      /* ===== APP STORE ===== */
+      const appStoreData = {
+        discover: [
+          { icon:"📷", name:"Camera Pro",   desc:"Professional photo editing tools", age:"4+",  dev:"PhotoCo",  rating:4, size:"82MB",  lang:"EN", images:["https://picsum.photos/200/120?random=10","https://picsum.photos/200/120?random=11","https://picsum.photos/200/120?random=12"] },
+          { icon:"🎵", name:"Beats Studio", desc:"Stream millions of songs",          age:"12+", dev:"BeatsCo",  rating:5, size:"45MB",  lang:"EN", images:["https://picsum.photos/200/120?random=13","https://picsum.photos/200/120?random=14","https://picsum.photos/200/120?random=15"] },
+          { icon:"📰", name:"Daily News",   desc:"Stay up to date with world news",  age:"9+",  dev:"NewsInc",  rating:3, size:"20MB",  lang:"EN", images:["https://picsum.photos/200/120?random=16","https://picsum.photos/200/120?random=17","https://picsum.photos/200/120?random=18"] },
+        ],
+        arcade: [
+          { icon:"🏎️", name:"Speed Racer",  desc:"Race through neon city streets",      age:"9+", dev:"NeonGames", rating:4, size:"120MB", lang:"EN", images:["https://picsum.photos/200/120?random=20","https://picsum.photos/200/120?random=21","https://picsum.photos/200/120?random=22"] },
+          { icon:"🧩", name:"Puzzle World", desc:"Thousands of mind-bending puzzles",   age:"4+", dev:"PuzzleLab", rating:5, size:"55MB",  lang:"EN", images:["https://picsum.photos/200/120?random=23","https://picsum.photos/200/120?random=24","https://picsum.photos/200/120?random=25"] },
+        ],
+        create: [
+          { icon:"🎨", name:"Sketch Board", desc:"Draw, paint and design anything", age:"4+",  dev:"ArtStudio", rating:4, size:"95MB",  lang:"EN", images:["https://picsum.photos/200/120?random=30","https://picsum.photos/200/120?random=31","https://picsum.photos/200/120?random=32"] },
+          { icon:"🎬", name:"Video Cut",    desc:"Edit videos like a pro",          age:"12+", dev:"CutPro",    rating:5, size:"210MB", lang:"EN", images:["https://picsum.photos/200/120?random=33","https://picsum.photos/200/120?random=34","https://picsum.photos/200/120?random=35"] },
+        ],
+        work: [
+          { icon:"📊", name:"Sheets Plus", desc:"Powerful spreadsheets on the go",   age:"4+", dev:"WorkSuite", rating:4, size:"60MB", lang:"EN", images:["https://picsum.photos/200/120?random=40","https://picsum.photos/200/120?random=41","https://picsum.photos/200/120?random=42"] },
+          { icon:"📝", name:"Docs Pro",    desc:"Write and collaborate in real time", age:"4+", dev:"WorkSuite", rating:4, size:"48MB", lang:"EN", images:["https://picsum.photos/200/120?random=43","https://picsum.photos/200/120?random=44","https://picsum.photos/200/120?random=45"] },
+        ],
+        play: [
+          { icon:"🎲", name:"Board Games", desc:"Classic board games with friends", age:"4+", dev:"FunZone", rating:3, size:"35MB", lang:"EN", images:["https://picsum.photos/200/120?random=50","https://picsum.photos/200/120?random=51","https://picsum.photos/200/120?random=52"] },
+        ],
+        updates: [
+          { icon:"🔒", name:"ScamQuest", desc:"Update available — bug fixes", age:"12+", dev:"ScamQuest Inc", rating:5, size:"14MB", lang:"EN", images:[] },
+        ]
+      };
 
-  bar.addEventListener("mousedown", (e) => {
-    // Don't drag if clicking buttons or dots
-    if (e.target.closest("button") || e.target.closest(".dot") || e.target.closest(".game-hud")) return;
+      function showCategory(cat, el) {
+        document.querySelectorAll(".as-cat").forEach(t => { t.style.background="transparent"; t.style.color="#333"; });
+        if (el) { el.style.background="#0a84ff"; el.style.color="white"; }
+        const apps = appStoreData[cat] || [];
+        const content = document.getElementById("appstore-content");
+        content.innerHTML = `<div style="padding:16px 20px 8px;font-size:22px;font-weight:700;color:#000;border-bottom:1px solid #f0f0f0;">${cat.charAt(0).toUpperCase()+cat.slice(1)}</div>`
+          + apps.map((app,i) => `<div onclick="showAppDetail(event,'${cat}',${i})" style="display:flex;align-items:center;padding:12px 20px;cursor:pointer;border-bottom:1px solid #f0f0f0;gap:12px;"><div style="font-size:32px;width:52px;height:52px;background:#f2f2f7;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${app.icon}</div><div style="flex:1;min-width:0;"><div style="font-weight:700;font-size:13px;color:#000;">${app.name}</div><div style="font-size:11px;color:#8e8e93;margin-top:2px;">${app.desc}</div></div><button onclick="event.stopPropagation()" style="background:#e8f0fe;color:#0a84ff;border:none;border-radius:14px;padding:5px 14px;font-size:12px;font-weight:600;cursor:pointer;width:auto;flex-shrink:0;">GET</button></div>`).join("");
+      }
 
-    isDragging = true;
-    focusWindow(win);
+      function showAppDetail(e, cat, index) {
+        if (e) e.stopPropagation();
+        const app = appStoreData[cat][index];
+        const content = document.getElementById("appstore-content");
+        const stars = "★".repeat(app.rating)+"☆".repeat(5-app.rating);
+        content.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 20px;border-bottom:1px solid #f0f0f0;"><button onclick="event.stopPropagation();goBack('${cat}')" style="background:none;border:none;color:#0a84ff;font-size:13px;cursor:pointer;width:auto;padding:0;">‹ Back</button><button style="background:none;border:none;color:#0a84ff;font-size:13px;cursor:pointer;width:auto;padding:0;">⬆ Share</button></div><div style="display:flex;gap:14px;padding:20px;"><div style="font-size:48px;width:80px;height:80px;background:#f2f2f7;border-radius:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${app.icon}</div><div style="flex:1;"><div style="font-weight:700;font-size:18px;color:#000;">${app.name}</div><div style="font-size:12px;color:#8e8e93;margin-top:4px;">${app.desc}</div><button style="margin-top:10px;background:#0a84ff;color:white;border:none;border-radius:16px;padding:7px 28px;font-size:13px;font-weight:600;cursor:pointer;width:auto;">GET</button></div></div><div style="height:1px;background:#f0f0f0;margin:0 20px;"></div><div style="display:flex;padding:14px 20px;gap:8px;overflow-x:auto;"><div style="flex:1;min-width:70px;background:#f9f9f9;border-radius:12px;padding:10px;text-align:center;"><div style="font-size:9px;color:#8e8e93;text-transform:uppercase;margin-bottom:4px;">Rating</div><div style="font-size:14px;color:#ffd60a;">${stars}</div><div style="font-size:10px;color:#8e8e93;">${app.rating}/5</div></div><div style="flex:1;min-width:60px;background:#f9f9f9;border-radius:12px;padding:10px;text-align:center;"><div style="font-size:9px;color:#8e8e93;text-transform:uppercase;margin-bottom:4px;">Age</div><div style="font-size:14px;font-weight:600;color:#000;">${app.age}</div></div><div style="flex:1;min-width:80px;background:#f9f9f9;border-radius:12px;padding:10px;text-align:center;"><div style="font-size:9px;color:#8e8e93;text-transform:uppercase;margin-bottom:4px;">Developer</div><div style="font-size:11px;font-weight:600;color:#000;">${app.dev}</div></div><div style="flex:1;min-width:55px;background:#f9f9f9;border-radius:12px;padding:10px;text-align:center;"><div style="font-size:9px;color:#8e8e93;text-transform:uppercase;margin-bottom:4px;">Size</div><div style="font-size:12px;font-weight:600;color:#000;">${app.size}</div></div><div style="flex:1;min-width:50px;background:#f9f9f9;border-radius:12px;padding:10px;text-align:center;"><div style="font-size:9px;color:#8e8e93;text-transform:uppercase;margin-bottom:4px;">Lang</div><div style="font-size:12px;font-weight:600;color:#000;">${app.lang}</div></div></div>`
+          + (app.images.length ? `<div style="padding:0 20px 20px;"><div style="font-size:13px;font-weight:600;color:#000;margin-bottom:10px;">Preview</div><div style="display:flex;gap:10px;overflow-x:auto;">${app.images.map(src=>`<img src="${src}" style="height:130px;border-radius:12px;flex-shrink:0;" />`).join("")}</div></div>` : "");
+      }
 
-    const rect = win.getBoundingClientRect();
-    startX = e.clientX;
-    startY = e.clientY;
-    startLeft = rect.left;
-    startTop = rect.top;
+      function openAppStore() {
+        openWindow("window-appstore");
+        setTimeout(() => showCategory("discover", document.querySelector(".as-cat")), 50);
+      }
 
-    // Switch from transform-based centering to fixed position
-    win.style.left = startLeft + "px";
-    win.style.top = startTop + "px";
-    win.style.transform = "none";
+      function goBack(cat) { showCategory(cat, null); }
 
-    e.preventDefault();
+      document.addEventListener("input", (e) => {
+        if (!e.target.matches("#window-appstore input[placeholder='🔍 Search']")) return;
+        const query = e.target.value.toLowerCase();
+        const allApps = Object.entries(appStoreData).flatMap(([cat,apps]) => apps.map((app,i)=>({...app,cat,i})));
+        const results = allApps.filter(a => a.name.toLowerCase().includes(query) || a.desc.toLowerCase().includes(query));
+        const content = document.getElementById("appstore-content");
+        if (!query) { showCategory("discover", document.querySelector(".as-cat")); return; }
+        content.innerHTML = results.length
+          ? results.map(app=>`<div onclick="showAppDetail(event,'${app.cat}',${app.i})" style="display:flex;align-items:center;padding:12px 20px;cursor:pointer;border-bottom:1px solid #f0f0f0;gap:12px;"><div style="font-size:32px;width:52px;height:52px;background:#f2f2f7;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${app.icon}</div><div style="flex:1;"><div style="font-weight:700;font-size:13px;color:#000;">${app.name}</div><div style="font-size:11px;color:#8e8e93;">${app.desc}</div></div><button onclick="event.stopPropagation()" style="background:#e8f0fe;color:#0a84ff;border:none;border-radius:14px;padding:5px 14px;font-size:12px;font-weight:600;cursor:pointer;width:auto;">GET</button></div>`).join("")
+          : `<div style="padding:30px;text-align:center;color:#8e8e93;">No results for "${query}"</div>`;
+      });
+
+      /* ===== NOTES ===== */
+      const notesData = [
+        { title:"Grocery List 🛒", date:"Today, 10:42", preview:"Don't forget milk...", tag:"#personal", content:`<div style="font-size:11px;color:#8e8e93;text-align:center;margin-bottom:16px;">Today at 10:42</div><div style="font-weight:700;font-size:18px;margin-bottom:12px;">Grocery List 🛒</div><div>☐ Milk</div><div>☐ Eggs</div><div>☐ Bread</div><div>☐ Butter</div><div>☐ Orange juice</div><div>☐ Pasta</div><div>☑ Cheese (already got)</div><div style="margin-top:12px;color:#8e8e93;font-size:12px;">#personal</div>` },
+        { title:"Passwords 🔑", date:"Today, 09:15", preview:"Netflix: john123...", tag:"#passwords", content:`<div style="font-size:11px;color:#8e8e93;text-align:center;margin-bottom:16px;">Today at 09:15</div><div style="font-weight:700;font-size:18px;margin-bottom:12px;">Passwords 🔑</div><div><b>Netflix:</b> john123!</div><div><b>Instagram:</b> johndoe@99</div><div><b>Bank PIN:</b> 4821</div><div><b>Gmail:</b> johnD0e_2024</div><div><b>WiFi:</b> HomeNetwork_5G / password88</div><div><b>Amazon:</b> j.doe@email.com / Shopping44!</div><div style="margin-top:12px;color:#8e8e93;font-size:12px;">#passwords</div>` },
+        { title:"Job Opportunity 💼", date:"Yesterday, 16:30", preview:"Call Mike re: internship...", tag:"#work", content:`<div style="font-size:11px;color:#8e8e93;text-align:center;margin-bottom:16px;">Yesterday at 16:30</div><div style="font-weight:700;font-size:18px;margin-bottom:12px;">Job Opportunity 💼</div><div>Call <b>Mike</b> about the internship position at TechCorp.</div><div style="margin-top:8px;"><b>📞 Number:</b> (917) 555-0143</div><div style="margin-top:8px;"><b>Best time to call:</b> Weekdays 9am–5pm</div><div style="margin-top:8px;">He mentioned $22/hr and possibility of full-time after summer.</div><div style="margin-top:12px;color:#8e8e93;font-size:12px;">#work</div>` },
+        { title:"Credit Card Info 💳", date:"Yesterday, 14:05", preview:"Visa ending 4821...", tag:"#passwords", content:`<div style="font-size:11px;color:#8e8e93;text-align:center;margin-bottom:16px;">Yesterday at 14:05</div><div style="font-weight:700;font-size:18px;margin-bottom:12px;">Credit Card Info 💳</div><div><b>Visa:</b> 4821 XXXX XXXX 9032</div><div><b>Expiry:</b> 09/27</div><div><b>CVV:</b> 412</div><div style="margin-top:8px;"><b>Billing address:</b> 123 Main St, New York, NY</div><div style="margin-top:12px;color:#ff3b30;font-size:12px;">⚠️ Don't share this!</div><div style="color:#8e8e93;font-size:12px;">#passwords</div>` },
+        { title:"Weekend Plans 🎉", date:"Yesterday, 11:00", preview:"Saturday: brunch with Sara...", tag:"#personal", content:`<div style="font-size:11px;color:#8e8e93;text-align:center;margin-bottom:16px;">Yesterday at 11:00</div><div style="font-weight:700;font-size:18px;margin-bottom:12px;">Weekend Plans 🎉</div><div><b>Saturday:</b></div><div>☐ Brunch with Sara @ 11am</div><div>☐ Gym 2pm</div><div>☐ Movie night w/ the guys</div><div style="margin-top:8px;"><b>Sunday:</b></div><div>☐ Laundry (finally)</div><div>☐ Finish that assignment due Monday</div><div>☐ Call mom</div><div style="margin-top:12px;color:#8e8e93;font-size:12px;">#personal</div>` },
+        { title:"Study Notes 📚", date:"Mon, 18:22", preview:"Chapter 4: Networking...", tag:"#work", content:`<div style="font-size:11px;color:#8e8e93;text-align:center;margin-bottom:16px;">Monday at 18:22</div><div style="font-weight:700;font-size:18px;margin-bottom:12px;">Study Notes 📚</div><div><b>Chapter 4: Networking Basics</b></div><div style="margin-top:8px;">• IP addresses identify devices on a network</div><div>• DNS translates domain names to IPs</div><div>• TCP/IP is the foundation of the internet</div><div>• Firewalls filter incoming/outgoing traffic</div><div style="margin-top:12px;color:#8e8e93;font-size:12px;">#work</div>` },
+        { title:"Random Thoughts 💭", date:"Sun, 23:11", preview:"Why is the sky blue...", tag:"#personal", content:`<div style="font-size:11px;color:#8e8e93;text-align:center;margin-bottom:16px;">Sunday at 23:11</div><div style="font-weight:700;font-size:18px;margin-bottom:12px;">Random Thoughts 💭</div><div>Why is the sky blue but sunsets are orange??</div><div style="margin-top:8px;">Should I get a cat? Pros: cute. Cons: allergies probably.</div><div style="margin-top:8px;">Need to learn how to cook more than pasta.</div><div style="margin-top:12px;color:#8e8e93;font-size:12px;">#personal</div>` },
+        { title:"SSN & Docs 🪪", date:"Sat, 09:00", preview:"SSN: 523-44-...", tag:"#passwords", content:`<div style="font-size:11px;color:#8e8e93;text-align:center;margin-bottom:16px;">Saturday at 09:00</div><div style="font-weight:700;font-size:18px;margin-bottom:12px;">SSN & Docs 🪪</div><div><b>SSN:</b> 523-44-8901</div><div><b>Passport #:</b> US8821445</div><div><b>Driver License:</b> NY-4421-887-009</div><div><b>Date of Birth:</b> March 14, 1998</div><div style="margin-top:12px;color:#ff3b30;font-size:12px;">⚠️ Extremely sensitive — do not share!</div><div style="color:#8e8e93;font-size:12px;">#passwords</div>` },
+      ];
+
+      let activeTag = "all";
+const deletedNotes = [
+  { title:"Old Todo List 📝", date:"Last week", preview:"Buy groceries, call dentist...", tag:"#personal", content:`<div style="font-size:11px;color:#8e8e93;text-align:center;margin-bottom:16px;">Last week</div><div style="font-weight:700;font-size:18px;margin-bottom:12px;">Old Todo List 📝</div><div>☑ Buy groceries</div><div>☑ Call dentist</div><div>☑ Return Amazon package</div><div style="margin-top:12px;color:#8e8e93;font-size:12px;">#personal</div>` },
+  { title:"Ex's Number 💔", date:"2 weeks ago", preview:"Don't text. Don't text. Don't...", tag:"#personal", content:`<div style="font-size:11px;color:#8e8e93;text-align:center;margin-bottom:16px;">2 weeks ago</div><div style="font-weight:700;font-size:18px;margin-bottom:12px;">Ex's Number 💔</div><div>📞 (917) 555-0187</div><div style="margin-top:8px;color:#ff3b30;">DO NOT TEXT.</div><div style="margin-top:8px;">seriously don't do it</div><div style="color:#8e8e93;font-size:12px;">#personal</div>` },
+];
+
+function initNotes() {
+  const list = document.getElementById("notes-list");
+  if (!list) return;
+  activeTag = "all";
+  renderNotesList(notesData, list);
+  openNote(0, notesData, false);
+
+  // wire up tags
+  document.querySelectorAll(".notes-tag").forEach(el => {
+    el.onclick = () => {
+      // highlight active tag
+      document.querySelectorAll(".notes-tag").forEach(t => t.style.background = "rgba(0,0,0,0.08)");
+      el.style.background = "#0a84ff";
+      el.style.color = "white";
+      activeTag = el.dataset.tag;
+      const filtered = activeTag === "all" ? notesData : notesData.filter(n => n.tag === activeTag);
+      renderNotesList(filtered, list);
+      if (filtered.length) openNote(0, filtered, false);
+    };
   });
 
-  document.addEventListener("mousemove", (e) => {
-    if (!isDragging) return;
-    const dx = e.clientX - startX;
-    const dy = e.clientY - startY;
-    win.style.left = (startLeft + dx) + "px";
-    win.style.top = (startTop + dy) + "px";
+  document.getElementById("notes-recently-deleted")?.addEventListener("click", () => {
+    // highlight recently deleted in sidebar
+    document.getElementById("notes-folder").style.background = "transparent";
+    document.getElementById("notes-recently-deleted").style.background = "rgba(0,0,0,0.07)";
+    document.getElementById("notes-recently-deleted").style.borderRadius = "6px";
+    renderNotesList(deletedNotes, list, true);
+    if (deletedNotes.length) openNote(0, deletedNotes, true);
   });
 
-  document.addEventListener("mouseup", () => {
-    isDragging = false;
+  document.getElementById("notes-folder")?.addEventListener("click", () => {
+    // highlight notes folder in sidebar
+    document.getElementById("notes-recently-deleted").style.background = "transparent";
+    document.getElementById("notes-folder").style.background = "rgba(0,0,0,0.07)";
+    renderNotesList(notesData, list);
+    openNote(0, notesData, false);
   });
-
-  // Focus on click anywhere on window
-  win.addEventListener("mousedown", () => focusWindow(win));
 }
 
-// ================= RESIZING =================
-function makeResizable(win) {
-  const handle = document.createElement("div");
-  handle.style.cssText = `
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    width: 16px;
-    height: 16px;
-    cursor: se-resize;
-    z-index: 999;
-    background: transparent;
+function renderNotesList(notes, list, isDeleted = false) {
+  list.innerHTML = `<div style="padding:8px 12px;font-size:11px;font-weight:700;color:#8e8e93;text-transform:uppercase;border-bottom:1px solid #e8e8e0;">${isDeleted ? "Recently Deleted" : "Notes"}</div>`
+    + notes.map((note, i) => `
+      <div onclick="openNote(${i}, ${isDeleted ? 'deletedNotes' : 'notesData'}, ${isDeleted})" id="note-item-${i}" style="padding:10px 14px;border-bottom:1px solid #e8e8e0;cursor:pointer;background:${i===0?"#ffd60a44":"transparent"};">
+        <div style="font-weight:700;font-size:13px;color:#000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${note.title}</div>
+        <div style="display:flex;gap:6px;margin-top:2px;">
+          <span style="font-size:11px;color:#8e8e93;">${note.date}</span>
+          <span style="font-size:11px;color:#8e8e93;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${note.preview}</span>
+        </div>
+      </div>`).join("");
+}
+
+function openNote(i, source, isDeleted = false) {
+  if (typeof source === "string") source = window[source];
+  if (!source) source = notesData;
+
+  document.querySelectorAll("[id^='note-item-']").forEach(el => el.style.background = "transparent");
+  const item = document.getElementById("note-item-" + i);
+  if (item) item.style.background = "#ffd60a44";
+
+  const content = document.getElementById("notes-content");
+  if (!content) return;
+
+  const note = source[i];
+  const maxChars = 300;
+
+  content.innerHTML = `
+    <div style="position:relative;">
+      ${note.content}
+      <div style="margin-top:16px;border-top:1px solid #f0f0f0;padding-top:12px;">
+        ${isDeleted ? 
+          `<div style="color:#ff3b30;font-size:12px;margin-bottom:8px;">🗑️ This note is in Recently Deleted — read only</div>
+           <div style="font-size:13px;color:#aaa;font-style:italic;">${note.userNote || "No additional notes."}</div>` 
+          :
+          `<div contenteditable="true" id="note-editable-${i}"
+            data-max="${maxChars}"
+            oninput="handleNoteInput(this, ${i})"
+            style="min-height:60px;font-size:13px;color:#333;outline:none;line-height:1.6;font-family:-apple-system,sans-serif;white-space:pre-wrap;"
+            >${note.userNote || ""}</div>
+           <div id="note-charcount-${i}" style="font-size:11px;color:#8e8e93;text-align:right;margin-top:4px;">${maxChars - (note.userNote?.length || 0)} chars remaining</div>`
+        }
+      </div>
+    </div>
   `;
-  win.style.position = "absolute";
-  win.appendChild(handle);
 
-  let isResizing = false;
-  let startX, startY, startW, startH;
-
-  handle.addEventListener("mousedown", (e) => {
-    isResizing = true;
-    startX = e.clientX;
-    startY = e.clientY;
-    startW = win.offsetWidth;
-    startH = win.offsetHeight;
-    e.preventDefault();
-    e.stopPropagation();
-  });
-
-  document.addEventListener("mousemove", (e) => {
-    if (!isResizing) return;
-    const newW = Math.max(300, startW + (e.clientX - startX));
-    const newH = Math.max(200, startH + (e.clientY - startY));
-    win.style.width = newW + "px";
-    win.style.height = newH + "px";
-  });
-
-  document.addEventListener("mouseup", () => {
-    isResizing = false;
-  });
+  if (!isDeleted) {
+    const editable = document.getElementById(`note-editable-${i}`);
+    if (editable) {
+      // place cursor at end
+      const range = document.createRange();
+      const sel = window.getSelection();
+      range.selectNodeContents(editable);
+      range.collapse(false);
+      sel.removeAllRanges();
+      sel.addRange(range);
+    }
+  }
 }
 
-// ================= INIT ALL WINDOWS =================
-window.addEventListener("DOMContentLoaded", () => {
-  document.querySelectorAll(".window").forEach(win => {
-    makeDraggable(win);
-    makeResizable(win);
+function handleNoteInput(el, i) {
+  const max = parseInt(el.dataset.max);
+  const text = el.innerText;
+  if (text.length > max) {
+    el.innerText = text.slice(0, max);
+    // move cursor to end
+    const range = document.createRange();
+    const sel = window.getSelection();
+    range.selectNodeContents(el);
+    range.collapse(false);
+    sel.removeAllRanges();
+    sel.addRange(range);
+  }
+  notesData[i].userNote = el.innerText;
+  const counter = document.getElementById(`note-charcount-${i}`);
+  if (counter) counter.textContent = (max - el.innerText.length) + " chars remaining";
+}
+
+/* ===== FILES APP ===== */
+const filesData = {
+  myfiles: {
+    title: "My Files",
+    items: [
+      { icon:"🖼️", name:"Photo Albums", meta:"21 items", color:"#e8f0ff", date:"" },
+      { icon:"🎵", name:"iTunes Files", meta:"12 items", color:"#e8ffe8", date:"" },
+      { icon:"🗑️", name:"Recently Deleted", meta:"18 items", color:"#f5f5f5", date:"" },
+      { icon:"📁", name:"Text", meta:"24 items", color:"#e8f4ff", date:"" },
+      { icon:"🏔️", name:"photo_31.12.20", meta:"", color:"#ddeeff", date:"01.01.2021", isPhoto:true },
+      { icon:"🏀", name:"Kira Wang - Game", meta:"", color:"#ffe8e8", date:"16.03.2020", isPhoto:true },
+      { icon:"📄", name:"March Report", meta:"", color:"#fff8e8", date:"16.03.2020" },
+      { icon:"🧾", name:"Invoice #00892", meta:"", color:"#f0f0ff", date:"16.03.2020" },
+{ icon:"🎬", name:"Tokyo trip", meta:"23:15", color:"#1a1a2e", date:"16.03.2020" },      { icon:"📖", name:"Wanderer journal", meta:"", color:"#f5f0ff", date:"16.03.2020", isPhoto:true },
+      { icon:"📋", name:"Admission Confirmation", meta:"", color:"#fff0f0", date:"16.03.2020" },
+      { icon:"✈️", name:"Boarding pass", meta:"", color:"#f0fff0", date:"16.03.2020" },
+      { icon:"🌴", name:"Tres Wood - Highlights", meta:"2:08", color:"#1a1a2e", date:"16.03.2020", isVideo:true },
+    ]
+  },
+  recent: {
+    title: "Recent Files",
+    items: [
+      { icon:"📄", name:"March Report", meta:"", color:"#fff8e8", date:"Today" },
+      { icon:"🧾", name:"Invoice #00892", meta:"", color:"#f0f0ff", date:"Yesterday" },
+      { icon:"📋", name:"Admission Confirmation", meta:"", color:"#fff0f0", date:"2 days ago" },
+    ]
+  },
+  icloud: {
+    title: "Documents - iCloud",
+    items: [
+      { icon:"📁", name:"Work Docs", meta:"8 items", color:"#e8f4ff", date:"" },
+      { icon:"📁", name:"Personal", meta:"14 items", color:"#e8f4ff", date:"" },
+      { icon:"📄", name:"Resume_2024.pdf", meta:"", color:"#fff8e8", date:"Jan 2024" },
+    ]
+  },
+  computer: {
+    title: "Computer",
+    items: [
+      { icon:"💾", name:"Macintosh HD", meta:"256 GB", color:"#f0f0f0", date:"" },
+      { icon:"📀", name:"External Drive", meta:"1 TB", color:"#f0f0f0", date:"" },
+    ]
+  },
+  browser: {
+  title: "Browser",
+  items: [
+    { icon:"📄", name:"invoice_march.pdf", meta:"", color:"#fff8e8", date:"Today" },
+    { icon:"🖼️", name:"wallpaper.jpg", meta:"", color:"#e8f4ff", date:"Yesterday", isPhoto:true },
+    { icon:"📦", name:"setup_v2.zip", meta:"", color:"#f0f0f0", date:"Mon" },
+    { icon:"🎬", name:"tutorial.mp4", meta:"4:21", color:"#111", date:"Last week"},
+    { icon:"📄", name:"resume_final.docx", meta:"", color:"#e8f0ff", date:"Last week" },
+    { icon:"🖼️", name:"screenshot.png", meta:"", color:"#f0fff0", date:"Last week", isPhoto:true },
+  ]
+},
+  vpn: {
+    title: "VPN",
+    items: [
+      { icon:"🔒", name:"Not Connected", meta:"Tap to connect", color:"#fff0f0", date:"" },
+    ]
+  },
+  dropbox: {
+    title: "John Doe",
+    items: [
+      { icon:"📦", name:"Shared with me", meta:"3 items", color:"#e8f0ff", date:"" },
+    ]
+  }
+};
+
+function showFilesSection(section, el) {
+  // update sidebar highlight
+  document.querySelectorAll(".files-nav-item").forEach(t => {
+    t.style.background = "transparent";
+    t.style.color = "#1c1c1e";
   });
-});
-</script>
+  if (el) { el.style.background = "#0a84ff"; el.style.color = "white"; }
+
+  const data = filesData[section] || filesData.myfiles;
+  const content = document.getElementById("files-content");
+
+  content.innerHTML = `
+    <div style="font-size:22px;font-weight:700;color:#1c1c1e;margin-bottom:16px;">${data.title}</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px;">
+      ${data.items.map(item => `
+<div style="display:flex;flex-direction:column;align-items:center;cursor:pointer;position:relative;" onclick="event.stopPropagation();openFileItem('${item.name}')">          <div style="width:110px;height:90px;border-radius:12px;background:${item.isVideo ? item.color : item.color};display:flex;align-items:center;justify-content:center;margin-bottom:6px;overflow:hidden;position:relative;border:0.5px solid rgba(0,0,0,0.08);">
+            ${item.isVideo ? 
+              `<div style="width:100%;height:100%;background:${item.color};display:flex;align-items:center;justify-content:center;font-size:28px;">🎬</div>
+               <div style="position:absolute;bottom:4px;right:4px;background:rgba(0,0,0,0.6);color:white;font-size:9px;padding:1px 5px;border-radius:4px;display:flex;align-items:center;gap:3px;">▶ ${item.meta}</div>` :
+              item.isPhoto ?
+              `<img src="https://picsum.photos/110/90?random=${Math.floor(Math.random()*50)}" style="width:100%;height:100%;object-fit:cover;" />` :
+              `<span style="font-size:36px;">${item.icon}</span>`
+            }
+          </div>
+          <div style="font-size:11px;font-weight:500;color:#1c1c1e;text-align:center;max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${item.name}</div>
+          ${item.meta && !item.isVideo ? `<div style="font-size:10px;color:#8e8e93;">${item.meta}</div>` : ""}
+          ${item.date ? `<div style="font-size:10px;color:#8e8e93;">${item.date}</div>` : ""}
+          <div style="position:absolute;top:4px;right:4px;color:#8e8e93;font-size:14px;cursor:pointer;" onclick="event.stopPropagation()">···</div>
+        </div>
+      `).join("")}
+    </div>
+  `;
+}
+
+function openFileItem(name) {
+  const overlay = document.createElement("div");
+  overlay.style.cssText = "position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.5);z-index:99998;display:flex;align-items:center;justify-content:center;";
+  overlay.innerHTML = `
+    <div style="background:white;border-radius:14px;padding:24px;width:340px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.4);">
+      <div style="font-size:48px;margin-bottom:12px;">📄</div>
+      <div style="font-size:16px;font-weight:700;color:#1c1c1e;margin-bottom:6px;">${name}</div>
+      <div style="font-size:12px;color:#8e8e93;margin-bottom:20px;">This file is stored on your device.</div>
+      <div style="display:flex;gap:10px;justify-content:center;">
+        <button onclick="this.closest('div[style*=fixed]').remove()" style="width:auto;padding:8px 20px;border-radius:8px;background:#f0f0f0;border:none;color:#333;cursor:pointer;">Close</button>
+        <button onclick="this.closest('div[style*=fixed]').remove()" style="width:auto;padding:8px 20px;border-radius:8px;background:#0a84ff;border:none;color:white;cursor:pointer;">Open</button>
+      </div>
+    </div>`;
+  overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
+  document.body.appendChild(overlay);
+}
+
+// init files when opened
+const _origOpenWindow = window.openWindow;
+      
+    </script>
+      <script src="settings.js"></script>
+    <script type="module" src="script.js"></script>
+
   </body>
 </html>
