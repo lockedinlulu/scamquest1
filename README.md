@@ -45,5 +45,5 @@ ScamQuest is currently being expanded post-hackathon to improve gameplay systems
 ---
 
 ## 🔗 Links
-- Devpost: [Devpost Link](https://devpost.com/software/scamquest?_gl=1*1qqafu6*_gcl_au*ODkwMzkzMjQ3LjE3ODE2MjMzMjU.*_ga*MTAzNzc3NDkwMy4xNzgxNjIzMzI4*_ga_0YHJK3Y10M*czE3ODIxNzAzMTEkbzIkZzAkdDE3ODIxNzAzMTEkajYwJGwwJGgw)]  
-- Playable Link: [ScamQuest](https://scamquest.netlify.app/)]
+- Devpost: [Devpost Link](https://devpost.com/software/scamquest?_gl=1*1qqafu6*_gcl_au*ODkwMzkzMjQ3LjE3ODE2MjMzMjU.*_ga*MTAzNzc3NDkwMy4xNzgxNjIzMzI4*_ga_0YHJK3Y10M*czE3ODIxNzAzMTEkbzIkZzAkdDE3ODIxNzAzMTEkajYwJGwwJGgw)
+- Playable Link: [ScamQuest](https://scamquest.netlify.app/)
